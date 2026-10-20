@@ -1,5 +1,11 @@
 {
   "dependencies": {
+    "com.nekuzaky.gittools": {
+      "version": "file:com.nekuzaky.gittools",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {}
+    },
     "com.unity.2d.animation": {
       "version": "16.0.1",
       "depth": 0,

@@ -1,0 +1,23 @@
+{
+  "name": "com.nekuzaky.gittools",
+  "version": "0.6.1-ja.1",
+  "displayName": "Git Tools 日本語・操作ガイド",
+  "description": "Unity内でGitの変更一覧・履歴・コミット・送受信を操作する日本語版。各操作の説明と初心者向けガイドを追加。",
+  "unity": "2021.3",
+  "keywords": [
+    "git",
+    "vcs",
+    "version-control",
+    "editor",
+    "tools"
+  ],
+  "author": {
+    "name": "Nekuzaky",
+    "url": "https://github.com/Nekuzaky"
+  },
+  "license": "MIT",
+  "documentationUrl": "https://github.com/Nekuzaky/git-unity",
+  "changelogUrl": "https://github.com/Nekuzaky/git-unity/blob/main/Packages/com.nekuzaky.gittools/CHANGELOG.md",
+  "licensesUrl": "https://github.com/Nekuzaky/git-unity/blob/main/Packages/com.nekuzaky.gittools/LICENSE.md",
+  "hideInEditor": false
+}

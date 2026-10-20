@@ -1,0 +1,20 @@
+{
+    "name": "GitTools.Editor",
+    "rootNamespace": "GitTools.EditorTools",
+    "references": [],
+    "includePlatforms": [ "Editor" ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [
+        {
+            "name": "com.unity.modules.vectorgraphics",
+            "expression": "1.0.0",
+            "define": "GITTOOLS_VECTOR_GRAPHICS"
+        }
+    ],
+    "noEngineReferences": false
+}
