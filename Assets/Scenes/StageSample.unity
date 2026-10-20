@@ -640,8 +640,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StageGenerator
   tilemap: {fileID: 455658285}
-  groundTile: {fileID: 0}
-  fillTile: {fileID: 0}
+  groundTile: {fileID: 11400000, guid: aed3256a29269264c98d58dd14cf523a, type: 2}
+  fillTile: {fileID: 11400000, guid: 618a154993c02cd4a89e8f279106fba7, type: 2}
   groundDepth: 8
   endless: 1
   seed: 0
