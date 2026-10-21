@@ -130,7 +130,7 @@ GameObject:
   - component: {fileID: 42231019}
   - component: {fileID: 42231018}
   m_Layer: 0
-  m_Name: StageGenerator (1)
+  m_Name: StageGenerator
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -149,6 +149,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StageGenerator
   tilemap: {fileID: 2027936396}
+  chunkWidth: 20
   groundTile: {fileID: 11400000, guid: aed3256a29269264c98d58dd14cf523a, type: 2}
   fillTile: {fileID: 11400000, guid: 618a154993c02cd4a89e8f279106fba7, type: 2}
   groundDepth: 8
@@ -163,23 +164,23 @@ MonoBehaviour:
   generateAhead: 40
   keepBehind: 20
   baseHeight: 0
-  startFlatLength: 5
+  startFlatLength: 7
   stepDensity: 0.08
   minFlatLength: 8
   maxFlatLength: 40
   minStepUp: 1
   maxStepUp: 2
-  maxHeight: 6
+  maxHeight: 3
   enemySections:
   - length: 100
-    density: 0.2
+    density: 0.1
     enemies:
     - prefab: {fileID: 6232053950234815764, guid: 4039cafb8d6f8b14b95957c0e6277a40, type: 3}
       weight: 1
       offset: {x: 0, y: 0}
       groupMin: 1
       groupMax: 1
-      groupSpacing: 2
+      groupSpacing: 3
       maxPerSection: 0
       minSameGap: 0
       noRepeat: 0
@@ -195,9 +196,9 @@ MonoBehaviour:
   densityIncrease: 0.4
   densityIncreaseInterval: 100
   maxEnemyDensity: 0.4
-  minEnemyGap: 3
+  minEnemyGap: 4
   stepSafeBefore: 4
-  stepSafeAfter: 2
+  stepSafeAfter: 3
 --- !u!4 &42231019
 Transform:
   m_ObjectHideFlags: 0
@@ -367,7 +368,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AutoScrollCamera
   speed: 8
   stage: {fileID: 42231018}
-  yOffset: 3
+  yOffset: 2
   followSmooth: 2
 --- !u!114 &351015296
 MonoBehaviour:
@@ -587,7 +588,7 @@ GameObject:
   - component: {fileID: 950147316}
   - component: {fileID: 950147315}
   m_Layer: 0
-  m_Name: ParallaxBackground (1)
+  m_Name: ParallaxBackground
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -663,21 +664,13 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 267017505837109207, guid: f1a86af43b64057418bed1896ccea79b, type: 3}
-      propertyPath: m_Material
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 1434127356923436350, guid: f1a86af43b64057418bed1896ccea79b, type: 3}
-      propertyPath: idleBackSpeed
-      value: -7
-      objectReference: {fileID: 0}
     - target: {fileID: 2589848515423940712, guid: f1a86af43b64057418bed1896ccea79b, type: 3}
       propertyPath: m_Name
-      value: Player (1)
+      value: Player
       objectReference: {fileID: 0}
     - target: {fileID: 3415057819177947078, guid: f1a86af43b64057418bed1896ccea79b, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 4.4
+      value: 5.04
       objectReference: {fileID: 0}
     - target: {fileID: 3415057819177947078, guid: f1a86af43b64057418bed1896ccea79b, type: 3}
       propertyPath: m_LocalPosition.y
