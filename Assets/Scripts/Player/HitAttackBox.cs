@@ -4,9 +4,13 @@
 using UnityEngine;
 
 // 破壊やダメージの処理は、攻撃を受けた側(オブジェクト/敵)のスクリプトが担当する。
-// ここでは「触れた相手に通知する」ことと、「何かに当たったか」を記録するだけ。
+// ここでは「タグが一致した相手に通知する」ことと、「当たったか」を記録するだけ。
 public class HitAttackBox : MonoBehaviour
 {
+    [Header("攻撃が当たるタグ")]
+    [Tooltip("ここに書いたタグに触れたときだけ「当たった」扱いにする(Tag Managerに登録したものと完全一致)")]
+    [SerializeField] private string[] hitTags = { "Enemy", "Object", "Iron" };
+
     public bool HitEnemy { get; private set; }
 
     private bool isChargeAttack;
@@ -24,10 +28,18 @@ public class HitAttackBox : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        // 相手に「攻撃を受けた」と通知する(受け取るメソッドがなければ何も起きない)
-        other.SendMessage("OnHit", isChargeAttack, SendMessageOptions.DontRequireReceiver);
+        if (!IsHitTarget(other)) return; // 床や背景など、対象外のタグは無視
 
         HitEnemy = true;
-        Debug.Log($"検出: {other.name}");
+        Debug.Log($"{other.tag}を検出: {other.name}");
+    }
+
+    private bool IsHitTarget(Collider2D other)
+    {
+        foreach (var tag in hitTags)
+        {
+            if (other.CompareTag(tag)) return true;
+        }
+        return false;
     }
 }

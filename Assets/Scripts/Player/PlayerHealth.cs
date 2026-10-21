@@ -12,8 +12,15 @@ public class PlayerHealth : MonoBehaviour
     [Header("画面外")]
     [SerializeField] private float offscreenMargin = 0.5f; // 画面の外側にどれだけ出たら死ぬか(ユニット)
 
+    [Header("無敵時間")]
+    [SerializeField] private float invincibleTime = 1f;  // ダメージ後の無敵時間(秒)
+    [SerializeField] private float blinkInterval = 0.1f; // 点滅の間隔(秒)
+
+    private SpriteRenderer[] blinkRenderers;
 
     public int CurrentHp { get; private set; }
+    public bool IsInvincible => Time.time < invincibleUntil;
+    private float invincibleUntil;
     public int MaxHp => maxHp;
     public bool IsDead { get; private set; }
 
@@ -26,6 +33,9 @@ public class PlayerHealth : MonoBehaviour
     {
         cam = Camera.main;
         CurrentHp = maxHp;
+
+        // 自分と子オブジェクトのスプライトをすべて集める
+        blinkRenderers = GetComponentsInChildren<SpriteRenderer>();
     }
 
     private void Start()
@@ -37,17 +47,37 @@ public class PlayerHealth : MonoBehaviour
     {
         if (IsDead) return;
         if (IsOffscreen()) Die();
+
+        UpdateBlink();
+    }
+
+    // 無敵中だけ、一定間隔でスプライトの表示/非表示を切り替える
+    private void UpdateBlink()
+    {
+        bool visible = true;
+        if (IsInvincible)
+            visible = Mathf.FloorToInt(Time.time / blinkInterval) % 2 == 0;
+
+        foreach (var r in blinkRenderers)
+            if (r != null) r.enabled = visible;
     }
 
     public void TakeDamage(int amount = 1)
     {
         if (IsDead) return;
+        if (IsInvincible) return; // 無敵中はダメージを受けない
 
         CurrentHp = Mathf.Max(CurrentHp - amount, 0);
         LogHearts();
         OnHpChanged?.Invoke(CurrentHp, maxHp);
 
-        if (CurrentHp <= 0) Die();
+        if (CurrentHp <= 0)
+        {
+            Die();
+            return;
+        }
+
+        invincibleUntil = Time.time + invincibleTime;
     }
 
     public void Heal(int amount = 1)

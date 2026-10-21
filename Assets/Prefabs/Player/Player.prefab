@@ -228,7 +228,7 @@ CapsuleCollider2D:
   m_Enabled: 1
   serializedVersion: 3
   m_Density: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: 08b5f02b51d1a9946af66c3d3eac9618, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -269,6 +269,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: '::'
   maxHp: 3
   offscreenMargin: 0.5
+  invincibleTime: 1.5
+  blinkInterval: 0.1
 --- !u!1 &7169283478416645870
 GameObject:
   m_ObjectHideFlags: 0
@@ -452,13 +454,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c314fe3a8f6fe89439fd7c434ce0f40b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
-  hitRules:
-  - tagName: Enemy
-    attackHits: 1
-  - tagName: Object
-    attackHits: 1
-  - tagName: Iron
-    attackHits: 1
+  hitTags:
+  - Enemy
+  - Object
+  - Iron
 --- !u!1 &8075116059091115312
 GameObject:
   m_ObjectHideFlags: 0
