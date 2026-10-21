@@ -58,15 +58,13 @@ public class StageGenerator : MonoBehaviour
     [Min(1)][SerializeField] int maxHeight = 6;
 
     [Header("敵")]
-    [Tooltip("ランダムに選んで配置する敵 (2体以上)")]
-    [SerializeField] GameObject[] enemyPrefabs;
-    [Tooltip("スタート時の敵の密度。1マスごとに敵が出る確率")]
-    [Range(0f, 1f)][SerializeField] float enemyDensity = 0.05f;
-    [Tooltip("一定距離進むごとに増える密度")]
+    [Tooltip("ステージ先頭から順に並べる区間。最後の区間は以降ずっと続く")]
+    [SerializeField] EnemySection[] enemySections;
+    [Tooltip("最後の区間に入った後、一定距離進むごとに増える密度")]
     [Range(0f, 1f)][SerializeField] float densityIncrease = 0.01f;
     [Tooltip("密度を増やす間隔 (マス)")]
     [Min(1)][SerializeField] int densityIncreaseInterval = 100;
-    [Tooltip("密度の上限")]
+    [Tooltip("増やした密度の上限")]
     [Range(0f, 1f)][SerializeField] float maxEnemyDensity = 0.3f;
     [Tooltip("敵同士の最短間隔 (マス)")]
     [Min(1)][SerializeField] int minEnemyGap = 3;
@@ -74,8 +72,42 @@ public class StageGenerator : MonoBehaviour
     [Min(0)][SerializeField] int stepSafeBefore = 4;
     [Tooltip("段差の直後で敵を置かない距離 (マス)")]
     [Min(0)][SerializeField] int stepSafeAfter = 2;
-    [Tooltip("地面の上面からの敵の位置ずれ")]
-    [SerializeField] Vector2 enemyOffset = Vector2.zero;
+
+    [System.Serializable]
+    class EnemyEntry
+    {
+        public GameObject prefab;
+        [Tooltip("出やすさ。同じ区間の他の敵との比で抽選する")]
+        [Min(0f)] public float weight = 1f;
+        [Tooltip("地面の上面からの位置ずれ")]
+        public Vector2 offset;
+
+        [Header("群れ")]
+        [Tooltip("1回で並べて出す数の範囲。1 なら単体")]
+        [Min(1)] public int groupMin = 1;
+        [Min(1)] public int groupMax = 1;
+        [Tooltip("群れの中の間隔 (マス)")]
+        [Min(1)] public int groupSpacing = 2;
+
+        [Header("制限")]
+        [Tooltip("この区間で出る最大数。0 なら無制限")]
+        [Min(0)] public int maxPerSection = 0;
+        [Tooltip("同じ種類どうしの最短間隔 (マス)。0 なら制限なし")]
+        [Min(0)] public int minSameGap = 0;
+        [Tooltip("直前に出た敵と同じ種類なら出さない")]
+        public bool noRepeat;
+    }
+
+    [System.Serializable]
+    class EnemySection
+    {
+        [Tooltip("区間の長さ (マス)。最後の区間では無視する")]
+        [Min(1)] public int length = 100;
+        [Tooltip("1マスごとに敵が出る確率")]
+        [Range(0f, 1f)] public float density = 0.05f;
+        [Tooltip("この区間に出る敵")]
+        public EnemyEntry[] enemies;
+    }
 
     // 段差の位置 (上った先の最初の列)。予告表示などに使う
     public IReadOnlyList<int> StepColumns => stepColumns;
@@ -84,6 +116,10 @@ public class StageGenerator : MonoBehaviour
     readonly List<int> stepColumns = new List<int>();
     readonly Dictionary<int, int> heights = new Dictionary<int, int>();
     readonly List<(int x, GameObject obj)> spawned = new List<(int, GameObject)>();
+    // 群れの残りを出す列
+    readonly Queue<int> pendingGroup = new Queue<int>();
+    readonly Dictionary<EnemyEntry, int> sectionCounts = new Dictionary<EnemyEntry, int>();
+    readonly Dictionary<EnemyEntry, int> lastColumnOf = new Dictionary<EnemyEntry, int>();
 
     System.Random rng;
     Transform container;
@@ -93,14 +129,21 @@ public class StageGenerator : MonoBehaviour
     int flatRun;
     int lastStepColumn;
     int lastEnemyColumn;
+    int currentSection;
+    EnemyEntry pendingEntry;
+    EnemyEntry lastEntry;
 
     void OnValidate()
     {
         if (maxStepUp < minStepUp) maxStepUp = minStepUp;
         if (maxFlatLength > 0 && maxFlatLength < minFlatLength) maxFlatLength = minFlatLength;
-        if (maxEnemyDensity < enemyDensity) maxEnemyDensity = enemyDensity;
-        if (enemyPrefabs != null && enemyPrefabs.Length > 0 && enemyPrefabs.Length < 2)
-            Debug.LogWarning($"{name}: 敵プレハブは2体以上指定してください", this);
+        if (enemySections == null) return;
+        foreach (var s in enemySections)
+        {
+            if (s?.enemies == null) continue;
+            foreach (var e in s.enemies)
+                if (e != null && e.groupMax < e.groupMin) e.groupMax = e.groupMin;
+        }
     }
 
     void Start()
@@ -137,6 +180,12 @@ public class StageGenerator : MonoBehaviour
         flatRun = 0;
         lastStepColumn = int.MinValue / 2;
         lastEnemyColumn = int.MinValue / 2;
+        currentSection = -1;
+        pendingEntry = null;
+        lastEntry = null;
+        pendingGroup.Clear();
+        sectionCounts.Clear();
+        lastColumnOf.Clear();
         nextColumn = 0;
         deletedUntil = 0;
 
@@ -173,6 +222,8 @@ public class StageGenerator : MonoBehaviour
             lastStepColumn = x;
             stepColumns.Add(x);
             RemoveEnemiesBefore(x);
+            // 群れは段差をまたがせない
+            pendingGroup.Clear();
         }
         else
         {
@@ -187,7 +238,9 @@ public class StageGenerator : MonoBehaviour
             tilemap.SetTile(new Vector3Int(x, y, 0), tile);
         }
 
-        if (!inStart && !inGoal) TrySpawnEnemy(x);
+        if (inStart || inGoal) pendingGroup.Clear();
+        else if (pendingGroup.Count > 0) SpawnPending(x);
+        else TrySpawnEnemy(x);
         nextColumn = x + 1;
     }
 
@@ -200,23 +253,101 @@ public class StageGenerator : MonoBehaviour
 
     void TrySpawnEnemy(int x)
     {
-        if (enemyPrefabs == null || enemyPrefabs.Length == 0) return;
+        int index = SectionIndexAt(x, out int sectionStart);
+        if (index < 0) return;
+        if (index != currentSection)
+        {
+            currentSection = index;
+            sectionCounts.Clear();
+        }
+        var section = enemySections[index];
+        if (section.enemies == null || section.enemies.Length == 0) return;
         if (x - lastStepColumn <= stepSafeAfter) return;
         if (x - lastEnemyColumn < minEnemyGap) return;
-        if (rng.NextDouble() >= DensityAt(x)) return;
 
-        var prefab = enemyPrefabs[rng.Next(enemyPrefabs.Length)];
-        if (prefab == null) return;
+        float density = section.density;
+        // 最後の区間だけ、進むほど密度を上げる
+        if (index == enemySections.Length - 1)
+        {
+            int steps = Mathf.Max(0, x - Mathf.Max(sectionStart, startFlatLength)) / densityIncreaseInterval;
+            density = Mathf.Max(density, Mathf.Min(maxEnemyDensity, density + densityIncrease * steps));
+        }
+        if (rng.NextDouble() >= density) return;
 
-        var obj = Instantiate(prefab, SurfacePosition(x) + (Vector3)enemyOffset, Quaternion.identity, container);
-        spawned.Add((x, obj));
-        lastEnemyColumn = x;
+        var entry = PickEnemy(section.enemies, x);
+        if (entry == null) return;
+
+        int count = rng.Next(entry.groupMin, Mathf.Max(entry.groupMin, entry.groupMax) + 1);
+        if (entry.maxPerSection > 0) count = Mathf.Min(count, entry.maxPerSection - CountInSection(entry));
+        pendingEntry = entry;
+        for (int i = 1; i < count; i++) pendingGroup.Enqueue(x + i * entry.groupSpacing);
+        Spawn(entry, x);
     }
 
-    float DensityAt(int x)
+    // 群れの残りを、予定の列に来たら出す
+    void SpawnPending(int x)
     {
-        int steps = Mathf.Max(0, x - startFlatLength) / densityIncreaseInterval;
-        return Mathf.Min(maxEnemyDensity, enemyDensity + densityIncrease * steps);
+        if (pendingGroup.Peek() != x) return;
+        pendingGroup.Dequeue();
+        Spawn(pendingEntry, x);
+    }
+
+    void Spawn(EnemyEntry entry, int x)
+    {
+        var obj = Instantiate(entry.prefab, SurfacePosition(x) + (Vector3)entry.offset, Quaternion.identity, container);
+        spawned.Add((x, obj));
+        lastEnemyColumn = x;
+        lastEntry = entry;
+        lastColumnOf[entry] = x;
+        sectionCounts[entry] = CountInSection(entry) + 1;
+    }
+
+    int CountInSection(EnemyEntry entry) => sectionCounts.TryGetValue(entry, out int n) ? n : 0;
+
+    // 列 x にこの敵を出してよいか
+    bool CanSpawn(EnemyEntry e, int x)
+    {
+        if (e == null || e.prefab == null || e.weight <= 0f) return false;
+        if (e.maxPerSection > 0 && CountInSection(e) >= e.maxPerSection) return false;
+        if (e.minSameGap > 0 && lastColumnOf.TryGetValue(e, out int last) && x - last < e.minSameGap) return false;
+        if (e.noRepeat && e == lastEntry) return false;
+        return true;
+    }
+
+    // 列 x が入る区間の番号と開始列。区間が無ければ -1
+    int SectionIndexAt(int x, out int start)
+    {
+        start = 0;
+        if (enemySections == null || enemySections.Length == 0) return -1;
+        for (int i = 0; i < enemySections.Length - 1; i++)
+        {
+            if (x < start + enemySections[i].length) return i;
+            start += enemySections[i].length;
+        }
+        return enemySections.Length - 1;
+    }
+
+    // 出せる敵の中から重みに応じて 1 体選ぶ。候補が無ければ null
+    EnemyEntry PickEnemy(EnemyEntry[] enemies, int x)
+    {
+        float total = 0f;
+        EnemyEntry fallback = null;
+        foreach (var e in enemies)
+        {
+            if (!CanSpawn(e, x)) continue;
+            total += e.weight;
+            fallback = e;
+        }
+        if (fallback == null) return null;
+
+        double r = rng.NextDouble() * total;
+        foreach (var e in enemies)
+        {
+            if (!CanSpawn(e, x)) continue;
+            r -= e.weight;
+            if (r < 0) return e;
+        }
+        return fallback;
     }
 
     // 段差が決まった時点で、その手前に置いた敵を取り除く
