@@ -11,7 +11,8 @@ namespace CyberAgentDev.ObjectPrototypeLearning
         // trueは受理、falseは通常攻撃の拒否、nullは攻撃種別が不明。
         public bool? CanReceiveAttack(HitAttackBox attackBox, bool? isChargeAttack = null)
         {
-            if (!isChargeAttack.HasValue && attackBox is IObjectAttackInfo attackInfo)
+            // Playerの確定値を優先し、旧通知の引数で攻撃種別を上書きしない。
+            if (attackBox is IObjectAttackInfo attackInfo)
                 isChargeAttack = attackInfo.IsChargeAttack;
             if (isChargeAttack.HasValue) return isChargeAttack.Value;
             if (!missingAttackInfoReported)

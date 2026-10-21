@@ -10,10 +10,11 @@ namespace CyberAgentDev.ObjectPrototypeLearning
         public const string DefaultPlayerTag = "Player";
         public const string DefaultObjectTag = "Object";
         public const string DefaultEnemyTag = "Enemy";
+        public const string DefaultIronTag = "Iron";
 
         // 対象タグは配列で持ち、Inspectorから候補を増減できるようにする。
         [SerializeField] string[] playerTags = { DefaultPlayerTag };
-        [SerializeField] string[] objectTags = { DefaultObjectTag, DefaultEnemyTag };
+        [SerializeField] string[] objectTags = { DefaultObjectTag, DefaultEnemyTag, DefaultIronTag };
         [SerializeField] bool canDamagePlayer = true;
         [Min(1)] [SerializeField] int contactDamage = 1;
         [Min(MinimumDamageIntervalSeconds)] [SerializeField] float contactDamageIntervalSeconds = 1f;
