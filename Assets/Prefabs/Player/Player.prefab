@@ -269,12 +269,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: '::'
   maxHp: 3
   offscreenMargin: 0.5
-  invincibleTime: 1
-  damageRules:
-  - tagName: Enemy
-    damage: 1
-  - tagName: Object
-    damage: 0
 --- !u!1 &7169283478416645870
 GameObject:
   m_ObjectHideFlags: 0
@@ -379,7 +373,7 @@ GameObject:
   - component: {fileID: 8578610746150499451}
   - component: {fileID: 91991650890613998}
   m_Layer: 0
-  m_Name: AttackHitBox
+  m_Name: HitAttackBox
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -462,6 +456,8 @@ MonoBehaviour:
   - tagName: Enemy
     attackHits: 1
   - tagName: Object
+    attackHits: 1
+  - tagName: Iron
     attackHits: 1
 --- !u!1 &8075116059091115312
 GameObject:

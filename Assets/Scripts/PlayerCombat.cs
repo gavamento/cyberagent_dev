@@ -1,3 +1,6 @@
+//===============================================================================-
+//プレイヤーの移動系のスクリプト    鍋坂明穂
+//===============================================================================-
 using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections;
@@ -43,6 +46,9 @@ public class PlayerCombat : MonoBehaviour
     private Vector3 hitboxBaseScale;
     private const float DashDuration = 0.2f;// ダッシュの時間
     private bool isAttacking; // 攻撃(ダッシュ)中は待機後退を止める
+
+    // 外部から「今攻撃中か」を読めるようにする(判定が出ている間+ダッシュ中)
+    public bool IsAttacking => isAttacking;
 
     private void Awake()
     {
