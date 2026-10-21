@@ -106,7 +106,7 @@ GameObject:
   - component: {fileID: 2448734321461282982}
   m_Layer: 0
   m_Name: EnemyRed
-  m_TagString: Enemy
+  m_TagString: Iron
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -183,15 +183,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5d5fa972d18a7c44682f70ca197965b5, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CyberAgentDev.ObjectPrototypeLearning.DestructibleObject2D
   playerTags:
   - Player
   objectTags:
-  - Object
-  - Enemy
   - Iron
-  canDamagePlayer: 1
+  canDamagePlayer: 0
   contactDamage: 1
   contactDamageIntervalSeconds: 1
   canBreakFromAttack: 1
@@ -209,5 +207,5 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9350f3410e053d24e9b05640ceccb49d, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CyberAgentDev.ObjectPrototypeLearning.ChargeOnlyEnemyScript
