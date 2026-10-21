@@ -6,8 +6,10 @@ using UnityEngine.Tilemaps;
 public class StageGenerator : MonoBehaviour
 {
     [Header("タイルマップ")]
-    [Tooltip("生成先のタイルマップ。生成時に中身は全消去されるので専用のものを使う")]
+    [Tooltip("チャンクの元にするタイルマップ。これをコピーしてチャンクごとに塗る。生成時に中身は全消去されるので専用のものを使う")]
     [SerializeField] Tilemap tilemap;
+    [Tooltip("1 チャンクの幅 (マス)。チャンク単位でまとめて生成・削除し、足元の当たり判定を作り直さないようにする")]
+    [Min(1)][SerializeField] int chunkWidth = 20;
     [Tooltip("地面の表面に塗るタイル")]
     [SerializeField] TileBase groundTile;
     [Tooltip("表面より下に塗るタイル。未指定なら表面タイルを使う")]
@@ -120,9 +122,12 @@ public class StageGenerator : MonoBehaviour
     readonly Queue<int> pendingGroup = new Queue<int>();
     readonly Dictionary<EnemyEntry, int> sectionCounts = new Dictionary<EnemyEntry, int>();
     readonly Dictionary<EnemyEntry, int> lastColumnOf = new Dictionary<EnemyEntry, int>();
+    // チャンク番号 → そのチャンクのタイルマップ
+    readonly Dictionary<int, Tilemap> chunks = new Dictionary<int, Tilemap>();
 
     System.Random rng;
     Transform container;
+    Transform chunkContainer;
     int nextColumn;
     int deletedUntil;
     int currentHeight;
@@ -158,7 +163,7 @@ public class StageGenerator : MonoBehaviour
         if (t == null) return;
 
         int cx = tilemap.WorldToCell(t.position).x;
-        while (nextColumn <= cx + generateAhead) GenerateColumn(nextColumn);
+        while (nextColumn <= cx + generateAhead) GenerateChunk();
         while (deletedUntil < cx - keepBehind) DeleteColumn(deletedUntil++);
     }
 
@@ -175,6 +180,8 @@ public class StageGenerator : MonoBehaviour
         rng = new System.Random(seed != 0 ? seed : System.Environment.TickCount);
         container = new GameObject("Spawned").transform;
         container.SetParent(transform, false);
+        chunkContainer = new GameObject("StageChunks").transform;
+        chunkContainer.SetParent(tilemap.transform.parent, false);
 
         currentHeight = baseHeight;
         flatRun = 0;
@@ -190,7 +197,7 @@ public class StageGenerator : MonoBehaviour
         deletedUntil = 0;
 
         int length = endless ? startFlatLength + generateAhead : stageLength;
-        while (nextColumn < length) GenerateColumn(nextColumn);
+        while (nextColumn < length) GenerateChunk();
 
         if (!endless) PlaceGoal();
     }
@@ -206,6 +213,31 @@ public class StageGenerator : MonoBehaviour
         if (container == null) container = transform.Find("Spawned");
         if (container != null) DestroyObj(container.gameObject);
         container = null;
+
+        chunks.Clear();
+        if (chunkContainer == null && tilemap != null) chunkContainer = tilemap.transform.parent.Find("StageChunks");
+        if (chunkContainer != null) DestroyObj(chunkContainer.gameObject);
+        chunkContainer = null;
+    }
+
+    // 次のチャンクを一度に生成する。チャンクを分けておけば、乗っているチャンクの当たり判定は作り直されない
+    void GenerateChunk()
+    {
+        int end = (ChunkOf(nextColumn) + 1) * chunkWidth;
+        if (!endless) end = Mathf.Min(end, stageLength);
+        while (nextColumn < end) GenerateColumn(nextColumn);
+    }
+
+    int ChunkOf(int x) => Mathf.FloorToInt((float)x / chunkWidth);
+
+    Tilemap GetChunk(int x)
+    {
+        int index = ChunkOf(x);
+        if (chunks.TryGetValue(index, out var map)) return map;
+        map = Instantiate(tilemap, chunkContainer);
+        map.name = $"Chunk {index}";
+        chunks[index] = map;
+        return map;
     }
 
     void GenerateColumn(int x)
@@ -231,11 +263,12 @@ public class StageGenerator : MonoBehaviour
         }
 
         heights[x] = currentHeight;
+        var map = GetChunk(x);
         int bottom = baseHeight - groundDepth;
         for (int y = bottom; y <= currentHeight; y++)
         {
             var tile = y == currentHeight || fillTile == null ? groundTile : fillTile;
-            tilemap.SetTile(new Vector3Int(x, y, 0), tile);
+            map.SetTile(new Vector3Int(x, y, 0), tile);
         }
 
         if (inStart || inGoal) pendingGroup.Clear();
@@ -364,10 +397,14 @@ public class StageGenerator : MonoBehaviour
 
     void DeleteColumn(int x)
     {
-        if (!heights.TryGetValue(x, out int h)) return;
-        for (int y = baseHeight - groundDepth; y <= h; y++)
-            tilemap.SetTile(new Vector3Int(x, y, 0), null);
-        heights.Remove(x);
+        if (!heights.Remove(x)) return;
+        // タイルは列ごとに消さず、チャンクの最後の列を過ぎたらチャンクごと消す
+        int index = ChunkOf(x);
+        if ((x + 1) % chunkWidth == 0 && chunks.TryGetValue(index, out var map))
+        {
+            DestroyObj(map.gameObject);
+            chunks.Remove(index);
+        }
 
         // 敵は列の順に並んでいるので先頭から見る
         while (spawned.Count > 0 && spawned[0].x <= x)
