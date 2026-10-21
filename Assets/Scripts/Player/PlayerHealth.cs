@@ -1,15 +1,8 @@
+//===============================================================================-
+//プレイヤーの体力の管理を行うスクリプト    鍋坂明穂
+//===============================================================================
 using UnityEngine;
 using System;
-
-[System.Serializable]
-public struct DamageTagRule
-{
-    [Tooltip("Unityのタグ名(Tag Managerに登録したものと完全一致)")]
-    public string tagName;
-
-    [Tooltip("プレイヤーが触れたときに受けるダメージ。0でダメージなし")]
-    public int damage;
-}
 
 public class PlayerHealth : MonoBehaviour
 {
@@ -19,17 +12,15 @@ public class PlayerHealth : MonoBehaviour
     [Header("画面外")]
     [SerializeField] private float offscreenMargin = 0.5f; // 画面の外側にどれだけ出たら死ぬか(ユニット)
 
-    [Header("ダメージ")]
-    [SerializeField] private float invincibleTime = 1f; // ダメージ後の無敵時間(秒)
-    [SerializeField]
-    private DamageTagRule[] damageRules =
-    {
-        new DamageTagRule { tagName = "Enemy",  damage = 1 },
-        new DamageTagRule { tagName = "Object", damage = 0 },
-    };
-    private float lastDamageTime = -999f;
+    [Header("無敵時間")]
+    [SerializeField] private float invincibleTime = 1f;  // ダメージ後の無敵時間(秒)
+    [SerializeField] private float blinkInterval = 0.1f; // 点滅の間隔(秒)
+
+    private SpriteRenderer[] blinkRenderers;
 
     public int CurrentHp { get; private set; }
+    public bool IsInvincible => Time.time < invincibleUntil;
+    private float invincibleUntil;
     public int MaxHp => maxHp;
     public bool IsDead { get; private set; }
 
@@ -42,6 +33,9 @@ public class PlayerHealth : MonoBehaviour
     {
         cam = Camera.main;
         CurrentHp = maxHp;
+
+        // 自分と子オブジェクトのスプライトをすべて集める
+        blinkRenderers = GetComponentsInChildren<SpriteRenderer>();
     }
 
     private void Start()
@@ -53,19 +47,37 @@ public class PlayerHealth : MonoBehaviour
     {
         if (IsDead) return;
         if (IsOffscreen()) Die();
+
+        UpdateBlink();
+    }
+
+    // 無敵中だけ、一定間隔でスプライトの表示/非表示を切り替える
+    private void UpdateBlink()
+    {
+        bool visible = true;
+        if (IsInvincible)
+            visible = Mathf.FloorToInt(Time.time / blinkInterval) % 2 == 0;
+
+        foreach (var r in blinkRenderers)
+            if (r != null) r.enabled = visible;
     }
 
     public void TakeDamage(int amount = 1)
     {
         if (IsDead) return;
-        if (Time.time - lastDamageTime < invincibleTime) return; // 無敵中
-        lastDamageTime = Time.time;
+        if (IsInvincible) return; // 無敵中はダメージを受けない
 
         CurrentHp = Mathf.Max(CurrentHp - amount, 0);
         LogHearts();
         OnHpChanged?.Invoke(CurrentHp, maxHp);
 
-        if (CurrentHp <= 0) Die();
+        if (CurrentHp <= 0)
+        {
+            Die();
+            return;
+        }
+
+        invincibleUntil = Time.time + invincibleTime;
     }
 
     public void Heal(int amount = 1)
@@ -114,28 +126,5 @@ public class PlayerHealth : MonoBehaviour
             hearts += i < CurrentHp ? "♥" : "♡";
 
         Debug.Log($"HP {CurrentHp}/{maxHp}  {hearts}");
-    }
-
-    private void OnTriggerEnter2D(Collider2D other)
-    {
-        TryDamage(other);
-    }
-
-    // 触れ続けている間も、無敵が切れたらダメージを受ける
-    private void OnTriggerStay2D(Collider2D other)
-    {
-        TryDamage(other);
-    }
-
-    private void TryDamage(Collider2D other)
-    {
-        foreach (var rule in damageRules)
-        {
-            if (rule.damage > 0 && other.CompareTag(rule.tagName))
-            {
-                TakeDamage(rule.damage);
-                return;
-            }
-        }
     }
 }
