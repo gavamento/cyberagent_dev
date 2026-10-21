@@ -4,6 +4,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections;
+using System.Collections.Generic;
 
 public class PlayerCombat : MonoBehaviour
 {
@@ -38,9 +39,8 @@ public class PlayerCombat : MonoBehaviour
 
     private Rigidbody2D rb;
     private HitAttackBox hitbox;
-    private int groundContacts;
-    private bool IsGrounded => groundContacts > 0;
-
+    private readonly HashSet<Collider2D> touching = new HashSet<Collider2D>(); // 触れているCollider
+    private bool IsGrounded => touching.Count > 0; // 床でも壁でも、触れていればジャンプ可
     private float pressStartTime;
     private bool isPressing;
     private Vector3 hitboxBaseScale;
@@ -152,18 +152,17 @@ public class PlayerCombat : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D col)
     {
-        if (IsFloor(col)) groundContacts++;
+        touching.Add(col.collider);
     }
 
     private void OnCollisionExit2D(Collision2D col)
     {
-        if (groundContacts > 0) groundContacts--;
+        touching.Remove(col.collider);
     }
 
-    private bool IsFloor(Collision2D col)
+    // 触れていた相手が消えたとき(Destroyなど)にExitが呼ばれない場合に備える
+    private void OnDisable()
     {
-        foreach (var contact in col.contacts)
-            if (contact.normal.y > 0.5f) return true;
-        return false;
+        touching.Clear();
     }
 }
