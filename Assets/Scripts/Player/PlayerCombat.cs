@@ -94,6 +94,8 @@ public class PlayerCombat : MonoBehaviour
     private Vector3 hitboxBaseScale;
     private const float DashDuration = 0.1f; // ダッシュの時間
     private bool isAttacking; // 攻撃(ダッシュ)中は待機後退を止める
+    private bool attackLanded;          // 今の攻撃が相手に通ったか
+    private bool currentAttackIsCharge; // 今の攻撃がため攻撃か
     private float jumpBufferTimer;
     private float coyoteTimer;
     private Camera cam;
@@ -104,6 +106,16 @@ public class PlayerCombat : MonoBehaviour
     // 外部から「今攻撃中か」を読めるようにする(判定が出ている間+ダッシュ中)
     // フィーバー中は常に「攻撃中」扱い(接触ダメージを受けない)
     public bool IsAttacking => isAttacking || IsFever;
+
+    // 今の攻撃がため攻撃か(チャージ限定のものの接触ダメージ判定用)
+    public bool IsChargeAttacking => isAttacking && currentAttackIsCharge;
+
+    // 攻撃が実際に相手へ通った(壊せた/耐久を削れた)ときに、相手側から呼ばれる。
+    // 通常攻撃がIronに弾かれたときなどは呼ばれないので、「外れ」扱いになる
+    public void NotifyHit()
+    {
+        attackLanded = true;
+    }
 
     private void Awake()
     {
@@ -294,6 +306,8 @@ public class PlayerCombat : MonoBehaviour
     private IEnumerator AttackRoutine(float scaleMultiplier, bool isCharge)
     {
         isAttacking = true;
+        attackLanded = false;
+        currentAttackIsCharge = isCharge;
 
         attackHitbox.transform.localScale = hitboxBaseScale * scaleMultiplier;
         hitbox.SetAttackType(isCharge);
@@ -301,13 +315,14 @@ public class PlayerCombat : MonoBehaviour
 
         // 判定時間が終わるか、敵に当たるまで待つ
         float t = 0f;
-        while (t < hitboxActiveTime && !hitbox.HitEnemy)
+        // (タグが合うだけでは「当たった」にしない。相手が攻撃を受け付けたときだけ NotifyHit が呼ばれる)
+        while (t < hitboxActiveTime && !attackLanded)
         {
             t += Time.deltaTime;
             yield return null;
         }
 
-        bool hit = hitbox.HitEnemy;
+        bool hit = attackLanded;
         attackHitbox.SetActive(false);
 
         // 当たったら前へ、外れたら後ろへ

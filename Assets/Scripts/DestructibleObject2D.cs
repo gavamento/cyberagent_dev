@@ -29,6 +29,8 @@ namespace CyberAgentDev.ObjectPrototypeLearning
         // 対象タグは配列で持ち、Inspectorから候補を増減できるようにする。
         [SerializeField] string[] playerTags = { DefaultPlayerTag };
         [SerializeField] string[] objectTags = { DefaultObjectTag, DefaultEnemyTag, DefaultIronTag };
+        // 接触でPlayerにダメージを与えるタグ(Objectは与えない)
+        [SerializeField] string[] damageTags = { DefaultEnemyTag, DefaultIronTag };
         [SerializeField] bool canDamagePlayer = true;
         [Min(1)][SerializeField] int contactDamage = 1;
         [Min(MinimumDamageIntervalSeconds)][SerializeField] float contactDamageIntervalSeconds = 1f;
@@ -61,8 +63,8 @@ namespace CyberAgentDev.ObjectPrototypeLearning
         float nextDamageTime;
         PlayerCombat lastAttacker; // 最後に攻撃したPlayer(スコアの加算先)
 
-        // Enemyだけが接触ダメージを出す。Objectは設定がONでもダメージなし。
-        public bool CanDamagePlayer => canDamagePlayer && gameObject.tag == DefaultEnemyTag;
+        // Damage Tags(Enemy・Iron)のものだけが接触ダメージを出す。Objectは設定がONでもダメージなし。
+        public bool CanDamagePlayer => canDamagePlayer && MatchesAnyTag(gameObject, damageTags);
         public int ContactDamage => contactDamage;
         public bool ChargeOnly
         {
@@ -158,7 +160,8 @@ namespace CyberAgentDev.ObjectPrototypeLearning
                 return false;
             }
             // Playerが公開する攻撃中の状態を使い、ダッシュ中も接触ダメージを止める。
-            if (combat != null && combat.IsAttacking) return false;
+            // ただしチャージ限定のもの(Iron)は、ため攻撃の最中でなければ、通常攻撃中でもダメージを受ける。
+            if (combat != null && combat.IsAttacking && !(ChargeOnly && !combat.IsChargeAttacking)) return false;
             if (!canDamageNow) return false;
             if (contactDamage < 1 || contactDamageIntervalSeconds <= 0f
                 || float.IsNaN(contactDamageIntervalSeconds) || float.IsInfinity(contactDamageIntervalSeconds))
@@ -198,6 +201,8 @@ namespace CyberAgentDev.ObjectPrototypeLearning
             lastAttacker = attackBox.GetComponentInParent<PlayerCombat>();
             if (lastAttacker == null)
                 Debug.LogWarning("攻撃したPlayerにPlayerCombatが見つかりません。スコアは加算されません。", this);
+            else
+                lastAttacker.NotifyHit(); // 攻撃が通ったので、Playerは「当たった」扱い(前へ出る)
             // 壊す前にヒットストップを出す(Destroy後は接触通知が届かないため)
             var hitStop = GetComponent<HitStop>();
             if (hitStop != null) hitStop.Play(attackBox.IsChargeAttack);
