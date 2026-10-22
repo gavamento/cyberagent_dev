@@ -164,6 +164,9 @@ namespace CyberAgentDev.ObjectPrototypeLearning
                 Debug.LogError("攻撃回数は1以上にしてください。", this);
                 return;
             }
+            // 壊す前にヒットストップを出す(Destroy後は接触通知が届かないため)
+            var hitStop = GetComponent<HitStop>();
+            if (hitStop != null) hitStop.Play(attackBox.IsChargeAttack);
             if (currentHitsTaken < hitsToBreak) currentHitsTaken++;
             if (currentHitsTaken >= hitsToBreak) Break();
         }

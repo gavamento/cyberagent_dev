@@ -32,6 +32,10 @@ public class HitAttackBox : MonoBehaviour, IObjectAttackInfo
     {
         if (!IsHitTarget(other)) return; // 床や背景など、対象外のタグは無視
 
+        // 下の通知で敵が壊れる前にヒットストップを出す
+        var hitStop = other.GetComponent<HitStop>();
+        if (hitStop != null) hitStop.Play(IsChargeAttack);
+
         // 旧通知。受け取るメソッドがなければ何も起きない(二重カウントはオブジェクト側で防止済み)
         other.SendMessage("OnHit", IsChargeAttack, SendMessageOptions.DontRequireReceiver);
 

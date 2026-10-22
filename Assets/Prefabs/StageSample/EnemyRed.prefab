@@ -104,6 +104,7 @@ GameObject:
   - component: {fileID: 9008884504206792040}
   - component: {fileID: 8231856637829807120}
   - component: {fileID: 2448734321461282982}
+  - component: {fileID: 4989071556216282892}
   m_Layer: 0
   m_Name: EnemyRed
   m_TagString: Iron
@@ -211,3 +212,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9350f3410e053d24e9b05640ceccb49d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CyberAgentDev.ObjectPrototypeLearning.ChargeOnlyEnemyScript
+--- !u!114 &4989071556216282892
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6232053950234815764}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f3fa9aced51467b42ac97fdd021864f5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HitStop
+  normalDuration: 1
+  chargeDuration: 0.12
+  stopTimeScale: 0
+  normalShake: 0.1
+  chargeShake: 0.25

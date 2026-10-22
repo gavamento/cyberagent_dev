@@ -176,7 +176,7 @@ MonoBehaviour:
     density: 0.1
     enemies:
     - prefab: {fileID: 6232053950234815764, guid: 4039cafb8d6f8b14b95957c0e6277a40, type: 3}
-      weight: 1
+      weight: 0.6
       offset: {x: 0, y: 0}
       groupMin: 1
       groupMax: 1
@@ -193,10 +193,10 @@ MonoBehaviour:
       maxPerSection: 0
       minSameGap: 0
       noRepeat: 0
-  densityIncrease: 0.4
+  densityIncrease: 0.45
   densityIncreaseInterval: 100
-  maxEnemyDensity: 0.4
-  minEnemyGap: 4
+  maxEnemyDensity: 1
+  minEnemyGap: 3
   stepSafeBefore: 4
   stepSafeAfter: 3
 --- !u!4 &42231019
@@ -214,6 +214,42 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &267077624 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2589848515423940712, guid: f1a86af43b64057418bed1896ccea79b, type: 3}
+  m_PrefabInstance: {fileID: 1338264629}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &267077631
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 267077624}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8708647e1b97475084006b91fc61902f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerTrailEffects
+  additiveMaterial: {fileID: 2100000, guid: 1e1d3f3cfcce4347bdfc4913695b883b, type: 2}
+  blendSpeed: 12
+  glowColor: {r: 0.3, g: 0.8, b: 1, a: 1}
+  glowOffset: {x: -0.2, y: 0}
+  glowSize: {x: 5, y: 2}
+  glowAlpha: 0.35
+  dashGlowLengthScale: 10
+  dashGlowAlpha: 0.9
+  glowFlicker: 0.08
+  trailColor: {r: 0.3, g: 0.8, b: 1, a: 1}
+  trailOffset: {x: 0, y: 0}
+  trailWidth: 0.5
+  trailAlpha: 0.25
+  trailTime: 1
+  dashTrailWidth: 3
+  dashTrailAlpha: 0.85
+  dashTrailTime: 2
+  flowOnScreen: 1
+  flowSpeed: 16
 --- !u!1 &347703692
 GameObject:
   m_ObjectHideFlags: 0
@@ -281,6 +317,7 @@ GameObject:
   - component: {fileID: 351015297}
   - component: {fileID: 351015296}
   - component: {fileID: 351015295}
+  - component: {fileID: 351015298}
   m_Layer: 0
   m_Name: Main Camera (1)
   m_TagString: MainCamera
@@ -422,6 +459,28 @@ AudioListener:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 351015292}
   m_Enabled: 1
+--- !u!114 &351015298
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 351015292}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9e859e484f614d9a9f2496c7b4622264, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DamageVignette
+  playerHealth: {fileID: 0}
+  baseColor: {r: 0, g: 0, b: 0, a: 1}
+  baseIntensity: 0.25
+  smoothness: 0.4
+  lowHpExtraIntensity: 0.15
+  lowHpTint: 0.4
+  damageColor: {r: 0.8, g: 0, b: 0, a: 1}
+  damageIntensity: 0.3
+  flashDuration: 0.4
+  volumePriority: 10
 --- !u!1 &454608684
 GameObject:
   m_ObjectHideFlags: 0
@@ -664,6 +723,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1434127356923436350, guid: f1a86af43b64057418bed1896ccea79b, type: 3}
+      propertyPath: idleBackSpeed
+      value: -7.3
+      objectReference: {fileID: 0}
     - target: {fileID: 2589848515423940712, guid: f1a86af43b64057418bed1896ccea79b, type: 3}
       propertyPath: m_Name
       value: Player
@@ -708,10 +771,25 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7972279784654754196, guid: f1a86af43b64057418bed1896ccea79b, type: 3}
+      propertyPath: IsDebugMode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8578610746150499451, guid: f1a86af43b64057418bed1896ccea79b, type: 3}
+      propertyPath: m_Size.x
+      value: 1.3590864
+      objectReference: {fileID: 0}
+    - target: {fileID: 8578610746150499451, guid: f1a86af43b64057418bed1896ccea79b, type: 3}
+      propertyPath: m_Offset.x
+      value: 0.17954324
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 2589848515423940712, guid: f1a86af43b64057418bed1896ccea79b, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 267077631}
   m_SourcePrefab: {fileID: 100100000, guid: f1a86af43b64057418bed1896ccea79b, type: 3}
 --- !u!1 &1776400873
 GameObject:
