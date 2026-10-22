@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 2625082787772768386}
   - component: {fileID: 1576483239372193744}
   - component: {fileID: 22235035472296478}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Debris
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -186,3 +186,5 @@ MonoBehaviour:
   maxAngularSpeed: 360
   lifeTime: 2
   fadeDuration: 0.5
+  DirectionX: {x: 0, y: 5}
+  DirectionY: {x: 0, y: 10}
