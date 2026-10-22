@@ -198,6 +198,8 @@ MonoBehaviour:
   hitsToBreak: 1
   isBroken: 0
   currentHitsTaken: 0
+  effectPrefab: {fileID: 7536003725225183824, guid: a6e26c138c59bc44a92819a9256519ae, type: 3}
+  positionOffset: {x: 0, y: 0.5, z: 0}
 --- !u!114 &2448734321461282982
 MonoBehaviour:
   m_ObjectHideFlags: 0
