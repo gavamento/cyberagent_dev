@@ -52,6 +52,10 @@ namespace CyberAgentDev.ObjectPrototypeLearning
 
         [Header("エフェクトの種類")]
         [SerializeField] private GameObject effectPrefab = null;
+        [Header("エフェクトの種類")]
+        [SerializeField] private GameObject debricPrefab = null;
+        [Header("エフェクトの種類")]
+        [SerializeField] private GameObject shockPrefab = null;
         [Header("エフェクトのオフセット")]
         [SerializeField] private Vector3 positionOffset;
 
@@ -225,9 +229,15 @@ namespace CyberAgentDev.ObjectPrototypeLearning
             }
 
             // 消滅エフェクト
-            if (effectPrefab != null)
+            if (effectPrefab != null && debricPrefab != null)
             {
-                EffectManager.PlayEffectWithOwnerSprite(effectPrefab, transform, positionOffset);
+                EffectManager.PlayEffectWithOwnerSpriteAndDebris(effectPrefab, debricPrefab, transform, 15, positionOffset);
+            }
+
+            // 衝撃波エフェクト
+            if (shockPrefab != null)
+            {
+                EffectManager.PlayEffect(shockPrefab, transform, positionOffset);
             }
 
             Destroy(gameObject);
