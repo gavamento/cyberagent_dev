@@ -25,6 +25,11 @@ namespace CyberAgentDev.ObjectPrototypeLearning
         [SerializeField] bool isBroken;
         [Min(0)] [SerializeField] int currentHitsTaken;
 
+        [Header("エフェクトの種類")]
+        [SerializeField] private GameObject effectPrefab = null;
+        [Header("エフェクトのオフセット")]
+        [SerializeField] private Vector3 positionOffset;
+
         readonly List<Collider2D> contacts = new List<Collider2D>();
         readonly List<Collider2D> attackContacts = new List<Collider2D>();
         readonly HashSet<Transform> handledPlayers = new HashSet<Transform>();
@@ -159,6 +164,9 @@ namespace CyberAgentDev.ObjectPrototypeLearning
                 Debug.LogError("攻撃回数は1以上にしてください。", this);
                 return;
             }
+            // 壊す前にヒットストップを出す(Destroy後は接触通知が届かないため)
+            var hitStop = GetComponent<HitStop>();
+            if (hitStop != null) hitStop.Play(attackBox.IsChargeAttack);
             if (currentHitsTaken < hitsToBreak) currentHitsTaken++;
             if (currentHitsTaken >= hitsToBreak) Break();
         }
@@ -168,6 +176,13 @@ namespace CyberAgentDev.ObjectPrototypeLearning
         {
             if (isBroken) return;
             isBroken = true;
+
+            // 消滅エフェクト
+            if (effectPrefab != null)
+            {
+                EffectManager.PlayEffectWithOwnerSprite(effectPrefab, transform, positionOffset);
+            }
+
             Destroy(gameObject);
         }
 

@@ -3,7 +3,7 @@
 * タイトル　　エフェクトマネージャー
 * 作成者　　　久保木幹太
 * 作成日　　　10月21日
-* 更新日　　　10月21日
+* 更新日　　　10月22日
 */
 
 using UnityEngine;
@@ -15,6 +15,7 @@ public static class EffectManager
     // VFXGraphのプロパティ名
     private static readonly int SpriteTextureID = Shader.PropertyToID("SpriteTexture");
     private static readonly int ParticleSizeID = Shader.PropertyToID("ParticleSize");
+    private static readonly int SpeedMultiplierID = Shader.PropertyToID("SpeedMultiplier");
 
     // パレットの色数
     private const int PaletteSize = 256;
@@ -86,12 +87,14 @@ public static class EffectManager
     /// <param name="baseTransform">基準の座標</param>
     /// <param name="positionOffset">オフセット</param>
     /// <param name="particleSize">パーティクルのサイズ</param>
+    /// <param name="speedMultiplier">パーティクルの初速倍率</param>
     /// <param name="targetSprite">使用するスプライト</param>
     public static void PlayEffect(
         GameObject effectPrefab, 
         Transform baseTransform,
         Vector3 positionOffset = default,
         float? particleSize = null,
+        float? speedMultiplier = null,
         Sprite targetSprite = null)
     {
         if (effectPrefab == null || baseTransform == null) return;
@@ -113,9 +116,34 @@ public static class EffectManager
 
         // スプライトが指定されてたら、不透明な色だけを集めたテクスチャをVFXのプロパティに渡す
         // テクスチャのランダムな位置から色を読み取って、パーティクルにそれっぽい色を付けるため(VFXの方で処理してる)
-        if (targetSprite != null && vfx.HasTexture(SpriteTextureID))
+        //if (targetSprite != null && vfx.HasTexture(SpriteTextureID))
         {
             vfx.SetTexture(SpriteTextureID, GetPalette(targetSprite));
+        }
+
+        // パーティクルの初速を決める
+        if (vfx.HasFloat(SpeedMultiplierID))
+        {
+            float multiplier;
+
+            if (speedMultiplier.HasValue)
+            {
+                // 指定されているならそれの倍率を優先
+                multiplier = speedMultiplier.Value;
+            }
+            else if (particleSize.HasValue)
+            {
+                // 指定されていなければサイズから自動計算
+                multiplier = particleSize.Value * 10.0f;
+            }
+            else
+            {
+                // どっちも指定されてなきゃデフォルト倍率
+                multiplier = 1.0f;
+            }
+
+            // VFXに値を渡す
+            vfx.SetFloat(SpeedMultiplierID, multiplier);
         }
     }
 
@@ -126,11 +154,13 @@ public static class EffectManager
     /// <param name="target">基準の座標</param>
     /// <param name="positionOffset">オフセット</param>
     /// <param name="particleSize">パーティクルの大きさ</param>
+    /// <param name="speedMultiplier">パーティクルの初速倍率</param>
     public static void PlayEffectWithOwnerSprite(
         GameObject effectPrefab,
         Transform target,
         Vector3 positionOffset = default,
-        float? particleSize = null
+        float? particleSize = null,
+        float? speedMultiplier = null
         )
     {
         if (target == null) return;
@@ -140,6 +170,6 @@ public static class EffectManager
         Sprite sprite = sr != null ? sr.sprite : null;
 
         // エフェクト生成
-        PlayEffect(effectPrefab, target, positionOffset, particleSize, sprite);
+        PlayEffect(effectPrefab, target, positionOffset, particleSize, speedMultiplier, sprite);
     }
 }
