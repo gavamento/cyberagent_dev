@@ -7,16 +7,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-[System.Serializable]
-public struct ScoreRule
-{
-    [Tooltip("Unityのタグ名(Tag Managerに登録したものと完全一致)")]
-    public string tagName;
-
-    [Tooltip("倒したときに加算される点数")]
-    public int points;
-}
-
 public class PlayerCombat : MonoBehaviour
 {
     [Header("Charge")]
@@ -56,16 +46,9 @@ public class PlayerCombat : MonoBehaviour
     [Tooltip("画面の左端を0、右端を1としたときの、これ以上進めない位置")]
     [SerializeField, Range(0.3f, 0.9f)] private float forwardLimit = 0.5f;
 
-    [Header("スコア(倒したとき)")]
+    [Header("スコア")]
     [Tooltip("スコア表示のスクリプト(ScoreScript)。UIのオブジェクトをドラッグ")]
     [SerializeField] private ScoreScript scoreScript;
-    [SerializeField]
-    private ScoreRule[] scoreRules =
-    {
-        new ScoreRule { tagName = "Object", points = 100 },
-        new ScoreRule { tagName = "Enemy",  points = 150 },
-        new ScoreRule { tagName = "Iron",   points = 400 },
-    };
 
     // ---- スコア ----
     public int Score { get; private set; }
@@ -76,8 +59,6 @@ public class PlayerCombat : MonoBehaviour
     private HitAttackBox hitbox;
     private readonly HashSet<Collider2D> touching = new HashSet<Collider2D>(); // 触れているCollider
     private bool IsGrounded => touching.Count > 0; // 床でも壁でも、触れていればジャンプ可
-    // 攻撃中に触れた相手と、倒したときの点数(消えたかどうかをあとで確認する)
-    private readonly Dictionary<GameObject, int> pendingKills = new Dictionary<GameObject, int>();
     private float pressStartTime;
     private bool isPressing;
     private Vector3 hitboxBaseScale;
@@ -100,7 +81,7 @@ public class PlayerCombat : MonoBehaviour
         cam = Camera.main;
     }
 
-    // 敵やオブジェクトを倒したときに呼ぶ。points は倒した相手の点数
+    // 点数を加算する(倒された敵やオブジェクト側から呼ばれる)
     public void AddScore(int points)
     {
         if (points <= 0) return;
@@ -195,7 +176,6 @@ public class PlayerCombat : MonoBehaviour
         else
             yield return Dash(-backDistance, backSpeed);
 
-        CollectKills(); // 消えた相手の分を加点する
         isAttacking = false;
     }
 
@@ -236,40 +216,10 @@ public class PlayerCombat : MonoBehaviour
         touching.Remove(col.collider);
     }
 
-    // AttackHitBox(子)に触れた相手もここに届く。攻撃中のものだけを覚える
-    private void OnTriggerEnter2D(Collider2D other)
-    {
-        if (!attackHitbox.activeInHierarchy) return;
-
-        int points = PointsFor(other.tag);
-        if (points <= 0) return;
-
-        pendingKills[other.gameObject] = points;
-    }
-
-    private int PointsFor(string tag)
-    {
-        foreach (var rule in scoreRules)
-            if (rule.tagName == tag) return rule.points;
-        return 0;
-    }
-
-    // 攻撃後に消えていた相手を「倒した」とみなし、まとめて1回で加点する
-    private void CollectKills()
-    {
-        int total = 0;
-        foreach (var kv in pendingKills)
-            if (kv.Key == null) total += kv.Value; // Destroyされたものは null になる
-
-        pendingKills.Clear();
-        AddScore(total);
-    }
-
     // 触れていた相手が消えたとき(Destroyなど)にExitが呼ばれない場合に備える
     private void OnDisable()
     {
         touching.Clear();
-        pendingKills.Clear();
     }
 
     // 画面の左端から forwardLimit の位置(ワールドX)
