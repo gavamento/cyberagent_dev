@@ -16,6 +16,8 @@ public class PlayerHealth : MonoBehaviour
     [SerializeField] private float invincibleTime = 1f;  // ダメージ後の無敵時間(秒)
     [SerializeField] private float blinkInterval = 0.1f; // 点滅の間隔(秒)
 
+    [SerializeField] private bool IsDebugMode = false; // デバッグモード
+
     private SpriteRenderer[] blinkRenderers;
 
     public int CurrentHp { get; private set; }
@@ -64,6 +66,8 @@ public class PlayerHealth : MonoBehaviour
 
     public void TakeDamage(int amount = 1)
     {
+        if (IsDebugMode) return;
+
         if (IsDead) return;
         if (IsInvincible) return; // 無敵中はダメージを受けない
 
