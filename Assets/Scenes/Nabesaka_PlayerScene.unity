@@ -777,7 +777,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7972279784654754196, guid: f1a86af43b64057418bed1896ccea79b, type: 3}
       propertyPath: IsDebugMode
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8578610746150499451, guid: f1a86af43b64057418bed1896ccea79b, type: 3}
       propertyPath: m_Size.x

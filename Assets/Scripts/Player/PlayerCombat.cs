@@ -86,8 +86,6 @@ public class PlayerCombat : MonoBehaviour
     {
         if (points <= 0) return;
 
-        Score += points;
-        Debug.Log($"+{points}  SCORE {Score}");
         OnScoreChanged?.Invoke(points, Score);
 
         if (scoreScript != null) scoreScript.AddScore(points); // UIの表示
