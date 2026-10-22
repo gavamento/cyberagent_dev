@@ -11,7 +11,9 @@ using System.Collections;
 
 public class ParticleTest : MonoBehaviour
 {
-    [SerializeField] private GameObject effectPrefab;　// パーティクルのプレハブ
+    [SerializeField] private GameObject effectPrefab;       // パーティクルのプレハブ
+    [SerializeField] private GameObject debrisPrefab;       // 破片のプレハブ
+    [SerializeField] private GameObject shockPrefab;        // 衝撃波のプレハブ
     [SerializeField] private float timeToDestroy = 3.0f;    // 壊れるまでの時間
     [SerializeField] private float effectLeadTime = 0.0f;   // 壊れる何秒前にパーティクルを出すか
 
@@ -33,7 +35,8 @@ public class ParticleTest : MonoBehaviour
             yield return new WaitForSeconds(effectLeadTime);
         }
 
-        EffectManager.PlayEffectWithOwnerSprite(effectPrefab, transform);
+        EffectManager.PlayEffectWithOwnerSpriteAndDebris(effectPrefab, debrisPrefab, transform, 10);
+        EffectManager.PlayEffect(shockPrefab, transform);
 
         // 自身を消滅
         Destroy(gameObject);

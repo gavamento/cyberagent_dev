@@ -9,6 +9,7 @@
 using UnityEngine;
 using UnityEngine.VFX;
 using System.Collections.Generic;
+using UnityEditor.Tilemaps;
 
 public static class EffectManager
 {
@@ -81,6 +82,29 @@ public static class EffectManager
     }
 
     /// <summary>
+    /// スプライトのパレットからランダムで1色を取得
+    /// </summary>
+    /// <param name="sprite">色を取得するスプライト</param>
+    private static Color GetRandomColor(Sprite sprite)
+    {
+        if (sprite == null) return Color.white;
+
+        Texture2D palette = GetPalette(sprite);
+
+        // GetPaletteで生成された256*1のパレットならそこから取得
+        if (palette != null && palette.isReadable)
+        {
+            int x = Random.Range(0, palette.width);
+            Color color = palette.GetPixel(x, 0);
+            color.a = 1.0f;
+
+            return color;
+        }
+
+        return Color.white;
+    }
+
+    /// <summary>
     /// エフェクトを発生させる(スプライト指定 or スプライト指定なし)
     /// </summary>
     /// <param name="effectPrefab">生成するVFXのプレハブ</param>
@@ -116,7 +140,7 @@ public static class EffectManager
 
         // スプライトが指定されてたら、不透明な色だけを集めたテクスチャをVFXのプロパティに渡す
         // テクスチャのランダムな位置から色を読み取って、パーティクルにそれっぽい色を付けるため(VFXの方で処理してる)
-        //if (targetSprite != null && vfx.HasTexture(SpriteTextureID))
+        if (targetSprite != null && vfx.HasTexture(SpriteTextureID))
         {
             vfx.SetTexture(SpriteTextureID, GetPalette(targetSprite));
         }
@@ -171,5 +195,53 @@ public static class EffectManager
 
         // エフェクト生成
         PlayEffect(effectPrefab, target, positionOffset, particleSize, speedMultiplier, sprite);
+    }
+
+    /// <summary>
+    /// エフェクトを発生させる(スプライト自動読み込み＆散らばる破片)
+    /// </summary>
+    /// <param name="effectPrefab">生成するVFXのプレハブ</param>
+    /// <param name="debrisPrefab">生成する破片のプレハブ</param>
+    /// <param name="target">基準の座標</param>
+    /// <param name="debrisCount">破片の数</param>
+    /// <param name="positionOffset">オフセット</param>
+    /// <param name="particleSize">パーティクルの大きさ</param>
+    /// <param name="speedMultiplier">パーティクルの初速倍率</param>
+    public static void PlayEffectWithOwnerSpriteAndDebris(
+        GameObject effectPrefab,
+        GameObject debrisPrefab,
+        Transform target,
+        int debrisCount = 5,
+        Vector3 positionOffset = default,
+        float? particleSize = null,
+        float? speedMultiplier = null)
+    {
+        if (target == null) return;
+
+        // 自分か子オブジェクトのSpriteRendererを探す
+        SpriteRenderer sr = target.GetComponentInChildren<SpriteRenderer>();
+        Sprite sprite = sr != null ? sr.sprite : null;
+
+        // 自動読み取りエフェクトを生成
+        PlayEffect(effectPrefab, target, positionOffset, particleSize, speedMultiplier, sprite);
+
+        // 生成座標
+        Vector3 debrisPosition = target.position + positionOffset;
+
+        // 指定回数ループ
+        for (int i = 0; i < debrisCount; i++)
+        {
+            // 破片のエフェクトもどきを生成
+            GameObject debrisObj = Object.Instantiate(debrisPrefab, debrisPosition, Quaternion.identity);
+
+            // BounceDebrisを取得
+            BounceDebris debris = debrisObj.GetComponent<BounceDebris>();
+
+            if (debris != null && sprite != null)
+            {
+                // 元のSpriteからランダムに1色を取得して設定
+                debris.SetColor(GetRandomColor(sprite));
+            }
+        }
     }
 }
