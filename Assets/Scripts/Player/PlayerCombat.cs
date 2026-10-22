@@ -6,6 +6,7 @@ using UnityEngine.InputSystem;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using CyberAgentDev.ObjectPrototypeLearning;
 
 public class PlayerCombat : MonoBehaviour
 {
@@ -54,6 +55,31 @@ public class PlayerCombat : MonoBehaviour
     [Tooltip("スコア表示のスクリプト(ScoreScript)。UIのオブジェクトをドラッグ")]
     [SerializeField] private ScoreScript scoreScript;
 
+    [Header("フィーバー(突進)")]
+    [Tooltip("フィーバーの継続時間(秒)")]
+    [SerializeField] private float feverDuration = 5f;
+    [Tooltip("フィーバー中に前へ進む速さ(ユニット/秒)。HTMLは140px/s≒2.6")]
+    [SerializeField] private float feverForwardSpeed = 2.6f;
+    [Tooltip("フィーバー中の速度倍率(世界のスクロール速度などに掛ける用)")]
+    [SerializeField] private float feverSpeedMultiplier = 1.3f;
+
+    [Tooltip("フィーバーゲージのスライダー(SliderScript)。UIのオブジェクトをドラッグ")]
+    [SerializeField] private SliderScript feverSlider;
+
+    [Header("デバッグ")]
+    [Tooltip("今フィーバー中か。実行中に自分でON/OFFすると、フィーバーを強制的に開始/終了できる")]
+    [SerializeField] private bool debugIsFever;
+
+    // ---- フィーバー ----
+    public const float FeverMax = 100f;
+    public float Fever { get; private set; }          // 0〜100(UI用)
+    public bool IsFever { get; private set; }         // フィーバー中(攻撃扱い+無敵)
+    public float SpeedMultiplier => IsFever ? feverSpeedMultiplier : 1f;
+    // 引数: (現在のゲージ 0〜100, フィーバー中か)
+    public event Action<float, bool> OnFeverChanged;
+    private float feverTimer;
+    private bool feverForced; // デバッグで強制ONにした間は、時間が経っても終わらない
+
     // ---- スコア ----
     public int Score { get; private set; }
     // 引数: (今回の加算量, 合計スコア)
@@ -76,7 +102,8 @@ public class PlayerCombat : MonoBehaviour
     private int lastHp;
 
     // 外部から「今攻撃中か」を読めるようにする(判定が出ている間+ダッシュ中)
-    public bool IsAttacking => isAttacking;
+    // フィーバー中は常に「攻撃中」扱い(接触ダメージを受けない)
+    public bool IsAttacking => isAttacking || IsFever;
 
     private void Awake()
     {
@@ -124,9 +151,85 @@ public class PlayerCombat : MonoBehaviour
         if (scoreScript != null) scoreScript.AddScore(points); // UIの表示
     }
 
+    // フィーバーゲージを加算する(倒された敵やオブジェクト側から呼ばれる)。フィーバー中は加算しない
+    public void AddFever(float amount)
+    {
+        if (IsFever || amount <= 0f) return;
+
+        Fever = Mathf.Min(FeverMax, Fever + amount);
+        NotifyFever(false);
+
+        if (Fever >= FeverMax) StartFever();
+    }
+
+    private void StartFever()
+    {
+        IsFever = true;
+        debugIsFever = true;
+        Fever = FeverMax;
+        feverTimer = feverDuration;
+
+        // 攻撃の途中だったら中断する
+        StopAllCoroutines();
+        attackHitbox.SetActive(false);
+        isAttacking = false;
+        isPressing = false;
+
+        Debug.Log("突進!!");
+        NotifyFever(true);
+    }
+
+    // ゲージの変化をイベントとスライダーUIへ伝える
+    private void NotifyFever(bool isFever)
+    {
+        OnFeverChanged?.Invoke(Fever, isFever);
+        if (feverSlider != null) feverSlider.SetSliderValue(Fever);
+    }
+
+    private void UpdateFever(float dt)
+    {
+        if (!IsFever) return;
+
+        if (feverForced) return; // ゲージも100のまま、タイマーも進めない
+
+        feverTimer -= dt;
+        Fever = Mathf.Max(0f, feverTimer / feverDuration * FeverMax); // ゲージが減っていく
+        NotifyFever(true);
+
+        if (feverTimer <= 0f) EndFever();
+    }
+
+    // 終了時に画面内のものを一掃する(この間はまだIsFeverなので、ゲージは増えない)
+    private void EndFever()
+    {
+        Debug.Log("一掃!!");
+
+        float height = cam.orthographicSize * 2f;
+        float right = cam.transform.position.x + height * cam.aspect * 0.5f;
+        foreach (var obj in FindObjectsByType<DestructibleObject2D>())
+        {
+            if (obj.transform.position.x < right) obj.FeverBreak(this);
+        }
+
+        IsFever = false;
+        debugIsFever = false;
+        feverForced = false;
+        Fever = 0f;
+        feverTimer = 0f;
+        NotifyFever(false);
+    }
+
     private void FixedUpdate()
     {
         float dt = Time.fixedDeltaTime;
+
+        // デバッグ用チェックボックスが手動で切り替えられたら、フィーバーを強制開始/終了
+        if (debugIsFever != IsFever)
+        {
+            if (debugIsFever) { StartFever(); feverForced = true; } // 時間で終わらない
+            else EndFever();
+        }
+        UpdateFever(dt);
         float vy = rb.linearVelocity.y;
 
         // 上昇中は接地とみなさない(ジャンプ直後に猶予が復活するのを防ぐ)
@@ -142,9 +245,11 @@ public class PlayerCombat : MonoBehaviour
         }
 
         // 攻撃中はMovePositionで動かすので、速度での移動は止める
-        // スクロールが初速より速くなった分を足して、画面に対する下がり方を保つ
+        // スクロールが初速より速くなった分を足して、画面に対する動きを保つ
+        // フィーバー中は前へ自動で進む
         float gain = progression != null ? progression.SpeedGain : 0f;
-        float vx = isAttacking ? 0f : -idleBackSpeed + gain;
+        float vx = IsFever ? feverForwardSpeed + gain
+                           : (isAttacking ? 0f : -idleBackSpeed + gain);
         rb.linearVelocity = new Vector2(vx, vy);
 
         float maxX = MaxForwardX();
@@ -160,6 +265,8 @@ public class PlayerCombat : MonoBehaviour
 
     public void OnAttack(InputAction.CallbackContext ctx)
     {
+        if (IsFever) return; // フィーバー中は攻撃操作なし
+
         if (ctx.started)
         {
             isPressing = true;
