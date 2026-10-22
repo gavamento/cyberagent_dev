@@ -699,11 +699,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5530126574076864735, guid: d75a30bb94884ff458c1bab592c351f1, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 250
+      value: 400
       objectReference: {fileID: 0}
     - target: {fileID: 5530126574076864735, guid: d75a30bb94884ff458c1bab592c351f1, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 40
+      value: 60
       objectReference: {fileID: 0}
     - target: {fileID: 5530126574076864735, guid: d75a30bb94884ff458c1bab592c351f1, type: 3}
       propertyPath: m_LocalPosition.x
@@ -739,7 +739,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5530126574076864735, guid: d75a30bb94884ff458c1bab592c351f1, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -100
+      value: -140
       objectReference: {fileID: 0}
     - target: {fileID: 5530126574076864735, guid: d75a30bb94884ff458c1bab592c351f1, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -1018,7 +1018,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -87.9, y: -0.20000076}
+  m_AnchoredPosition: {x: -160, y: -0.20000076}
   m_SizeDelta: {x: 160, y: 29.5815}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1462313303
@@ -1043,10 +1043,10 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 12800000, guid: 91f1f205e9b910540ba5430e61b83317, type: 3}
-    m_FontSize: 14
+    m_FontSize: 22
     m_FontStyle: 0
     m_BestFit: 0
-    m_MinSize: 10
+    m_MinSize: 2
     m_MaxSize: 40
     m_Alignment: 4
     m_AlignByGeometry: 0
@@ -1237,6 +1237,10 @@ PrefabInstance:
     - target: {fileID: 8976888490701147786, guid: e762538b4863bfe47aa2f10ab62dc9fd, type: 3}
       propertyPath: m_AnchorMin.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8976888490701147786, guid: e762538b4863bfe47aa2f10ab62dc9fd, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -120
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1532,6 +1536,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GameOverDirector
   playerHealth: {fileID: 422097692}
   scrollCamera: {fileID: 351015295}
+  playerCombat: {fileID: 0}
   message: YOU DIED
   font: {fileID: 0}
   fontSize: 160
