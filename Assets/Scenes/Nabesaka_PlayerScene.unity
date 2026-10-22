@@ -664,6 +664,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1434127356923436350, guid: f1a86af43b64057418bed1896ccea79b, type: 3}
+      propertyPath: jumpForce
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 1434127356923436350, guid: f1a86af43b64057418bed1896ccea79b, type: 3}
+      propertyPath: scoreScript
+      value: 
+      objectReference: {fileID: 1842595942}
     - target: {fileID: 2589848515423940712, guid: f1a86af43b64057418bed1896ccea79b, type: 3}
       propertyPath: m_Name
       value: Player
@@ -800,6 +808,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: ScoreNum
       objectReference: {fileID: 0}
+    - target: {fileID: 7420706933190695798, guid: e762538b4863bfe47aa2f10ab62dc9fd, type: 3}
+      propertyPath: Active
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8512313136366193718, guid: e762538b4863bfe47aa2f10ab62dc9fd, type: 3}
       propertyPath: m_Pivot.x
       value: 0
@@ -890,6 +902,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 8512313136366193718, guid: e762538b4863bfe47aa2f10ab62dc9fd, type: 3}
   m_PrefabInstance: {fileID: 1842595939}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1842595942 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7420706933190695798, guid: e762538b4863bfe47aa2f10ab62dc9fd, type: 3}
+  m_PrefabInstance: {fileID: 1842595939}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0c1bc633ebbfd264da4c91aed24500dd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ScoreScript
 --- !u!1 &2027936395
 GameObject:
   m_ObjectHideFlags: 0
