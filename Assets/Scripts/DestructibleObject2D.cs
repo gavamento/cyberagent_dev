@@ -3,6 +3,17 @@ using UnityEngine;
 
 namespace CyberAgentDev.ObjectPrototypeLearning
 {
+    // タグごとの、倒したときの点数
+    [System.Serializable]
+    public struct TagScore
+    {
+        [Tooltip("Unityのタグ名(Tag Managerに登録したものと完全一致)")]
+        public string tagName;
+
+        [Tooltip("このタグのものを倒したときにPlayerへ加算される点数")]
+        public int points;
+    }
+
     [DisallowMultipleComponent]
     public sealed class DestructibleObject2D : MonoBehaviour
     {
@@ -16,14 +27,23 @@ namespace CyberAgentDev.ObjectPrototypeLearning
         [SerializeField] string[] playerTags = { DefaultPlayerTag };
         [SerializeField] string[] objectTags = { DefaultObjectTag, DefaultEnemyTag, DefaultIronTag };
         [SerializeField] bool canDamagePlayer = true;
-        [Min(1)] [SerializeField] int contactDamage = 1;
-        [Min(MinimumDamageIntervalSeconds)] [SerializeField] float contactDamageIntervalSeconds = 1f;
+        [Min(1)][SerializeField] int contactDamage = 1;
+        [Min(MinimumDamageIntervalSeconds)][SerializeField] float contactDamageIntervalSeconds = 1f;
         [SerializeField] bool canBreakFromAttack = true;
         // 旧シーンの保存値を引き継ぐためだけに保持し、起動時に専用部品へ移す。
-        [HideInInspector] [SerializeField] bool chargeOnly;
-        [Min(1)] [SerializeField] int hitsToBreak = 1;
+        [HideInInspector][SerializeField] bool chargeOnly;
+        [Min(1)][SerializeField] int hitsToBreak = 1;
         [SerializeField] bool isBroken;
-        [Min(0)] [SerializeField] int currentHitsTaken;
+        [Min(0)][SerializeField] int currentHitsTaken;
+
+        [Header("倒したときのスコア(このオブジェクトのタグで点数が決まる)")]
+        [SerializeField]
+        TagScore[] scoreByTag =
+        {
+            new TagScore { tagName = DefaultObjectTag, points = 100 },
+            new TagScore { tagName = DefaultEnemyTag,  points = 200 },
+            new TagScore { tagName = DefaultIronTag,   points = 400 },
+        };
 
         [Header("エフェクトの種類")]
         [SerializeField] private GameObject effectPrefab = null;
@@ -36,6 +56,7 @@ namespace CyberAgentDev.ObjectPrototypeLearning
         readonly HashSet<HitAttackBox> receivedAttackBoxes = new HashSet<HitAttackBox>();
         Collider2D objectCollider;
         float nextDamageTime;
+        PlayerCombat lastAttacker; // 最後に攻撃したPlayer(スコアの加算先)
 
         // Enemyだけが接触ダメージを出す。Objectは設定がONでもダメージなし。
         public bool CanDamagePlayer => canDamagePlayer && gameObject.tag == DefaultEnemyTag;
@@ -164,6 +185,10 @@ namespace CyberAgentDev.ObjectPrototypeLearning
                 Debug.LogError("攻撃回数は1以上にしてください。", this);
                 return;
             }
+            // 攻撃したPlayerを覚えておき、壊れたときにスコアを渡す。
+            lastAttacker = attackBox.GetComponentInParent<PlayerCombat>();
+            if (lastAttacker == null)
+                Debug.LogWarning("攻撃したPlayerにPlayerCombatが見つかりません。スコアは加算されません。", this);
             // 壊す前にヒットストップを出す(Destroy後は接触通知が届かないため)
             var hitStop = GetComponent<HitStop>();
             if (hitStop != null) hitStop.Play(attackBox.IsChargeAttack);
@@ -177,6 +202,10 @@ namespace CyberAgentDev.ObjectPrototypeLearning
             if (isBroken) return;
             isBroken = true;
 
+            // 攻撃したPlayerへスコアを渡す(攻撃以外で壊れたときは lastAttacker が空なので加算なし)
+            if (lastAttacker != null)
+                lastAttacker.AddScore(ScoreFor(gameObject.tag));
+
             // 消滅エフェクト
             if (effectPrefab != null)
             {
@@ -184,6 +213,15 @@ namespace CyberAgentDev.ObjectPrototypeLearning
             }
 
             Destroy(gameObject);
+        }
+
+        // このオブジェクトのタグに対応する点数(表にないタグは0)
+        int ScoreFor(string tag)
+        {
+            if (scoreByTag == null) return 0;
+            foreach (var rule in scoreByTag)
+                if (rule.tagName == tag) return rule.points;
+            return 0;
         }
 
         HitAttackBox FindAttackBox()

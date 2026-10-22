@@ -3,39 +3,57 @@
 //===============================================================================-
 using UnityEngine;
 using UnityEngine.InputSystem;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
 public class PlayerCombat : MonoBehaviour
 {
     [Header("Charge")]
-    [SerializeField] private float chargeThreshold = 0.5f;
+    [SerializeField] private float chargeThreshold = 0.26f; // これ以上押したらため攻撃
 
     [Header("Attack Hitbox")]
     [SerializeField] private GameObject attackHitbox;
-    [SerializeField] private float hitboxActiveTime = 0.15f;
-    [SerializeField] private float chargeScaleMultiplier = 2f;
+    [SerializeField] private float hitboxActiveTime = 0.13f;
+    [SerializeField] private float chargeScaleMultiplier = 1.5f;
 
-    [Header("Dash (イージング移動)")]
     [Header("前進(敵に当たったとき)")]
     [Tooltip("前に進む距離")]
-    [SerializeField] private float forwardDistance = 1.5f;
+    [SerializeField] private float forwardDistance = 1.35f;
     [Tooltip("ぐんっと感の強さ。大きいほど出だしが急加速")]
-    [SerializeField, Range(1f, 8f)] private float forwardSpeed = 4f;
+    [SerializeField, Range(1f, 8f)] private float forwardSpeed = 2f;
 
     [Header("後退(敵に外れたとき)")]
     [Tooltip("後ろに下がる距離")]
-    [SerializeField] private float backDistance = 1f;
+    [SerializeField] private float backDistance = 0.46f;
     [Tooltip("ぐんっと感の強さ。大きいほど出だしが急加速")]
-    [SerializeField, Range(1f, 8f)] private float backSpeed = 4f;
-
-
-    [Header("Jump")]
-    [SerializeField] private float jumpForce = 3f;
+    [SerializeField, Range(1f, 8f)] private float backSpeed = 2f;
 
     [Header("待機中の後退")]
     [Tooltip("何もしていないときに後ろへ下がる速さ(ユニット/秒)。0で下がらない")]
-    [SerializeField] private float idleBackSpeed = 0.5f;
+    [SerializeField] private float idleBackSpeed = 0.76f;
+
+    [Header("Jump")]
+    [SerializeField] private float jumpForce = 14.6f;
+    [Tooltip("Rigidbody2DのGravity Scaleをこの値で上書きする")]
+    [SerializeField] private float gravityScale = 4.5f;
+    [Tooltip("着地の少し前に押したジャンプを受け付ける時間(秒)")]
+    [SerializeField] private float jumpBufferTime = 0.22f;
+    [Tooltip("地面を離れた直後でもジャンプできる猶予(秒)")]
+    [SerializeField] private float coyoteTime = 0.16f;
+
+    [Header("前進の限界")]
+    [Tooltip("画面の左端を0、右端を1としたときの、これ以上進めない位置")]
+    [SerializeField, Range(0.3f, 0.9f)] private float forwardLimit = 0.5f;
+
+    [Header("スコア")]
+    [Tooltip("スコア表示のスクリプト(ScoreScript)。UIのオブジェクトをドラッグ")]
+    [SerializeField] private ScoreScript scoreScript;
+
+    // ---- スコア ----
+    public int Score { get; private set; }
+    // 引数: (今回の加算量, 合計スコア)
+    public event Action<int, int> OnScoreChanged;
 
     private Rigidbody2D rb;
     private HitAttackBox hitbox;
@@ -44,8 +62,11 @@ public class PlayerCombat : MonoBehaviour
     private float pressStartTime;
     private bool isPressing;
     private Vector3 hitboxBaseScale;
-    private const float DashDuration = 0.2f;// ダッシュの時間
+    private const float DashDuration = 0.1f; // ダッシュの時間
     private bool isAttacking; // 攻撃(ダッシュ)中は待機後退を止める
+    private float jumpBufferTimer;
+    private float coyoteTimer;
+    private Camera cam;
 
     // 外部から「今攻撃中か」を読めるようにする(判定が出ている間+ダッシュ中)
     public bool IsAttacking => isAttacking;
@@ -53,21 +74,53 @@ public class PlayerCombat : MonoBehaviour
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
+        rb.gravityScale = gravityScale;
         hitbox = attackHitbox.GetComponent<HitAttackBox>();
         hitboxBaseScale = attackHitbox.transform.localScale;
         attackHitbox.SetActive(false);
+        cam = Camera.main;
     }
+
+    // 点数を加算する(倒された敵やオブジェクト側から呼ばれる)
+    public void AddScore(int points)
+    {
+        if (points <= 0) return;
+
+        OnScoreChanged?.Invoke(points, Score);
+
+        if (scoreScript != null) scoreScript.AddScore(points); // UIの表示
+    }
+
     private void FixedUpdate()
     {
+        float dt = Time.fixedDeltaTime;
+        float vy = rb.linearVelocity.y;
+
+        // 上昇中は接地とみなさない(ジャンプ直後に猶予が復活するのを防ぐ)
+        if (IsGrounded && vy <= 0.1f) coyoteTimer = coyoteTime;
+        else coyoteTimer -= dt;
+        jumpBufferTimer -= dt;
+
+        if (jumpBufferTimer > 0f && coyoteTimer > 0f)
+        {
+            vy = jumpForce;
+            jumpBufferTimer = 0f;
+            coyoteTimer = 0f;
+        }
+
         // 攻撃中はMovePositionで動かすので、速度での移動は止める
         float vx = isAttacking ? 0f : -idleBackSpeed;
-        rb.linearVelocity = new Vector2(vx, rb.linearVelocity.y);
+        rb.linearVelocity = new Vector2(vx, vy);
+
+        float maxX = MaxForwardX();
+        if (rb.position.x > maxX)
+            rb.position = new Vector2(maxX, rb.position.y);
     }
 
     public void OnJump(InputAction.CallbackContext ctx)
     {
-        if (!ctx.performed || !IsGrounded) return;
-        rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
+        if (!ctx.performed) return;
+        jumpBufferTimer = jumpBufferTime; // 実際のジャンプはFixedUpdateで判定する
     }
 
     public void OnAttack(InputAction.CallbackContext ctx)
@@ -138,7 +191,9 @@ public class PlayerCombat : MonoBehaviour
             float eased = EaseOutPower(Mathf.Clamp01(elapsed / DashDuration), sharpness);
             float current = eased * distance;
 
-            rb.MovePosition(rb.position + Vector2.right * (current - prev));
+            Vector2 target = rb.position + Vector2.right * (current - prev);
+            target.x = Mathf.Min(target.x, MaxForwardX()); // 限界を超えない
+            rb.MovePosition(target);
             prev = current;
         }
     }
@@ -148,7 +203,6 @@ public class PlayerCombat : MonoBehaviour
     {
         return 1f - Mathf.Pow(1f - t, power);
     }
-    // 最初に急加速して、だんだん減速する「ぐんっ」とした動き
 
     private void OnCollisionEnter2D(Collision2D col)
     {
@@ -164,5 +218,13 @@ public class PlayerCombat : MonoBehaviour
     private void OnDisable()
     {
         touching.Clear();
+    }
+
+    // 画面の左端から forwardLimit の位置(ワールドX)
+    private float MaxForwardX()
+    {
+        float height = cam.orthographicSize * 2f;
+        float width = height * cam.aspect;
+        return cam.transform.position.x - width * 0.5f + width * forwardLimit;
     }
 }
