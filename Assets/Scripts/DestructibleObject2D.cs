@@ -204,7 +204,10 @@ namespace CyberAgentDev.ObjectPrototypeLearning
 
             // 攻撃したPlayerへスコアを渡す(攻撃以外で壊れたときは lastAttacker が空なので加算なし)
             if (lastAttacker != null)
+            {
                 lastAttacker.AddScore(ScoreFor(gameObject.tag));
+                lastAttacker.NotifyBreak(); // 破壊で加速する
+            }
 
             // 消滅エフェクト
             if (effectPrefab != null)

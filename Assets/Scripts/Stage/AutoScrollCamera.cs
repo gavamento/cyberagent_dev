@@ -1,9 +1,10 @@
 using UnityEngine;
 
-// 一定速度で右へ進むカメラ。地面の高さにゆるく追従する。動作確認用
+// 右へ進むカメラ。地面の高さにゆるく追従する
+// 同じオブジェクトに ScrollSpeedProgression があれば、その速度で進む
 public class AutoScrollCamera : MonoBehaviour
 {
-    [Tooltip("右へ進む速さ (マス/秒)")]
+    [Tooltip("右へ進む速さ (マス/秒)。ScrollSpeedProgression があるときは初速")]
     [SerializeField] float speed = 8f;
     [Tooltip("高さの追従に使う生成器。未指定なら追従しない")]
     [SerializeField] StageGenerator stage;
@@ -12,10 +13,20 @@ public class AutoScrollCamera : MonoBehaviour
     [Tooltip("高さの追従の速さ。大きいほど素早く合わせる")]
     [Min(0f)][SerializeField] float followSmooth = 2f;
 
+    ScrollSpeedProgression progression;
+
+    public float BaseSpeed => speed;
+    public float CurrentSpeed => progression != null ? progression.CurrentSpeed : speed;
+
+    void Awake()
+    {
+        progression = GetComponent<ScrollSpeedProgression>();
+    }
+
     void LateUpdate()
     {
         var pos = transform.position;
-        pos.x += speed * Time.deltaTime;
+        pos.x += CurrentSpeed * Time.deltaTime;
 
         if (stage != null && stage.TryGetSurfaceY(pos.x, out float groundY))
         {

@@ -45,6 +45,10 @@ public class PlayerCombat : MonoBehaviour
     [Header("前進の限界")]
     [Tooltip("画面の左端を0、右端を1としたときの、これ以上進めない位置")]
     [SerializeField, Range(0.3f, 0.9f)] private float forwardLimit = 0.5f;
+    [Tooltip("速いほど限界を左へ寄せて、先を見やすくする")]
+    [SerializeField] private bool shiftLimitWithSpeed = true;
+    [Tooltip("最高速のときに左へ寄せる量(画面幅に対する割合)")]
+    [SerializeField, Range(0f, 0.3f)] private float limitShiftAtMax = 0.19f;
 
     [Header("スコア")]
     [Tooltip("スコア表示のスクリプト(ScoreScript)。UIのオブジェクトをドラッグ")]
@@ -67,6 +71,9 @@ public class PlayerCombat : MonoBehaviour
     private float jumpBufferTimer;
     private float coyoteTimer;
     private Camera cam;
+    private ScrollSpeedProgression progression; // カメラの速度管理。なければ加速しない
+    private PlayerHealth health;
+    private int lastHp;
 
     // 外部から「今攻撃中か」を読めるようにする(判定が出ている間+ダッシュ中)
     public bool IsAttacking => isAttacking;
@@ -79,6 +86,32 @@ public class PlayerCombat : MonoBehaviour
         hitboxBaseScale = attackHitbox.transform.localScale;
         attackHitbox.SetActive(false);
         cam = Camera.main;
+        progression = cam.GetComponent<ScrollSpeedProgression>();
+
+        health = GetComponent<PlayerHealth>();
+        if (health != null)
+        {
+            lastHp = health.MaxHp; // PlayerHealth.Awake より先に呼ばれても良いように
+            health.OnHpChanged += HandleHpChanged;
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (health != null) health.OnHpChanged -= HandleHpChanged;
+    }
+
+    // HPが減ったら失速させる
+    private void HandleHpChanged(int hp, int max)
+    {
+        if (hp < lastHp && hp > 0 && progression != null) progression.Hurt();
+        lastHp = hp;
+    }
+
+    // 敵やオブジェクトを壊したとき(壊された側から呼ばれる)
+    public void NotifyBreak()
+    {
+        if (progression != null) progression.AddBreak();
     }
 
     // 点数を加算する(倒された敵やオブジェクト側から呼ばれる)
@@ -109,7 +142,9 @@ public class PlayerCombat : MonoBehaviour
         }
 
         // 攻撃中はMovePositionで動かすので、速度での移動は止める
-        float vx = isAttacking ? 0f : -idleBackSpeed;
+        // スクロールが初速より速くなった分を足して、画面に対する下がり方を保つ
+        float gain = progression != null ? progression.SpeedGain : 0f;
+        float vx = isAttacking ? 0f : -idleBackSpeed + gain;
         rb.linearVelocity = new Vector2(vx, vy);
 
         float maxX = MaxForwardX();
@@ -172,7 +207,10 @@ public class PlayerCombat : MonoBehaviour
         if (hit)
             yield return Dash(forwardDistance, forwardSpeed);
         else
+        {
+            if (progression != null) progression.Whiff();
             yield return Dash(-backDistance, backSpeed);
+        }
 
         isAttacking = false;
     }
@@ -225,6 +263,9 @@ public class PlayerCombat : MonoBehaviour
     {
         float height = cam.orthographicSize * 2f;
         float width = height * cam.aspect;
-        return cam.transform.position.x - width * 0.5f + width * forwardLimit;
+        float limit = forwardLimit;
+        if (shiftLimitWithSpeed && progression != null)
+            limit -= limitShiftAtMax * progression.Speed01;
+        return cam.transform.position.x - width * 0.5f + width * limit;
     }
 }
