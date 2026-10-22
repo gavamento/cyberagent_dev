@@ -136,8 +136,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f3fa9aced51467b42ac97fdd021864f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HitStop
-  normalDuration: 1
-  chargeDuration: 2
+  normalDuration: 0.05
+  chargeDuration: 0.05
   stopTimeScale: 0
   normalShake: 0.1
   chargeShake: 0.25
