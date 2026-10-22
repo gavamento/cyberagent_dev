@@ -318,6 +318,7 @@ GameObject:
   - component: {fileID: 351015296}
   - component: {fileID: 351015295}
   - component: {fileID: 351015298}
+  - component: {fileID: 351015299}
   m_Layer: 0
   m_Name: Main Camera (1)
   m_TagString: MainCamera
@@ -481,6 +482,39 @@ MonoBehaviour:
   damageIntensity: 0.3
   flashDuration: 0.4
   volumePriority: 10
+--- !u!114 &351015299
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 351015292}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 58223f015530fdb4db962557b83e4e95, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ScrollSpeedProgression
+  stepDistance: 100
+  stepAdd: 0.25
+  baseMax: 10
+  flowPerBreak: 1
+  flowMax: 17
+  accelRate: 1.057
+  flowDecayDelay: 1.35
+  flowDecayRate: 0.85
+  speedCap: 16
+  whiffFlowLoss: 3.2
+  whiffSpeedRate: 0.67
+  whiffBrakeTime: 0.48
+  hurtFlowLoss: 4
+  hurtSpeedRate: 0.76
+  followRate: 5.2
+  brakeFollowRate: 2.3
+  brakeTargetRate: 0.78
+  minSpeedRate: 0.5
+  currentSpeed: 0
+  flow: 0
+  distance: 0
 --- !u!114 &422097692 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7972279784654754196, guid: f1a86af43b64057418bed1896ccea79b, type: 3}

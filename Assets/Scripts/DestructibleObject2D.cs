@@ -216,6 +216,7 @@ namespace CyberAgentDev.ObjectPrototypeLearning
             {
                 lastAttacker.AddScore(ScoreFor(gameObject.tag));
                 lastAttacker.AddFever(FeverFor(gameObject.tag)); // フィーバー中は加算されない
+                lastAttacker.NotifyBreak(); // 破壊で加速する(フィーバー中も)
             }
 
             // 消滅エフェクト
