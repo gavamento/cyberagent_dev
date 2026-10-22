@@ -99,6 +99,9 @@ MonoBehaviour:
   - Object
   - Enemy
   - Iron
+  damageTags:
+  - Enemy
+  - Iron
   canDamagePlayer: 1
   contactDamage: 1
   contactDamageIntervalSeconds: 1
@@ -107,6 +110,16 @@ MonoBehaviour:
   hitsToBreak: 1
   isBroken: 0
   currentHitsTaken: 0
+  scoreByTag:
+  - tagName: Object
+    points: 100
+    fever: 4
+  - tagName: Enemy
+    points: 200
+    fever: 4
+  - tagName: Iron
+    points: 400
+    fever: 10
   effectPrefab: {fileID: 7536003725225183824, guid: a6e26c138c59bc44a92819a9256519ae, type: 3}
   positionOffset: {x: 0, y: 1, z: 0}
 --- !u!114 &6298046847853652904
@@ -121,8 +134,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f3fa9aced51467b42ac97fdd021864f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HitStop
-  normalDuration: 1
-  chargeDuration: 2
+  normalDuration: 0.05
+  chargeDuration: 0.05
   stopTimeScale: 0
   normalShake: 0.1
   chargeShake: 0.25
