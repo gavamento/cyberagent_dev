@@ -329,6 +329,7 @@ MonoBehaviour:
   sliderValue: 50
   sliderMin: 0
   sliderMax: 100
+  fillSpeed: 60
 --- !u!1 &9081801649607743791
 GameObject:
   m_ObjectHideFlags: 0

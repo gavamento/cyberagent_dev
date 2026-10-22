@@ -12,6 +12,9 @@ namespace CyberAgentDev.ObjectPrototypeLearning
 
         [Tooltip("このタグのものを倒したときにPlayerへ加算される点数")]
         public int points;
+
+        [Tooltip("このタグのものを倒したときに加算されるフィーバーゲージ(0〜100。100で突進)")]
+        public float fever;
     }
 
     [DisallowMultipleComponent]
@@ -40,9 +43,9 @@ namespace CyberAgentDev.ObjectPrototypeLearning
         [SerializeField]
         TagScore[] scoreByTag =
         {
-            new TagScore { tagName = DefaultObjectTag, points = 100 },
-            new TagScore { tagName = DefaultEnemyTag,  points = 200 },
-            new TagScore { tagName = DefaultIronTag,   points = 400 },
+            new TagScore { tagName = DefaultObjectTag, points = 100, fever = 4 },
+            new TagScore { tagName = DefaultEnemyTag,  points = 200, fever = 4 },
+            new TagScore { tagName = DefaultIronTag,   points = 400, fever = 10 },
         };
 
         [Header("エフェクトの種類")]
@@ -148,6 +151,12 @@ namespace CyberAgentDev.ObjectPrototypeLearning
         bool HandleContact(Transform player, bool canDamageNow)
         {
             var combat = player.GetComponent<PlayerCombat>();
+            // フィーバー中のPlayerに触れたら、ダメージなしで一発で壊れる。
+            if (combat != null && combat.IsFever)
+            {
+                FeverBreak(combat);
+                return false;
+            }
             // Playerが公開する攻撃中の状態を使い、ダッシュ中も接触ダメージを止める。
             if (combat != null && combat.IsAttacking) return false;
             if (!canDamageNow) return false;
@@ -204,7 +213,10 @@ namespace CyberAgentDev.ObjectPrototypeLearning
 
             // 攻撃したPlayerへスコアを渡す(攻撃以外で壊れたときは lastAttacker が空なので加算なし)
             if (lastAttacker != null)
+            {
                 lastAttacker.AddScore(ScoreFor(gameObject.tag));
+                lastAttacker.AddFever(FeverFor(gameObject.tag)); // フィーバー中は加算されない
+            }
 
             // 消滅エフェクト
             if (effectPrefab != null)
@@ -213,6 +225,23 @@ namespace CyberAgentDev.ObjectPrototypeLearning
             }
 
             Destroy(gameObject);
+        }
+
+        // フィーバー中のPlayerに壊される(接触・終了時の一掃)。耐久回数や突進攻撃の条件は無視して一発で壊れる
+        public void FeverBreak(PlayerCombat player)
+        {
+            if (isBroken || !isActiveAndEnabled) return;
+            lastAttacker = player;
+            Break();
+        }
+
+        // このオブジェクトのタグに対応するフィーバー加算量(表にないタグは0)
+        float FeverFor(string tag)
+        {
+            if (scoreByTag == null) return 0f;
+            foreach (var rule in scoreByTag)
+                if (rule.tagName == tag) return rule.fever;
+            return 0f;
         }
 
         // このオブジェクトのタグに対応する点数(表にないタグは0)
