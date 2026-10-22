@@ -1273,7 +1273,7 @@ GameObject:
   - component: {fileID: 2027936399}
   - component: {fileID: 2027936398}
   - component: {fileID: 2027936397}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: StageTilemap
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1532,6 +1532,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GameOverDirector
   playerHealth: {fileID: 422097692}
   scrollCamera: {fileID: 351015295}
+  playerCombat: {fileID: 0}
   message: YOU DIED
   font: {fileID: 0}
   fontSize: 160
