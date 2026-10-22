@@ -119,6 +119,104 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &888654476
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 888654479}
+  - component: {fileID: 888654478}
+  - component: {fileID: 888654477}
+  m_Layer: 0
+  m_Name: ResultScoreDirector
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &888654477
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 888654476}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dcb30f647c37a8243877b853526295fc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ResultScoreDirector
+  digitCount: 6
+  previewScore: 1230
+  font: {fileID: 0}
+  digitFontSize: 150
+  digitColor: {r: 1, g: 1, b: 1, a: 1}
+  label: SCORE
+  labelFontSize: 80
+  labelGap: 30
+  hint: CLICK TO TITLE
+  hintFontSize: 48
+  hintGap: 60
+  wallSprite: {fileID: 1807672608, guid: 21e05415367de4d4089cd42fd716f48c, type: 3}
+  wallColor: {r: 0.19215688, g: 0.3019608, b: 0.4666667, a: 1}
+  wallSize: {x: 130, y: 180}
+  spacing: 12
+  crackCount: 6
+  jaggedness: 0.08
+  startDelay: 0.8
+  digitInterval: 0.35
+  shakeDuration: 0.15
+  shakeStrength: 6
+  crackDuration: 0.08
+  crackGap: 6
+  scatterDuration: 0.8
+  popDuration: 0.2
+  popScale: 1.4
+  scatterSpeed: {x: 250, y: 700}
+  upwardBoost: 300
+  gravity: 2500
+  maxAngularSpeed: 540
+  titleSceneName: Title
+--- !u!114 &888654478
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 888654476}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0e8627690d0077489cbf84fb6ef0025, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UIShatterEffect
+  columns: 4
+  rows: 3
+  duration: 0.7
+  gravity: 3000
+  speedRange: {x: 400, y: 1100}
+  upwardBoost: 500
+  maxAngularSpeed: 720
+  shakeTarget: {fileID: 0}
+  shakeStrength: 14
+  shakeDuration: 0.25
+--- !u!4 &888654479
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 888654476}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 934.4436, y: 8.45447, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1559914601
 GameObject:
   m_ObjectHideFlags: 0
@@ -488,7 +586,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &2014743006
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -525,3 +623,4 @@ SceneRoots:
   - {fileID: 1559914605}
   - {fileID: 2001090552}
   - {fileID: 2014743007}
+  - {fileID: 888654479}
