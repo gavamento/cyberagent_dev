@@ -81,6 +81,11 @@ public class PlayerCombat : MonoBehaviour
     private Vector3 tempVisualBasePos;
     private bool tempVisualReady;
     // ===== 仮ここまで =====
+    [Header("効果音")]
+    [SerializeField] private AudioClip jumpSe;
+    [SerializeField] private AudioClip attackSe;
+    [SerializeField] private AudioClip chargeAttackSe;
+    [SerializeField] private AudioClip feverStartSe;
 
     [Header("デバッグ")]
     [Tooltip("今フィーバー中か。実行中に自分でON/OFFすると、フィーバーを強制的に開始/終了できる")]
@@ -267,6 +272,7 @@ public class PlayerCombat : MonoBehaviour
         SetAttackAnim(false);
 
         Debug.Log("突進!!");
+        AudioManager.PlaySE(feverStartSe);
         NotifyFever(true);
     }
 
@@ -333,6 +339,7 @@ public class PlayerCombat : MonoBehaviour
             vy = jumpForce;
             jumpBufferTimer = 0f;
             coyoteTimer = 0f;
+            AudioManager.PlaySE(jumpSe);
         }
 
         // 攻撃中はMovePositionで動かすので、速度での移動は止める
@@ -378,6 +385,7 @@ public class PlayerCombat : MonoBehaviour
     private void DoAttack(float scaleMultiplier, string label, bool isCharge)
     {
         Debug.Log(label);
+        AudioManager.PlaySE(isCharge ? chargeAttackSe : attackSe);
         StopAllCoroutines();
         StartCoroutine(AttackRoutine(scaleMultiplier, isCharge));
     }
