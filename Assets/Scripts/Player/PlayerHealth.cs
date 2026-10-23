@@ -16,6 +16,10 @@ public class PlayerHealth : MonoBehaviour
     [SerializeField] private float invincibleTime = 1f;  // ダメージ後の無敵時間(秒)
     [SerializeField] private float blinkInterval = 0.1f; // 点滅の間隔(秒)
 
+    [Header("効果音")]
+    [SerializeField] private AudioClip damageSe; // 死ななかったときの被ダメ音
+    [SerializeField] private AudioClip deathSe;
+
     [SerializeField] private bool IsDebugMode = false; // デバッグモード
 
     private SpriteRenderer[] blinkRenderers;
@@ -81,6 +85,7 @@ public class PlayerHealth : MonoBehaviour
             return;
         }
 
+        AudioManager.PlaySE(damageSe);
         invincibleUntil = Time.time + invincibleTime;
     }
 
@@ -104,6 +109,7 @@ public class PlayerHealth : MonoBehaviour
         OnDied?.Invoke();
 
         Debug.Log("プレイヤーが死亡");
+        AudioManager.PlaySE(deathSe);
         gameObject.SetActive(false); // 消える
     }
 

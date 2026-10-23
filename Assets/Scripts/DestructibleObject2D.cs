@@ -59,6 +59,9 @@ namespace CyberAgentDev.ObjectPrototypeLearning
         [Header("エフェクトのオフセット")]
         [SerializeField] private Vector3 positionOffset;
 
+        [Header("壊れたときの音")]
+        [SerializeField] private AudioClip breakSe = null;
+
         readonly List<Collider2D> contacts = new List<Collider2D>();
         readonly List<Collider2D> attackContacts = new List<Collider2D>();
         readonly HashSet<Transform> handledPlayers = new HashSet<Transform>();
@@ -239,6 +242,8 @@ namespace CyberAgentDev.ObjectPrototypeLearning
             {
                 EffectManager.PlayEffect(shockPrefab, transform, positionOffset);
             }
+
+            AudioManager.PlaySE(breakSe);
 
             Destroy(gameObject);
         }
