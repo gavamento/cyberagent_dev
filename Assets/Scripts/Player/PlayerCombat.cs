@@ -66,6 +66,27 @@ public class PlayerCombat : MonoBehaviour
     [Tooltip("フィーバーゲージのスライダー(SliderScript)。UIのオブジェクトをドラッグ")]
     [SerializeField] private SliderScript feverSlider;
 
+    [Header("アニメーション")]
+    [Tooltip("プレイヤーのAnimator。空なら自分か子オブジェクトから自動で探す")]
+    [SerializeField] private Animator animator;
+    [Tooltip("攻撃中にONにするAnimatorのパラメーター名(Bool。Triggerでも動く)")]
+    [SerializeField] private string attackParam = "IsAttack";
+
+    // ===== 仮: 攻撃中だけ見た目を下げる(後で消す) =====
+    [Header("仮: 攻撃中の見た目の位置(後で削除)")]
+    [Tooltip("下げたい見た目(スプライト)のTransform。空ならAnimatorのオブジェクト。Rigidbodyと同じオブジェクトは動かさない")]
+    [SerializeField] private Transform tempAttackVisual;
+    [Tooltip("攻撃中に動かすY(マイナスで下がる)。ユニット")]
+    [SerializeField] private float tempAttackOffsetY = 0.3f;
+    private Vector3 tempVisualBasePos;
+    private bool tempVisualReady;
+    // ===== 仮ここまで =====
+    [Header("効果音")]
+    [SerializeField] private AudioClip jumpSe;
+    [SerializeField] private AudioClip attackSe;
+    [SerializeField] private AudioClip chargeAttackSe;
+    [SerializeField] private AudioClip feverStartSe;
+
     [Header("デバッグ")]
     [Tooltip("今フィーバー中か。実行中に自分でON/OFFすると、フィーバーを強制的に開始/終了できる")]
     [SerializeField] private bool debugIsFever;
@@ -102,6 +123,9 @@ public class PlayerCombat : MonoBehaviour
     private ScrollSpeedProgression progression; // カメラの速度管理。なければ加速しない
     private PlayerHealth health;
     private int lastHp;
+    private int attackHash;
+    private bool hasAttackParam;
+    private AnimatorControllerParameterType attackParamType;
 
     // 外部から「今攻撃中か」を読めるようにする(判定が出ている間+ダッシュ中)
     // フィーバー中は常に「攻撃中」扱い(接触ダメージを受けない)
@@ -126,6 +150,8 @@ public class PlayerCombat : MonoBehaviour
         attackHitbox.SetActive(false);
         cam = Camera.main;
         progression = cam.GetComponent<ScrollSpeedProgression>();
+        SetupAnimator();
+        TempSetupAttackVisual(); // 仮(後で削除)
 
         health = GetComponent<PlayerHealth>();
         if (health != null)
@@ -134,6 +160,63 @@ public class PlayerCombat : MonoBehaviour
             health.OnHpChanged += HandleHpChanged;
         }
     }
+
+    // Animatorと、攻撃のパラメーター(IsAttack)を探しておく
+    private void SetupAnimator()
+    {
+        if (animator == null) animator = GetComponentInChildren<Animator>();
+        if (animator == null || animator.runtimeAnimatorController == null)
+        {
+            Debug.LogWarning("PlayerCombat: AnimatorまたはAnimator Controllerが見つかりません。攻撃アニメーションは再生されません。", this);
+            return;
+        }
+
+        attackHash = Animator.StringToHash(attackParam);
+        foreach (var param in animator.parameters)
+        {
+            if (param.nameHash != attackHash) continue;
+            attackParamType = param.type;
+            hasAttackParam = true;
+            break;
+        }
+        if (!hasAttackParam)
+            Debug.LogWarning($"PlayerCombat: Animatorに「{attackParam}」パラメーターがありません。Animator Controllerに追加してください。", this);
+    }
+
+    // 攻撃アニメーションのON/OFF。Boolなら攻撃中だけON、Triggerなら開始の瞬間に発火
+    private void SetAttackAnim(bool on)
+    {
+        TempAttackVisualOffset(on); // 仮(後で削除)
+        if (!hasAttackParam) return;
+
+        if (attackParamType == AnimatorControllerParameterType.Bool)
+            animator.SetBool(attackHash, on);
+        else if (attackParamType == AnimatorControllerParameterType.Trigger && on)
+            animator.SetTrigger(attackHash);
+    }
+
+    // ===== 仮: 攻撃中だけ見た目を下げる(後で消す) =====
+    // 消すとき: このブロック、フィールド(仮)、Awakeの TempSetupAttackVisual()、SetAttackAnim 内の TempAttackVisualOffset(on) を削除
+    private void TempSetupAttackVisual()
+    {
+        if (tempAttackVisual == null && animator != null) tempAttackVisual = animator.transform;
+        if (tempAttackVisual == null) return;
+        if (tempAttackVisual == transform)
+        {
+            Debug.LogWarning("PlayerCombat(仮): 見た目がプレイヤー本体(Rigidbody)と同じオブジェクトです。子のスプライトを Temp Attack Visual に指定してください。", this);
+            tempAttackVisual = null;
+            return;
+        }
+        tempVisualBasePos = tempAttackVisual.localPosition;
+        tempVisualReady = true;
+    }
+
+    private void TempAttackVisualOffset(bool on)
+    {
+        if (!tempVisualReady) return;
+        tempAttackVisual.localPosition = tempVisualBasePos + (on ? new Vector3(0f, tempAttackOffsetY, 0f) : Vector3.zero);
+    }
+    // ===== 仮ここまで =====
 
     private void OnDestroy()
     {
@@ -186,8 +269,10 @@ public class PlayerCombat : MonoBehaviour
         attackHitbox.SetActive(false);
         isAttacking = false;
         isPressing = false;
+        SetAttackAnim(false);
 
         Debug.Log("突進!!");
+        AudioManager.PlaySE(feverStartSe);
         NotifyFever(true);
     }
 
@@ -254,6 +339,7 @@ public class PlayerCombat : MonoBehaviour
             vy = jumpForce;
             jumpBufferTimer = 0f;
             coyoteTimer = 0f;
+            AudioManager.PlaySE(jumpSe);
         }
 
         // 攻撃中はMovePositionで動かすので、速度での移動は止める
@@ -299,6 +385,7 @@ public class PlayerCombat : MonoBehaviour
     private void DoAttack(float scaleMultiplier, string label, bool isCharge)
     {
         Debug.Log(label);
+        AudioManager.PlaySE(isCharge ? chargeAttackSe : attackSe);
         StopAllCoroutines();
         StartCoroutine(AttackRoutine(scaleMultiplier, isCharge));
     }
@@ -308,6 +395,7 @@ public class PlayerCombat : MonoBehaviour
         isAttacking = true;
         attackLanded = false;
         currentAttackIsCharge = isCharge;
+        SetAttackAnim(true); // 攻撃アニメーションを再生
 
         attackHitbox.transform.localScale = hitboxBaseScale * scaleMultiplier;
         hitbox.SetAttackType(isCharge);
@@ -335,6 +423,7 @@ public class PlayerCombat : MonoBehaviour
         }
 
         isAttacking = false;
+        SetAttackAnim(false);
     }
 
     // イージングで distance だけ動く(符号が向き)。sharpness が大きいほど「ぐんっ」
