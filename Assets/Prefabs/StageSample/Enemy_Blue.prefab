@@ -32,7 +32,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 8447312878592863026}
+  - {fileID: 4612357036790806958}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!61 &4199187820279696582
@@ -124,6 +124,7 @@ MonoBehaviour:
   debricPrefab: {fileID: 8425339182896627664, guid: 920554e8e1ea5684da118f571ba2848f, type: 3}
   shockPrefab: {fileID: 4079247072460627102, guid: 6c1eb619c63d33249a39a956ceae695c, type: 3}
   positionOffset: {x: 0, y: 1, z: 0}
+  breakSe: {fileID: 0}
 --- !u!114 &6298046847853652904
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -141,7 +142,7 @@ MonoBehaviour:
   stopTimeScale: 0
   normalShake: 0.1
   chargeShake: 0.25
---- !u!1 &4822508333431198342
+--- !u!1 &6242075678608674529
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -149,38 +150,38 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 8447312878592863026}
-  - component: {fileID: 1025687479234910512}
+  - component: {fileID: 4612357036790806958}
+  - component: {fileID: 8625234754548023582}
   m_Layer: 0
-  m_Name: Sprite
+  m_Name: house_0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &8447312878592863026
+--- !u!4 &4612357036790806958
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4822508333431198342}
+  m_GameObject: {fileID: 6242075678608674529}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: 0}
-  m_LocalScale: {x: 0.8, y: 0.8, z: 0.8}
-  m_ConstrainProportionsScale: 1
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 1.05, z: 0}
+  m_LocalScale: {x: 0.20351909, y: 0.20351909, z: 0.20351909}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5993540300361375716}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!212 &1025687479234910512
+--- !u!212 &8625234754548023582
 SpriteRenderer:
   serializedVersion: 3
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4822508333431198342}
+  m_GameObject: {fileID: 6242075678608674529}
   m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 0
@@ -220,14 +221,14 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 1
+  m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -7465155600972115287, guid: db5a7a02666ff7942a29156ce6531faf, type: 3}
+  m_Sprite: {fileID: -1923994175756728024, guid: 109ca6e3894da1145a8c5e42f0e30442, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 0.99757284, y: 0.99757284}
+  m_Size: {x: 11.41, y: 12.09}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
