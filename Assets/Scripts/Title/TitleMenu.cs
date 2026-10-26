@@ -11,14 +11,14 @@ public class TitleMenu : MonoBehaviour
     [SerializeField] private Button quitButton;
     [SerializeField] private UIShatterEffect shatter;
     [SerializeField] private SettingsPopup settingsPopup;
+    [SerializeField] private DifficultyPopup difficultyPopup;
     [SerializeField] private CanvasGroup menuGroup;
-    [SerializeField] private string gameSceneName = "Game";
 
     private bool busy;
 
     void Awake()
     {
-        startButton.onClick.AddListener(() => Run(startButton, () => SceneController.ChangeScene(gameSceneName)));
+        startButton.onClick.AddListener(() => Run(startButton, OpenDifficulty));
         settingsButton.onClick.AddListener(() => Run(settingsButton, OpenSettings));
         quitButton.onClick.AddListener(() => Run(quitButton, Quit));
     }
@@ -31,6 +31,15 @@ public class TitleMenu : MonoBehaviour
         if (menuGroup != null) menuGroup.blocksRaycasts = false;
         if (EventSystem.current != null) EventSystem.current.SetSelectedGameObject(null);
         shatter.Shatter((RectTransform)button.transform, next);
+    }
+
+    void OpenDifficulty()
+    {
+        difficultyPopup.Open(() =>
+        {
+            startButton.gameObject.SetActive(true);
+            Unlock();
+        });
     }
 
     void OpenSettings()
