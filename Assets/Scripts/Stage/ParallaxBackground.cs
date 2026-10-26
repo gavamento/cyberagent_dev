@@ -71,7 +71,12 @@ public class ParallaxBackground : MonoBehaviour
         public float tileWidth;
     }
 
+    [Tooltip("Boost で予約した分を進める速さ。大きいほど一気に流れる")]
+    [Min(0f)][SerializeField] float boostEase = 10f;
+
     readonly List<Runtime> runtimes = new List<Runtime>();
+    float boostPending;  // まだ進めていない追加の移動量
+    float boostDistance; // 今までに追加で進めた量
     readonly List<Object> generated = new List<Object>();
     Vector3 cameraStart;
     bool dirty;
@@ -97,6 +102,12 @@ public class ParallaxBackground : MonoBehaviour
 
     void OnDestroy() => Clear();
 
+    // 背景を追加で distance だけ進める (ダッシュ演出用)。少しずつ進めて、戻さない
+    public void Boost(float distance)
+    {
+        if (distance > 0f) boostPending += distance;
+    }
+
     void LateUpdate()
     {
         if (targetCamera == null) return;
@@ -110,10 +121,15 @@ public class ParallaxBackground : MonoBehaviour
         Vector3 moved = cam - cameraStart;
         float halfView = targetCamera.orthographicSize * targetCamera.aspect;
 
+        float step = boostPending * (1f - Mathf.Exp(-boostEase * Time.deltaTime));
+        boostPending -= step;
+        boostDistance += step;
+
         foreach (var rt in runtimes)
         {
-            // 層全体の位置 = 開始位置 + カメラ移動量 × 追従率
-            float layerX = cameraStart.x + moved.x * rt.layer.followRate.x;
+            // 層全体の位置 = 開始位置 + カメラ移動量 × 追従率。追加分は近景ほど大きく流す
+            float layerX = cameraStart.x + moved.x * rt.layer.followRate.x
+                         - boostDistance * (1f - rt.layer.followRate.x);
             float layerY = cameraStart.y + rt.layer.yOffset + moved.y * rt.layer.followRate.y;
             rt.root.position = new Vector3(layerX, layerY, 0f);
 
