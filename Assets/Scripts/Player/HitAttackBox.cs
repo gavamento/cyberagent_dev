@@ -17,6 +17,9 @@ public class HitAttackBox : MonoBehaviour, IObjectAttackInfo
     // ため攻撃かどうか(IObjectAttackInfo)。オブジェクト側が読む
     public bool IsChargeAttack { get; private set; }
 
+    // 有効になるたびに増える攻撃の番号。受けた側が同じ攻撃を二重に数えないために使う
+    public int AttackId { get; private set; }
+
     // SetActive(true) の前に呼ぶ
     public void SetAttackType(bool charge)
     {
@@ -26,6 +29,7 @@ public class HitAttackBox : MonoBehaviour, IObjectAttackInfo
     private void OnEnable()
     {
         HitEnemy = false;
+        AttackId++;
     }
 
     private void OnTriggerEnter2D(Collider2D other)
