@@ -739,15 +739,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7277884269268609925, guid: d75a30bb94884ff458c1bab592c351f1, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 0.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7277884269268609925, guid: d75a30bb94884ff458c1bab592c351f1, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7277884269268609925, guid: d75a30bb94884ff458c1bab592c351f1, type: 3}
       propertyPath: m_AnchorMin.x
-      value: 0.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7329818823603285451, guid: d75a30bb94884ff458c1bab592c351f1, type: 3}
       propertyPath: m_Name
@@ -841,6 +841,7 @@ MonoBehaviour:
     placeholderWidth: 32
     placeholderHeight: 6
     placeholderWaves: 3
+  boostEase: 10
 --- !u!4 &950147316
 Transform:
   m_ObjectHideFlags: 0
@@ -876,6 +877,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: 2641958160831659058, guid: f1a86af43b64057418bed1896ccea79b, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: 93e166b886dd70b41b3fab26ba46755f, type: 2}
     - target: {fileID: 3415057819177947078, guid: f1a86af43b64057418bed1896ccea79b, type: 3}
       propertyPath: m_LocalPosition.x
       value: 5.04
@@ -917,7 +922,8 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 8075116059091115312, guid: f1a86af43b64057418bed1896ccea79b, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f1a86af43b64057418bed1896ccea79b, type: 3}
