@@ -71,16 +71,11 @@ public class PlayerCombat : MonoBehaviour
     [SerializeField] private Animator animator;
     [Tooltip("攻撃中にONにするAnimatorのパラメーター名(Bool。Triggerでも動く)")]
     [SerializeField] private string attackParam = "IsAttack";
+    [Tooltip("地面に触れているかをAnimatorへ送るBoolパラメーター名。空中のスプライトに切り替える用")]
+    [SerializeField] private string groundedParam = "IsGrounded";
+    [Tooltip("フィーバー中のアニメーション再生速度の倍率(1で通常)。歩きが速く見える")]
+    [SerializeField, Min(0.1f)] private float feverAnimSpeed = 1.8f;
 
-    // ===== 仮: 攻撃中だけ見た目を下げる(後で消す) =====
-    [Header("仮: 攻撃中の見た目の位置(後で削除)")]
-    [Tooltip("下げたい見た目(スプライト)のTransform。空ならAnimatorのオブジェクト。Rigidbodyと同じオブジェクトは動かさない")]
-    [SerializeField] private Transform tempAttackVisual;
-    [Tooltip("攻撃中に動かすY(マイナスで下がる)。ユニット")]
-    [SerializeField] private float tempAttackOffsetY = 0.3f;
-    private Vector3 tempVisualBasePos;
-    private bool tempVisualReady;
-    // ===== 仮ここまで =====
     [Header("効果音")]
     [SerializeField] private AudioClip jumpSe;
     [SerializeField] private AudioClip attackSe;
@@ -129,6 +124,8 @@ public class PlayerCombat : MonoBehaviour
     private int attackHash;
     private bool hasAttackParam;
     private AnimatorControllerParameterType attackParamType;
+    private int groundedHash;
+    private bool hasGroundedParam;
 
     // 外部から「今攻撃中か」を読めるようにする(判定が出ている間+ダッシュ中)
     // フィーバー中は常に「攻撃中」扱い(接触ダメージを受けない)
@@ -154,7 +151,6 @@ public class PlayerCombat : MonoBehaviour
         cam = Camera.main;
         progression = cam.GetComponent<ScrollSpeedProgression>();
         SetupAnimator();
-        TempSetupAttackVisual(); // 仮(後で削除)
 
         health = GetComponent<PlayerHealth>();
         if (health != null)
@@ -175,12 +171,18 @@ public class PlayerCombat : MonoBehaviour
         }
 
         attackHash = Animator.StringToHash(attackParam);
+        groundedHash = Animator.StringToHash(groundedParam);
         foreach (var param in animator.parameters)
         {
-            if (param.nameHash != attackHash) continue;
-            attackParamType = param.type;
-            hasAttackParam = true;
-            break;
+            if (param.nameHash == attackHash)
+            {
+                attackParamType = param.type;
+                hasAttackParam = true;
+            }
+            else if (param.nameHash == groundedHash && param.type == AnimatorControllerParameterType.Bool)
+            {
+                hasGroundedParam = true;
+            }
         }
         if (!hasAttackParam)
             Debug.LogWarning($"PlayerCombat: Animatorに「{attackParam}」パラメーターがありません。Animator Controllerに追加してください。", this);
@@ -189,7 +191,6 @@ public class PlayerCombat : MonoBehaviour
     // 攻撃アニメーションのON/OFF。Boolなら攻撃中だけON、Triggerなら開始の瞬間に発火
     private void SetAttackAnim(bool on)
     {
-        TempAttackVisualOffset(on); // 仮(後で削除)
         if (!hasAttackParam) return;
 
         if (attackParamType == AnimatorControllerParameterType.Bool)
@@ -198,28 +199,11 @@ public class PlayerCombat : MonoBehaviour
             animator.SetTrigger(attackHash);
     }
 
-    // ===== 仮: 攻撃中だけ見た目を下げる(後で消す) =====
-    // 消すとき: このブロック、フィールド(仮)、Awakeの TempSetupAttackVisual()、SetAttackAnim 内の TempAttackVisualOffset(on) を削除
-    private void TempSetupAttackVisual()
+    // アニメーションの再生速度(フィーバー中だけ速くする)
+    private void SetAnimSpeed(float speed)
     {
-        if (tempAttackVisual == null && animator != null) tempAttackVisual = animator.transform;
-        if (tempAttackVisual == null) return;
-        if (tempAttackVisual == transform)
-        {
-            Debug.LogWarning("PlayerCombat(仮): 見た目がプレイヤー本体(Rigidbody)と同じオブジェクトです。子のスプライトを Temp Attack Visual に指定してください。", this);
-            tempAttackVisual = null;
-            return;
-        }
-        tempVisualBasePos = tempAttackVisual.localPosition;
-        tempVisualReady = true;
+        if (animator != null) animator.speed = speed;
     }
-
-    private void TempAttackVisualOffset(bool on)
-    {
-        if (!tempVisualReady) return;
-        tempAttackVisual.localPosition = tempVisualBasePos + (on ? new Vector3(0f, tempAttackOffsetY, 0f) : Vector3.zero);
-    }
-    // ===== 仮ここまで =====
 
     private void OnDestroy()
     {
@@ -263,6 +247,7 @@ public class PlayerCombat : MonoBehaviour
     private void StartFever()
     {
         IsFever = true;
+        SetAnimSpeed(feverAnimSpeed);
         debugIsFever = true;
         Fever = FeverMax;
         feverTimer = feverDuration;
@@ -312,6 +297,7 @@ public class PlayerCombat : MonoBehaviour
         }
 
         IsFever = false;
+        SetAnimSpeed(1f);
         debugIsFever = false;
         feverForced = false;
         Fever = 0f;
@@ -331,6 +317,9 @@ public class PlayerCombat : MonoBehaviour
         }
         UpdateFever(dt);
         float vy = rb.linearVelocity.y;
+
+        // 地面に触れているかをAnimatorへ伝える(ジャンプ用スプライトの切り替え)
+        if (hasGroundedParam) animator.SetBool(groundedHash, IsGrounded);
 
         // 上昇中は接地とみなさない(ジャンプ直後に猶予が復活するのを防ぐ)
         if (IsGrounded && vy <= 0.1f) coyoteTimer = coyoteTime;

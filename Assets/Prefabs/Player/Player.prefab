@@ -207,6 +207,10 @@ MonoBehaviour:
   attackParam: IsAttack
   tempAttackVisual: {fileID: 0}
   tempAttackOffsetY: 0.3
+  jumpSe: {fileID: 0}
+  attackSe: {fileID: 0}
+  chargeAttackSe: {fileID: 0}
+  feverStartSe: {fileID: 0}
   debugIsFever: 0
 --- !u!50 &267017505837109207
 Rigidbody2D:
@@ -288,6 +292,8 @@ MonoBehaviour:
   offscreenMargin: 0.5
   invincibleTime: 1.5
   blinkInterval: 0.1
+  damageSe: {fileID: 0}
+  deathSe: {fileID: 0}
   IsDebugMode: 0
 --- !u!114 &6897665812063877766
 MonoBehaviour:
@@ -348,7 +354,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0.03999996, y: -0.33, z: 0}
-  m_LocalScale: {x: 1.3606, y: 1.3606, z: 1.3606}
+  m_LocalScale: {x: 0.3504089, y: 0.3504089, z: 0.3504089}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 3415057819177947078}
@@ -402,7 +408,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 1
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -2311659948842064771, guid: a0c776364a1d77243b204a96862199ec, type: 3}
+  m_Sprite: {fileID: -36079925882612774, guid: fa6f9c5241c02e946b7d75836f31696b, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -423,7 +429,7 @@ Animator:
   m_GameObject: {fileID: 7169283478416645870}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 06ab3f669075bab41bb22ec7f48ca273, type: 2}
+  m_Controller: {fileID: 9100000, guid: 9eda07c3687e71943812e7d43e1f9424, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
