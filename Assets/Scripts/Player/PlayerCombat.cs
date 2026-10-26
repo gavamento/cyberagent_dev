@@ -104,6 +104,9 @@ public class PlayerCombat : MonoBehaviour
     // 攻撃が当たって前へダッシュし始めたとき。引数: ため攻撃か(演出用)
     public event Action<bool> OnForwardDash;
 
+    // 攻撃ボタンを離して攻撃が始まったとき。引数: ため攻撃か(剣士の見切り用)
+    public event Action<bool> OnAttackStarted;
+
     private Rigidbody2D rb;
     private HitAttackBox hitbox;
     private readonly HashSet<Collider2D> touching = new HashSet<Collider2D>(); // 触れているCollider
@@ -380,6 +383,8 @@ public class PlayerCombat : MonoBehaviour
         AudioManager.PlaySE(isCharge ? chargeAttackSe : attackSe);
         StopAllCoroutines();
         StartCoroutine(AttackRoutine(scaleMultiplier, isCharge));
+        // 攻撃の初期化の後に通知する(受け取った側が NotifyHit すると前へ踏み込む)
+        OnAttackStarted?.Invoke(isCharge);
     }
 
     private IEnumerator AttackRoutine(float scaleMultiplier, bool isCharge)

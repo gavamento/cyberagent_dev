@@ -38,6 +38,13 @@ public class HitStopRunner : MonoBehaviour
         instance.Begin(duration, timeScale, shake);
     }
 
+    // スローなど、ヒットストップ以外が決める普段の時間の速さ。停止中なら終了後に戻る値だけ変える
+    public static void SetBaseTimeScale(float timeScale)
+    {
+        if (instance != null && instance.stopping) instance.savedTimeScale = timeScale;
+        else Time.timeScale = timeScale;
+    }
+
     private void Begin(float duration, float timeScale, float shake)
     {
         if (!stopping)
