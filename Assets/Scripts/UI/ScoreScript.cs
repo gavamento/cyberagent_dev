@@ -13,8 +13,11 @@ public class ScoreScript : MonoBehaviour
     [Header("AddScore‚ªÁ‚¦‚é‚Ü‚Å‚Ì‘¬“x")]
     [SerializeField] private float fadeTime = 1.5f;
 
-    //ƒXƒRƒA‚ÌŠi”[æ
-    private int score;
+    //‘«‚·ƒXƒRƒA‚ÌŠi”[æ
+    static private int score;
+
+    //ƒXƒRƒA•`‰æ‚ÉŽg—p‚·‚é•Ï”
+    private int viewScore;
     
     //‘«‚·ƒXƒRƒA‚ÌŠi”[æ
     private int totalAddScore;
@@ -25,18 +28,19 @@ public class ScoreScript : MonoBehaviour
     private void Start()
     {
         addScoreText.gameObject.SetActive(false);
+        score = 0;
     }
 
     // Update is called once per frame
     void Update()
     {
-        scoreText.text = "Score:" + score.ToString();
+        scoreText.text = "Score:" + viewScore.ToString();
         addScoreText.text = "+" + viewAddScore.ToString();
 
         if (totalAddScore > 0)
         {
             totalAddScore = totalAddScore - 1;
-            score = score + 1;
+            viewScore = viewScore + 1;
         }
 
         if (addScoreText.color.a > 0)
@@ -65,5 +69,10 @@ public class ScoreScript : MonoBehaviour
         Color color = addScoreText.color;
         color.a = 1.0f;
         addScoreText.color = color;
+
+        score += add;
     }
+
+    public static int GetScore()
+    {  return score; }
 }
