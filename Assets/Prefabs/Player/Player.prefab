@@ -189,7 +189,7 @@ MonoBehaviour:
   forwardSpeed: 6
   backDistance: 3
   backSpeed: 6
-  idleBackSpeed: -7.3
+  idleBackSpeed: -7.4
   jumpForce: 14
   gravityScale: 4.5
   jumpBufferTime: 0.22

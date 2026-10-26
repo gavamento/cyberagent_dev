@@ -1038,7 +1038,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1434127356923436350, guid: f1a86af43b64057418bed1896ccea79b, type: 3}
       propertyPath: idleBackSpeed
-      value: -7.3
+      value: -7.5
       objectReference: {fileID: 0}
     - target: {fileID: 1434127356923436350, guid: f1a86af43b64057418bed1896ccea79b, type: 3}
       propertyPath: feverForwardSpeed
