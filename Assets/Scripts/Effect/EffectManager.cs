@@ -9,7 +9,6 @@
 using UnityEngine;
 using UnityEngine.VFX;
 using System.Collections.Generic;
-using UnityEditor.Tilemaps;
 
 public static class EffectManager
 {

@@ -65,7 +65,7 @@ public class BounceDebris : MonoBehaviour
     private IEnumerator FadeOut()
     {
         // フェード開始まで待つ
-        float waitTime = Mathf.Max(0.0f, lifeTime, - fadeDuration);
+        float waitTime = Mathf.Max(0.0f, lifeTime - fadeDuration);
         yield return new WaitForSeconds(waitTime);
 
         // 現在の色とα値もらう
