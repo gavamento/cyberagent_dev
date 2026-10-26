@@ -106,6 +106,9 @@ public class PlayerCombat : MonoBehaviour
     // 引数: (今回の加算量, 合計スコア)
     public event Action<int, int> OnScoreChanged;
 
+    // 攻撃が当たって前へダッシュし始めたとき。引数: ため攻撃か(演出用)
+    public event Action<bool> OnForwardDash;
+
     private Rigidbody2D rb;
     private HitAttackBox hitbox;
     private readonly HashSet<Collider2D> touching = new HashSet<Collider2D>(); // 触れているCollider
@@ -415,7 +418,10 @@ public class PlayerCombat : MonoBehaviour
 
         // 当たったら前へ、外れたら後ろへ
         if (hit)
+        {
+            OnForwardDash?.Invoke(isCharge);
             yield return Dash(forwardDistance, forwardSpeed);
+        }
         else
         {
             if (progression != null) progression.Whiff();
