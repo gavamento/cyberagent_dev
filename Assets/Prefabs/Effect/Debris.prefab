@@ -181,7 +181,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BounceDebris
   minSpeed: 5
-  maxSpeed: 10
+  maxSpeed: 20
   minAngularSpeed: -360
   maxAngularSpeed: 360
   lifeTime: 2
