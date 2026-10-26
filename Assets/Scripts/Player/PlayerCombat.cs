@@ -231,6 +231,7 @@ public class PlayerCombat : MonoBehaviour
     {
         if (points <= 0) return;
 
+        Score += points;
         OnScoreChanged?.Invoke(points, Score);
 
         if (scoreScript != null) scoreScript.AddScore(points); // UIの表示
@@ -363,12 +364,16 @@ public class PlayerCombat : MonoBehaviour
         if (ctx.started)
         {
             isPressing = true;
-            pressStartTime = Time.time;
+            pressStartTime = Time.unscaledTime; // スローやヒットストップ中も実時間で押した長さを測る
         }
         else if (ctx.canceled && isPressing)
         {
             isPressing = false;
-            float held = Time.time - pressStartTime;
+            // 死亡などで非アクティブになる途中のキャンセルでは攻撃しない(非アクティブではコルーチンを始められない)
+            // PlayerInput.OnDisable から呼ばれた時点では、自分の OnDisable 前なので isActiveAndEnabled はまだ true のまま
+            if (!gameObject.activeInHierarchy) return;
+
+            float held = Time.unscaledTime - pressStartTime;
 
             if (held >= chargeThreshold)
                 DoAttack(chargeScaleMultiplier, "ため攻撃", true);
@@ -394,6 +399,8 @@ public class PlayerCombat : MonoBehaviour
         currentAttackIsCharge = isCharge;
         SetAttackAnim(true); // 攻撃アニメーションを再生
 
+        // 前の攻撃の判定が残っていたら一度切る。入れ直すと重なっている相手にも新しい攻撃として当たる
+        attackHitbox.SetActive(false);
         attackHitbox.transform.localScale = hitboxBaseScale * scaleMultiplier;
         hitbox.SetAttackType(isCharge);
         attackHitbox.SetActive(true);
@@ -467,6 +474,7 @@ public class PlayerCombat : MonoBehaviour
     private void OnDisable()
     {
         touching.Clear();
+        isPressing = false; // 押したまま無効になったら、再び有効になったときに攻撃が出ないようにする
     }
 
     // 画面の左端から forwardLimit の位置(ワールドX)

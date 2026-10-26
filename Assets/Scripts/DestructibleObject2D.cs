@@ -65,7 +65,8 @@ namespace CyberAgentDev.ObjectPrototypeLearning
         readonly List<Collider2D> contacts = new List<Collider2D>();
         readonly List<Collider2D> attackContacts = new List<Collider2D>();
         readonly HashSet<Transform> handledPlayers = new HashSet<Transform>();
-        readonly HashSet<HitAttackBox> receivedAttackBoxes = new HashSet<HitAttackBox>();
+        // 攻撃判定ごとに、最後に受け付けた攻撃の番号(HitAttackBox.AttackId)
+        readonly Dictionary<HitAttackBox, int> receivedAttackIds = new Dictionary<HitAttackBox, int>();
         Collider2D objectCollider;
         IAttackAcceptRule[] acceptRules;
         float nextDamageTime;
@@ -137,14 +138,12 @@ namespace CyberAgentDev.ObjectPrototypeLearning
             contacts.Clear();
             attackContacts.Clear();
             handledPlayers.Clear();
-            receivedAttackBoxes.Clear();
+            receivedAttackIds.Clear();
             nextDamageTime = 0f;
         }
 
         void FixedUpdate()
         {
-            // 攻撃判定の無効状態を確認したら、次の攻撃を受け付けられるよう記録を消す。
-            receivedAttackBoxes.RemoveWhere(attack => attack == null || !attack.isActiveAndEnabled);
             if (isBroken || !MatchesAnyTag(gameObject, objectTags)) return;
             bool canDamageNow = CanDamagePlayer && Time.time >= nextDamageTime;
             bool damageSent = false;
@@ -208,8 +207,10 @@ namespace CyberAgentDev.ObjectPrototypeLearning
             bool? accepted = rule != null ? rule.CanReceiveAttack(attackBox, isChargeAttack) : true;
             // 情報不足は保留し、後から届く旧通知の確定値も受け付けられるようにする。
             if (!accepted.HasValue) return;
-            // Triggerと旧通知の両方が来ても、同じ攻撃を二重に数えない。
-            if (!receivedAttackBoxes.Add(attackBox) || !accepted.Value) return;
+            // Triggerと旧通知の両方が来ても、同じ攻撃を二重に数えない。連打した次の攻撃は番号が変わるので受け付ける。
+            if (receivedAttackIds.TryGetValue(attackBox, out int receivedId) && receivedId == attackBox.AttackId) return;
+            receivedAttackIds[attackBox] = attackBox.AttackId;
+            if (!accepted.Value) return;
             if (hitsToBreak < 1)
             {
                 Debug.LogError("攻撃回数は1以上にしてください。", this);
