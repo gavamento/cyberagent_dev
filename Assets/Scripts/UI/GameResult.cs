@@ -14,7 +14,7 @@ public static class GameResult
         get => lastScore;
         set
         {
-            lastScore = value;
+            lastScore = ScoreScript.GetScore();
             HasScore = true;
         }
     }
