@@ -899,38 +899,39 @@ MonoBehaviour:
   targetCamera: {fileID: 351015294}
   layers:
   - name: Sky
-    sprite: {fileID: 0}
-    color: {r: 0.45, g: 0.7, b: 0.95, a: 1}
-    followRate: {x: 1, y: 1}
-    yOffset: -9
-    scale: 1
+    sprite: {fileID: 3326840229467707989, guid: c22b6b2f0986a4f4c9abd02b4c62787f, type: 3}
+    color: {r: 1, g: 1, b: 1, a: 1}
+    followRate: {x: 0.9, y: 1}
+    yOffset: 0
+    scale: 2
     sortingOrder: -30
     shape: 0
     placeholderWidth: 32
     placeholderHeight: 18
     placeholderWaves: 3
   - name: FarMountains
-    sprite: {fileID: 0}
-    color: {r: 0.45, g: 0.55, b: 0.75, a: 1}
-    followRate: {x: 0.8, y: 0.9}
-    yOffset: -5
-    scale: 1
+    sprite: {fileID: 21300000, guid: cafe3920a601b0d4ab1ba13c580f7c9a, type: 3}
+    color: {r: 1, g: 1, b: 1, a: 1}
+    followRate: {x: 0.7, y: 1}
+    yOffset: 0.65
+    scale: 2
     sortingOrder: -20
     shape: 1
     placeholderWidth: 32
     placeholderHeight: 9
     placeholderWaves: 4
   - name: NearHills
-    sprite: {fileID: 0}
-    color: {r: 0.3, g: 0.6, b: 0.4, a: 1}
-    followRate: {x: 0.5, y: 0.7}
-    yOffset: -5
-    scale: 1
+    sprite: {fileID: -5128094750267489279, guid: 2fd66a406dba9d543abd31b14aa568cc, type: 3}
+    color: {r: 1, g: 1, b: 1, a: 1}
+    followRate: {x: 0.5, y: 1}
+    yOffset: 0.1
+    scale: 2
     sortingOrder: -10
     shape: 2
     placeholderWidth: 32
     placeholderHeight: 6
     placeholderWaves: 3
+  boostEase: 10
 --- !u!4 &950147316
 Transform:
   m_ObjectHideFlags: 0
