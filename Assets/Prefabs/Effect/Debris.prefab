@@ -118,7 +118,7 @@ Rigidbody2D:
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
@@ -181,10 +181,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BounceDebris
   minSpeed: 5
-  maxSpeed: 20
+  maxSpeed: 30
   minAngularSpeed: -360
   maxAngularSpeed: 360
-  lifeTime: 2
+  lifeTime: 3
   fadeDuration: 0.5
   DirectionX: {x: 0, y: 5}
   DirectionY: {x: 0, y: 10}
+  flashDuration: 0.1
+  flashColor: {r: 1, g: 1, b: 1, a: 1}
+  isShadow: 1
+  shadowOffset: {x: 0.06, y: -0.06}
+  shadowColor: {r: 0, g: 0, b: 0, a: 0.45}
+  shadowScale: 1
