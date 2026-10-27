@@ -13,10 +13,10 @@ public class PlayerCombat : MonoBehaviour
 {
     [Header("Charge")]
     [SerializeField] private float chargeThreshold = 0.26f; // これ以上押したらため攻撃
-    [Tooltip("ONなら、最大までためた時点で、ボタンを離さなくても自動でため攻撃が出る")]
+    [Tooltip("ONなら、ためが溜まってから一定時間たつと、ボタンを離さなくても自動でため攻撃が出る")]
     [SerializeField] private bool autoChargeAttack = true;
-    [Tooltip("この時間(秒)ためると自動でため攻撃が出る。Charge Thresholdより短い値にしても、Charge Threshold+0.05秒になる")]
-    [Min(0f)][SerializeField] private float maxChargeTime = 0.8f;
+    [Tooltip("ためが溜まった(Charge Thresholdを越えた)後、自動でため攻撃が出るまでの時間(秒)")]
+    [Min(0.05f)][SerializeField] private float autoChargeDelay = 2f;
 
     [Header("チャージゲージ(丸)")]
     [Tooltip("丸く減る/増えるゲージのImage(丸いスプライトを設定)。Image Type等はスクリプトが自動で Filled/Radial360 にする。空ならゲージなし")]
@@ -290,8 +290,8 @@ public class PlayerCombat : MonoBehaviour
         }
     }
 
-    // 自動でため攻撃が出るまでの時間(ため攻撃が出せる時間より必ず長くする)
-    private float AutoChargeTime => Mathf.Max(maxChargeTime, chargeThreshold + 0.05f);
+    // 押し始めから自動でため攻撃が出るまでの時間(溜まるまで + 溜まってからの待ち)
+    private float AutoChargeTime => chargeThreshold + autoChargeDelay;
 
     // 押している間だけ、ためた割合(0〜1)を丸ゲージで見せる。色が変わるとため攻撃が出せる。満タンで自動発動
     private void Update()
@@ -325,10 +325,17 @@ public class PlayerCombat : MonoBehaviour
         if (chargeGaugeRoot.activeSelf != show) chargeGaugeRoot.SetActive(show);
         if (!show) return;
 
-        // ゲージは「最大までの割合」。ため攻撃が出せる量(Charge Threshold)を越えたら色が変わる
-        float full = autoChargeAttack ? AutoChargeTime : chargeThreshold;
-        chargeGauge.fillAmount = Mathf.Clamp01(held / full);
-        chargeGauge.color = held >= chargeThreshold ? chargeReadyColor : chargingColor;
+        // 溜まるまでは増えていく。溜まったら色が変わり、満タンのまま(自動で攻撃が出るまで)
+        if (held < chargeThreshold)
+        {
+            chargeGauge.fillAmount = Mathf.Clamp01(held / chargeThreshold);
+            chargeGauge.color = chargingColor;
+        }
+        else
+        {
+            chargeGauge.fillAmount = 1f;
+            chargeGauge.color = chargeReadyColor;
+        }
     }
 
     // Animatorと、攻撃のパラメーター(IsAttack)を探しておく

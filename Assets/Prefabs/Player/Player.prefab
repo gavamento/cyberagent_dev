@@ -39,6 +39,7 @@ Transform:
   m_Children:
   - {fileID: 7394253336096141685}
   - {fileID: 3202173663703978069}
+  - {fileID: 8743214074403752688}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &269488425639277476
@@ -185,7 +186,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: '::'
   chargeThreshold: 0.2
   autoChargeAttack: 1
-  maxChargeTime: 0.25
+  autoChargeDelay: 2
   chargeGauge: {fileID: 0}
   chargeGaugeRoot: {fileID: 0}
   chargeGaugeShowDelay: 0.08
@@ -196,10 +197,10 @@ MonoBehaviour:
   hitboxActiveTime: 0.15
   chargeScaleMultiplier: 2
   forwardDistance: 5
-  forwardSpeed: 7
+  forwardSpeed: 8
   backDistance: 1
-  backSpeed: 4
-  idleBackSpeed: -7.5
+  backSpeed: 3
+  idleBackSpeed: -7.7
   jumpForce: 14
   gravityScale: 4.5
   jumpBufferTime: 0.22
@@ -367,6 +368,28 @@ MonoBehaviour:
   dashTrailTime: 2
   flowOnScreen: 1
   flowSpeed: 16
+--- !u!114 &4378120956613852091
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2589848515423940712}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 245045ef84cd4e3686e7a0615740b094, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
+  targetTags:
+  - Enemy
+  - Iron
+  - Object
+  outlineMaterial: {fileID: 2100000, guid: e0293ffda16d431ab1337382537fcef0, type: 2}
+  outlineColor: {r: 1, g: 0.95, b: 0.2, a: 1}
+  outlineWidth: 0.06
+  blinkSpeed: 4
+  minAlpha: 0.25
+  maxAlpha: 1
 --- !u!1 &7169283478416645870
 GameObject:
   m_ObjectHideFlags: 0
@@ -577,25 +600,78 @@ MonoBehaviour:
   - Enemy
   - Object
   - Iron
---- !u!114 &4378120956613852091
-MonoBehaviour:
+--- !u!1001 &6511096747735156858
+PrefabInstance:
   m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 3415057819177947078}
+    m_Modifications:
+    - target: {fileID: 2524880148620935818, guid: 8760f28a61ce5b0479b393605fba63dc, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.012789726
+      objectReference: {fileID: 0}
+    - target: {fileID: 2524880148620935818, guid: 8760f28a61ce5b0479b393605fba63dc, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -2.9267025
+      objectReference: {fileID: 0}
+    - target: {fileID: 2524880148620935818, guid: 8760f28a61ce5b0479b393605fba63dc, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2524880148620935818, guid: 8760f28a61ce5b0479b393605fba63dc, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2524880148620935818, guid: 8760f28a61ce5b0479b393605fba63dc, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2524880148620935818, guid: 8760f28a61ce5b0479b393605fba63dc, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2524880148620935818, guid: 8760f28a61ce5b0479b393605fba63dc, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2524880148620935818, guid: 8760f28a61ce5b0479b393605fba63dc, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2524880148620935818, guid: 8760f28a61ce5b0479b393605fba63dc, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2524880148620935818, guid: 8760f28a61ce5b0479b393605fba63dc, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3303393726055259421, guid: 8760f28a61ce5b0479b393605fba63dc, type: 3}
+      propertyPath: chargeEffect
+      value: 
+      objectReference: {fileID: 4378542859878868513}
+    - target: {fileID: 3303393726055259421, guid: 8760f28a61ce5b0479b393605fba63dc, type: 3}
+      propertyPath: followTarget
+      value: 
+      objectReference: {fileID: 3415057819177947078}
+    - target: {fileID: 3701536391943392354, guid: 8760f28a61ce5b0479b393605fba63dc, type: 3}
+      propertyPath: m_Name
+      value: ChargeEffectCute
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 8760f28a61ce5b0479b393605fba63dc, type: 3}
+--- !u!2083052967 &4378542859878868513 stripped
+VisualEffect:
+  m_CorrespondingSourceObject: {fileID: 7394834133397253723, guid: 8760f28a61ce5b0479b393605fba63dc, type: 3}
+  m_PrefabInstance: {fileID: 6511096747735156858}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2589848515423940712}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 245045ef84cd4e3686e7a0615740b094, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: '::'
-  targetTags:
-  - Enemy
-  - Iron
-  - Object
-  outlineMaterial: {fileID: 2100000, guid: e0293ffda16d431ab1337382537fcef0, type: 2}
-  outlineColor: {r: 1, g: 0.95, b: 0.2, a: 1}
-  outlineWidth: 0.06
-  blinkSpeed: 4
-  minAlpha: 0.25
-  maxAlpha: 1
+--- !u!4 &8743214074403752688 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2524880148620935818, guid: 8760f28a61ce5b0479b393605fba63dc, type: 3}
+  m_PrefabInstance: {fileID: 6511096747735156858}
+  m_PrefabAsset: {fileID: 0}
