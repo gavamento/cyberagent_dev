@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-// ほぼ一本道のステージをタイルマップに自動生成する。段差は上りのみ、敵もランダム配置する。
+// ほぼ一本道のステージをタイルマップに自動生成する。段差は上りのみ、穴と敵もランダム配置する。
 // 敵の出方は距離の区間に加えて、経過時間・ラッシュ/休憩・flow でも変えられる。
 public class StageGenerator : MonoBehaviour
 {
@@ -59,6 +59,17 @@ public class StageGenerator : MonoBehaviour
     [Min(1)][SerializeField] int maxStepUp = 2;
     [Tooltip("基準の高さから何マスまで上がるか。超える段差の代わりに基準の高さまで落とす")]
     [Min(1)][SerializeField] int maxHeight = 6;
+
+    [Header("穴")]
+    [Tooltip("穴の密度。最短平地を越えた後、1マスごとに穴が出る確率。0 なら穴なし")]
+    [Range(0f, 1f)][SerializeField] float holeDensity = 0.03f;
+    [Tooltip("穴の幅 (マス)。前後は同じ高さなので、跳び越えられる幅にする")]
+    [Min(1)][SerializeField] int minHoleWidth = 2;
+    [Min(1)][SerializeField] int maxHoleWidth = 3;
+    [Tooltip("穴の手前で敵を置かない距離 (マス)")]
+    [Min(0)][SerializeField] int holeSafeBefore = 4;
+    [Tooltip("穴の直後で敵を置かない距離 (マス)")]
+    [Min(0)][SerializeField] int holeSafeAfter = 3;
 
     [Header("敵")]
     [Tooltip("ステージ先頭から順に並べる区間。最後の区間は以降ずっと続く")]
@@ -175,9 +186,12 @@ public class StageGenerator : MonoBehaviour
 
     // 段差の位置 (上った先の最初の列)。予告表示などに使う
     public IReadOnlyList<int> StepColumns => stepColumns;
+    // 穴の位置 (穴の最初の列)
+    public IReadOnlyList<int> HoleColumns => holeColumns;
     public bool IsEndless => endless;
 
     readonly List<int> stepColumns = new List<int>();
+    readonly List<int> holeColumns = new List<int>();
     readonly Dictionary<int, int> heights = new Dictionary<int, int>();
     // 出した敵。段差の手前で取り除いたときに出現の記録を戻せるよう、種類と区間も覚えておく
     readonly List<(int x, GameObject obj, EnemyEntry entry, int section)> spawned = new List<(int, GameObject, EnemyEntry, int)>();
@@ -207,6 +221,9 @@ public class StageGenerator : MonoBehaviour
     int currentHeight;
     int flatRun;
     int lastStepColumn;
+    // 今の穴の残りの列数と、穴の後の最初の列
+    int holeRemaining;
+    int lastHoleEnd;
     int lastEnemyColumn;
     int currentSection;
     EnemyEntry pendingEntry;
@@ -216,6 +233,7 @@ public class StageGenerator : MonoBehaviour
     {
         if (maxStepUp < minStepUp) maxStepUp = minStepUp;
         if (maxFlatLength > 0 && maxFlatLength < minFlatLength) maxFlatLength = minFlatLength;
+        if (maxHoleWidth < minHoleWidth) maxHoleWidth = minHoleWidth;
         if (enemySections == null) return;
         foreach (var s in enemySections)
         {
@@ -265,6 +283,8 @@ public class StageGenerator : MonoBehaviour
         currentHeight = baseHeight;
         flatRun = 0;
         lastStepColumn = int.MinValue / 2;
+        holeRemaining = 0;
+        lastHoleEnd = int.MinValue / 2;
         lastEnemyColumn = int.MinValue / 2;
         currentSection = -1;
         pendingEntry = null;
@@ -289,6 +309,7 @@ public class StageGenerator : MonoBehaviour
         if (tilemap != null) tilemap.ClearAllTiles();
         heights.Clear();
         stepColumns.Clear();
+        holeColumns.Clear();
         spawned.Clear();
 
         if (container == null) container = transform.Find("Spawned");
@@ -331,8 +352,13 @@ public class StageGenerator : MonoBehaviour
     {
         bool inStart = x < startFlatLength;
         bool inGoal = !endless && x >= stageLength - goalAreaLength;
+        bool inHole = holeRemaining > 0;
 
-        if (!inStart && !inGoal && ShouldStep())
+        if (inHole)
+        {
+            ContinueHole(x);
+        }
+        else if (!inStart && !inGoal && ShouldStep())
         {
             int step = rng.Next(minStepUp, maxStepUp + 1);
             // 上がりすぎたら基準の高さまで落として戻す
@@ -340,25 +366,34 @@ public class StageGenerator : MonoBehaviour
             flatRun = 0;
             lastStepColumn = x;
             stepColumns.Add(x);
-            RemoveEnemiesBefore(x);
+            RemoveEnemiesBefore(x, stepSafeBefore);
             // 群れは段差をまたがせない
             pendingGroup.Clear();
+        }
+        else if (!inStart && !inGoal && ShouldHole())
+        {
+            StartHole(x);
+            inHole = true;
         }
         else
         {
             flatRun++;
         }
 
+        // 穴の列も高さは記録しておき、カメラの高さやチャンクの削除はそのまま使えるようにする
         heights[x] = currentHeight;
         var map = GetChunk(x);
-        int bottom = baseHeight - groundDepth;
-        for (int y = bottom; y <= currentHeight; y++)
+        if (!inHole)
         {
-            var tile = y == currentHeight || fillTile == null ? groundTile : fillTile;
-            map.SetTile(new Vector3Int(x, y, 0), tile);
+            int bottom = baseHeight - groundDepth;
+            for (int y = bottom; y <= currentHeight; y++)
+            {
+                var tile = y == currentHeight || fillTile == null ? groundTile : fillTile;
+                map.SetTile(new Vector3Int(x, y, 0), tile);
+            }
         }
 
-        if (inStart || inGoal) pendingGroup.Clear();
+        if (inStart || inGoal || inHole) pendingGroup.Clear();
         else if (pendingGroup.Count > 0) SpawnPending(x);
         else TrySpawnEnemy(x);
         nextColumn = x + 1;
@@ -369,6 +404,31 @@ public class StageGenerator : MonoBehaviour
         if (flatRun < minFlatLength) return false;
         if (maxFlatLength > 0 && flatRun >= maxFlatLength) return true;
         return rng.NextDouble() < stepDensity;
+    }
+
+    bool ShouldHole()
+    {
+        if (holeDensity <= 0f || flatRun < minFlatLength) return false;
+        return rng.NextDouble() < holeDensity;
+    }
+
+    // 列 x から穴を開ける。ゴール前の平地には掛からない幅にする
+    void StartHole(int x)
+    {
+        int width = rng.Next(minHoleWidth, maxHoleWidth + 1);
+        if (!endless) width = Mathf.Min(width, stageLength - goalAreaLength - x);
+        holeColumns.Add(x);
+        RemoveEnemiesBefore(x, holeSafeBefore);
+        holeRemaining = width;
+        ContinueHole(x);
+    }
+
+    // 穴の 1 列分を進める。穴が終わったら、そこから平地を数え直す
+    void ContinueHole(int x)
+    {
+        if (--holeRemaining > 0) return;
+        lastHoleEnd = x + 1;
+        flatRun = 0;
     }
 
     void TrySpawnEnemy(int x)
@@ -383,6 +443,7 @@ public class StageGenerator : MonoBehaviour
         var section = enemySections[index];
         if (section.enemies == null || section.enemies.Length == 0) return;
         if (x - lastStepColumn <= stepSafeAfter) return;
+        if (x - lastHoleEnd < holeSafeAfter) return;
         if (x - lastEnemyColumn < minEnemyGap) return;
 
         float density = section.density;
@@ -561,14 +622,14 @@ public class StageGenerator : MonoBehaviour
         debugEnemyRates = debugBuilder.ToString();
     }
 
-    // 段差が決まった時点で、その手前に置いた敵を取り除く。出現の記録も取り除いた分だけ戻す
-    void RemoveEnemiesBefore(int stepX)
+    // 段差や穴が決まった時点で、その手前 safe マスに置いた敵を取り除く。出現の記録も取り除いた分だけ戻す
+    void RemoveEnemiesBefore(int stepX, int safe)
     {
         removedEntries.Clear();
         for (int i = spawned.Count - 1; i >= 0; i--)
         {
             var s = spawned[i];
-            if (s.x < stepX - stepSafeBefore) break;
+            if (s.x < stepX - safe) break;
             if (s.obj != null) DestroyObj(s.obj);
             spawned.RemoveAt(i);
             // 区間が変わった後なら数は数え直しになっているので触らない
@@ -616,6 +677,7 @@ public class StageGenerator : MonoBehaviour
             spawned.RemoveAt(0);
         }
         while (stepColumns.Count > 0 && stepColumns[0] <= x) stepColumns.RemoveAt(0);
+        while (holeColumns.Count > 0 && holeColumns[0] <= x) holeColumns.RemoveAt(0);
     }
 
     void PlaceGoal()

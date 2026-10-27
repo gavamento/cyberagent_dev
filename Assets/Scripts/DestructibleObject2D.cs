@@ -86,6 +86,9 @@ namespace CyberAgentDev.ObjectPrototypeLearning
         public bool IsBroken => isBroken;
         public int RemainingHits => Mathf.Max(0, hitsToBreak - currentHitsTaken);
 
+        // 壊れたときの通知。引数は壊したPlayer(攻撃以外で壊れたときはnull)
+        public event System.Action<PlayerCombat> OnBroken;
+
         void Awake()
         {
             // Enemyの円形など、同じGameObjectにある既存の当たり判定を使う。
@@ -257,6 +260,7 @@ namespace CyberAgentDev.ObjectPrototypeLearning
 
             AudioManager.PlaySE(breakSe);
 
+            OnBroken?.Invoke(lastAttacker);
             Destroy(gameObject);
         }
 
