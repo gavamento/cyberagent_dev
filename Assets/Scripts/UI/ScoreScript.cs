@@ -27,6 +27,10 @@ public class ScoreScript : MonoBehaviour
     //足すスコア描画に使用する変数
     private int viewAddScore;
 
+    // 今テキストに出している値。-1 は未表示
+    private int shownScore = -1;
+    private int shownAddScore = -1;
+
     private void Start()
     {
         addScoreText.gameObject.SetActive(false);
@@ -36,8 +40,7 @@ public class ScoreScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        scoreText.text = "Score:" + Mathf.FloorToInt(viewScore).ToString();
-        addScoreText.text = "+" + viewAddScore.ToString();
+        RefreshTexts();
 
         // 加算分を countUpTime 秒で数え終える(フレームレートに依存しない)
         if (viewScore < score)
@@ -74,6 +77,22 @@ public class ScoreScript : MonoBehaviour
         // 残りの差を countUpTime 秒で数え終える速さにする(連続で入っても間に合う)
         float remain = score - viewScore;
         countSpeed = countUpTime > 0f ? remain / countUpTime : float.MaxValue;
+    }
+
+    // 値が変わったときだけテキストを作り直す(毎フレームの文字列生成を避ける)
+    private void RefreshTexts()
+    {
+        int view = Mathf.FloorToInt(viewScore);
+        if (view != shownScore)
+        {
+            shownScore = view;
+            scoreText.text = "Score:" + view;
+        }
+        if (viewAddScore != shownAddScore)
+        {
+            shownAddScore = viewAddScore;
+            addScoreText.text = "+" + viewAddScore;
+        }
     }
 
     public static int GetScore()

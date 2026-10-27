@@ -38,7 +38,7 @@ public class TitleMenu : MonoBehaviour
         difficultyPopup.Open(() =>
         {
             startButton.gameObject.SetActive(true);
-            Unlock();
+            Unlock(startButton);
         });
     }
 
@@ -47,14 +47,16 @@ public class TitleMenu : MonoBehaviour
         settingsPopup.Open(() =>
         {
             settingsButton.gameObject.SetActive(true);
-            Unlock();
+            Unlock(settingsButton);
         });
     }
 
-    void Unlock()
+    // 押したボタンを選び直して、キーボードやパッドでもすぐ操作できるようにする
+    void Unlock(Button selected)
     {
         busy = false;
         if (menuGroup != null) menuGroup.blocksRaycasts = true;
+        if (EventSystem.current != null) EventSystem.current.SetSelectedGameObject(selected.gameObject);
     }
 
     static void Quit()

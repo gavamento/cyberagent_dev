@@ -76,6 +76,9 @@ namespace CyberAgentDev.ObjectPrototypeLearning
         [SerializeField] AudioClip slashSe;
         [SerializeField] AudioClip counterSe;
 
+        // 剣士は大量に生成されるので、見つけたPlayerを全員で使い回す
+        static PlayerCombat cachedPlayer;
+
         readonly RaycastHit2D[] groundHits = new RaycastHit2D[4];
         DestructibleObject2D destructible;
         EnemyGroundMover mover;
@@ -109,7 +112,11 @@ namespace CyberAgentDev.ObjectPrototypeLearning
         {
             state = State.Walk;
             mover.Speed = walkSpeed;
-            if (player == null) player = FindAnyObjectByType<PlayerCombat>();
+            if (player == null)
+            {
+                if (cachedPlayer == null) cachedPlayer = FindAnyObjectByType<PlayerCombat>();
+                player = cachedPlayer;
+            }
             if (player == null) return;
             playerHealth = player.GetComponent<PlayerHealth>();
             playerCollider = player.GetComponent<Collider2D>();
