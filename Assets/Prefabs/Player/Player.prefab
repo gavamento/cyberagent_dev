@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 7972279784654754196}
   - component: {fileID: 6897665812063877766}
   - component: {fileID: 2720721183056413300}
+  - component: {fileID: 4378120956613852091}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -576,3 +577,25 @@ MonoBehaviour:
   - Enemy
   - Object
   - Iron
+--- !u!114 &4378120956613852091
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2589848515423940712}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 245045ef84cd4e3686e7a0615740b094, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
+  targetTags:
+  - Enemy
+  - Iron
+  - Object
+  outlineMaterial: {fileID: 2100000, guid: e0293ffda16d431ab1337382537fcef0, type: 2}
+  outlineColor: {r: 1, g: 0.95, b: 0.2, a: 1}
+  outlineWidth: 0.06
+  blinkSpeed: 4
+  minAlpha: 0.25
+  maxAlpha: 1
