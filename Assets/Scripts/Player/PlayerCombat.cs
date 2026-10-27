@@ -3,6 +3,7 @@
 //===============================================================================-
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -12,6 +13,22 @@ public class PlayerCombat : MonoBehaviour
 {
     [Header("Charge")]
     [SerializeField] private float chargeThreshold = 0.26f; // これ以上押したらため攻撃
+    [Tooltip("この時間(秒)ためると、ボタンを離さなくても自動でため攻撃が出る。0で自動発動しない(Charge Thresholdより大きい値にする)")]
+    [Min(0f)][SerializeField] private float maxChargeTime = 0.8f;
+
+    [Header("チャージゲージ(丸)")]
+    [Tooltip("丸く減る/増えるゲージのImage(丸いスプライトを設定)。Image Type等はスクリプトが自動で Filled/Radial360 にする。空ならゲージなし")]
+    [SerializeField] private Image chargeGauge;
+    [Tooltip("ゲージ全体(背景の輪なども含む)の親オブジェクト。空ならゲージのImage自身を出し入れする")]
+    [SerializeField] private GameObject chargeGaugeRoot;
+    [Tooltip("押し始めてからゲージを出すまでの時間(秒)。通常攻撃のたびにチラつかないようにする")]
+    [Min(0f)][SerializeField] private float chargeGaugeShowDelay = 0.08f;
+    [Tooltip("プレイヤーの足元(Transformの位置)から見た、ゲージを出す位置。ユニット。頭の上に合わせる")]
+    [SerializeField] private Vector2 chargeGaugeOffset = new Vector2(0f, 1.8f);
+    [Tooltip("ためている途中の色")]
+    [SerializeField] private Color chargingColor = Color.white;
+    [Tooltip("ため攻撃が出せるようになった(満タン)ときの色")]
+    [SerializeField] private Color chargeReadyColor = new Color(1f, 0.76f, 0.1f);
 
     [Header("Attack Hitbox")]
     [SerializeField] private GameObject attackHitbox;
@@ -73,6 +90,8 @@ public class PlayerCombat : MonoBehaviour
     [SerializeField] private string attackParam = "IsAttack";
     [Tooltip("地面に触れているかをAnimatorへ送るBoolパラメーター名。空中のスプライトに切り替える用")]
     [SerializeField] private string groundedParam = "IsGrounded";
+    [Tooltip("フィーバー中だけONにするAnimatorのBoolパラメーター名。ループする攻撃アニメ(フィーバー用)へ切り替える。無ければ従来どおり IsAttack をONにし続ける")]
+    [SerializeField] private string feverParam = "IsFever";
     [Tooltip("フィーバー中のアニメーション再生速度の倍率(1で通常)。歩きが速く見える")]
     [SerializeField, Min(0.1f)] private float feverAnimSpeed = 1.8f;
 
@@ -104,6 +123,9 @@ public class PlayerCombat : MonoBehaviour
     // 攻撃が当たって前へダッシュし始めたとき。引数: ため攻撃か(演出用)
     public event Action<bool> OnForwardDash;
 
+    // 攻撃ボタンを離して攻撃が始まったとき。引数: ため攻撃か(剣士の見切り用)
+    public event Action<bool> OnAttackStarted;
+
     private Rigidbody2D rb;
     private HitAttackBox hitbox;
     private readonly HashSet<Collider2D> touching = new HashSet<Collider2D>(); // 触れているCollider
@@ -126,6 +148,9 @@ public class PlayerCombat : MonoBehaviour
     private AnimatorControllerParameterType attackParamType;
     private int groundedHash;
     private bool hasGroundedParam;
+    private int feverHash;
+    private bool hasFeverParam;
+    private Canvas gaugeCanvas; // チャージゲージが入っているCanvas
 
     // 外部から「今攻撃中か」を読めるようにする(判定が出ている間+ダッシュ中)
     // フィーバー中は常に「攻撃中」扱い(接触ダメージを受けない)
@@ -151,6 +176,7 @@ public class PlayerCombat : MonoBehaviour
         cam = Camera.main;
         progression = cam.GetComponent<ScrollSpeedProgression>();
         SetupAnimator();
+        SetupChargeGauge();
 
         health = GetComponent<PlayerHealth>();
         if (health != null)
@@ -158,6 +184,75 @@ public class PlayerCombat : MonoBehaviour
             lastHp = health.MaxHp; // PlayerHealth.Awake より先に呼ばれても良いように
             health.OnHpChanged += HandleHpChanged;
         }
+    }
+
+    // 丸いチャージゲージの初期設定(押していない間は隠しておく)
+    private void SetupChargeGauge()
+    {
+        if (chargeGauge == null) return;
+        if (chargeGaugeRoot == null) chargeGaugeRoot = chargeGauge.gameObject;
+
+        chargeGauge.type = Image.Type.Filled;
+        chargeGauge.fillMethod = Image.FillMethod.Radial360;
+        chargeGauge.fillOrigin = (int)Image.Origin360.Top; // 真上から時計回りに
+        chargeGauge.fillClockwise = true;
+        chargeGauge.fillAmount = 0f;
+        chargeGaugeRoot.SetActive(false);
+        gaugeCanvas = chargeGaugeRoot.GetComponentInParent<Canvas>();
+        if (gaugeCanvas != null) gaugeCanvas = gaugeCanvas.rootCanvas;
+    }
+
+    // ゲージをプレイヤーの頭の上に付ける。カメラやプレイヤーが動いた後に合わせるため LateUpdate
+    private void LateUpdate()
+    {
+        if (chargeGauge == null || !chargeGaugeRoot.activeSelf) return;
+
+        Vector3 world = transform.position + (Vector3)chargeGaugeOffset;
+        var t = chargeGaugeRoot.transform;
+
+        if (gaugeCanvas == null || gaugeCanvas.renderMode == RenderMode.WorldSpace)
+        {
+            t.position = world; // ワールド空間のCanvas(または普通のオブジェクト)
+            return;
+        }
+
+        // 画面に固定するCanvas(Overlay / Camera)なら、ワールドの位置を画面の位置へ変換する
+        Vector2 screen = cam.WorldToScreenPoint(world);
+        if (gaugeCanvas.renderMode == RenderMode.ScreenSpaceOverlay)
+        {
+            t.position = screen;
+        }
+        else
+        {
+            var canvasRect = (RectTransform)gaugeCanvas.transform;
+            if (RectTransformUtility.ScreenPointToWorldPointInRectangle(canvasRect, screen, gaugeCanvas.worldCamera, out Vector3 pos))
+                t.position = pos;
+        }
+    }
+
+    // 押している間だけ、ためた割合(0〜1)を丸ゲージで見せる。色が変わるとため攻撃が出せる。満タンで自動発動
+    private void Update()
+    {
+        float held = isPressing ? Time.unscaledTime - pressStartTime : 0f;
+
+        // 最大までためたら、離さなくても自動でため攻撃
+        if (isPressing && !IsFever && maxChargeTime > chargeThreshold && held >= maxChargeTime && gameObject.activeInHierarchy)
+        {
+            isPressing = false;
+            DoAttack(chargeScaleMultiplier, "ため攻撃(自動)", true);
+            held = 0f;
+        }
+
+        if (chargeGauge == null) return;
+
+        bool show = isPressing && !IsFever && held >= chargeGaugeShowDelay;
+        if (chargeGaugeRoot.activeSelf != show) chargeGaugeRoot.SetActive(show);
+        if (!show) return;
+
+        // ゲージは「最大までの割合」。ため攻撃が出せる量(Charge Threshold)を越えたら色が変わる
+        float full = maxChargeTime > chargeThreshold ? maxChargeTime : chargeThreshold;
+        chargeGauge.fillAmount = Mathf.Clamp01(held / full);
+        chargeGauge.color = held >= chargeThreshold ? chargeReadyColor : chargingColor;
     }
 
     // Animatorと、攻撃のパラメーター(IsAttack)を探しておく
@@ -172,6 +267,7 @@ public class PlayerCombat : MonoBehaviour
 
         attackHash = Animator.StringToHash(attackParam);
         groundedHash = Animator.StringToHash(groundedParam);
+        feverHash = Animator.StringToHash(feverParam);
         foreach (var param in animator.parameters)
         {
             if (param.nameHash == attackHash)
@@ -182,6 +278,10 @@ public class PlayerCombat : MonoBehaviour
             else if (param.nameHash == groundedHash && param.type == AnimatorControllerParameterType.Bool)
             {
                 hasGroundedParam = true;
+            }
+            else if (param.nameHash == feverHash && param.type == AnimatorControllerParameterType.Bool)
+            {
+                hasFeverParam = true;
             }
         }
         if (!hasAttackParam)
@@ -197,6 +297,21 @@ public class PlayerCombat : MonoBehaviour
             animator.SetBool(attackHash, on);
         else if (attackParamType == AnimatorControllerParameterType.Trigger && on)
             animator.SetTrigger(attackHash);
+    }
+
+    // フィーバー中のアニメーション。IsFever パラメーターがあれば、ループする専用の攻撃アニメへ。
+    // なければ従来どおり、通常の攻撃アニメ(IsAttack)をONにし続ける
+    private void SetFeverAnim(bool on)
+    {
+        if (hasFeverParam)
+        {
+            animator.SetBool(feverHash, on);
+            SetAttackAnim(false);
+        }
+        else
+        {
+            SetAttackAnim(on);
+        }
     }
 
     // アニメーションの再生速度(フィーバー中だけ速くする)
@@ -228,6 +343,7 @@ public class PlayerCombat : MonoBehaviour
     {
         if (points <= 0) return;
 
+        Score += points;
         OnScoreChanged?.Invoke(points, Score);
 
         if (scoreScript != null) scoreScript.AddScore(points); // UIの表示
@@ -257,7 +373,7 @@ public class PlayerCombat : MonoBehaviour
         attackHitbox.SetActive(false);
         isAttacking = false;
         isPressing = false;
-        SetAttackAnim(false);
+        SetFeverAnim(true); // フィーバー中はずっと攻撃アニメーション(ループ)
 
         Debug.Log("突進!!");
         AudioManager.PlaySE(feverStartSe);
@@ -297,6 +413,7 @@ public class PlayerCombat : MonoBehaviour
         }
 
         IsFever = false;
+        SetFeverAnim(false); // 攻撃アニメーションを止めて、歩きに戻す
         SetAnimSpeed(1f);
         debugIsFever = false;
         feverForced = false;
@@ -360,12 +477,16 @@ public class PlayerCombat : MonoBehaviour
         if (ctx.started)
         {
             isPressing = true;
-            pressStartTime = Time.time;
+            pressStartTime = Time.unscaledTime; // スローやヒットストップ中も実時間で押した長さを測る
         }
         else if (ctx.canceled && isPressing)
         {
             isPressing = false;
-            float held = Time.time - pressStartTime;
+            // 死亡などで非アクティブになる途中のキャンセルでは攻撃しない(非アクティブではコルーチンを始められない)
+            // PlayerInput.OnDisable から呼ばれた時点では、自分の OnDisable 前なので isActiveAndEnabled はまだ true のまま
+            if (!gameObject.activeInHierarchy) return;
+
+            float held = Time.unscaledTime - pressStartTime;
 
             if (held >= chargeThreshold)
                 DoAttack(chargeScaleMultiplier, "ため攻撃", true);
@@ -380,6 +501,8 @@ public class PlayerCombat : MonoBehaviour
         AudioManager.PlaySE(isCharge ? chargeAttackSe : attackSe);
         StopAllCoroutines();
         StartCoroutine(AttackRoutine(scaleMultiplier, isCharge));
+        // 攻撃の初期化の後に通知する(受け取った側が NotifyHit すると前へ踏み込む)
+        OnAttackStarted?.Invoke(isCharge);
     }
 
     private IEnumerator AttackRoutine(float scaleMultiplier, bool isCharge)
@@ -389,6 +512,8 @@ public class PlayerCombat : MonoBehaviour
         currentAttackIsCharge = isCharge;
         SetAttackAnim(true); // 攻撃アニメーションを再生
 
+        // 前の攻撃の判定が残っていたら一度切る。入れ直すと重なっている相手にも新しい攻撃として当たる
+        attackHitbox.SetActive(false);
         attackHitbox.transform.localScale = hitboxBaseScale * scaleMultiplier;
         hitbox.SetAttackType(isCharge);
         attackHitbox.SetActive(true);
@@ -462,6 +587,7 @@ public class PlayerCombat : MonoBehaviour
     private void OnDisable()
     {
         touching.Clear();
+        isPressing = false; // 押したまま無効になったら、再び有効になったときに攻撃が出ないようにする
     }
 
     // 画面の左端から forwardLimit の位置(ワールドX)

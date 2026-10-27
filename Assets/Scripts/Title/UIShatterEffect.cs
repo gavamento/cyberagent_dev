@@ -94,11 +94,9 @@ public class UIShatterEffect : MonoBehaviour
         group.interactable = false;
 
         var clone = Instantiate(target.gameObject, rect);
+        // 破片ごと消えるので無効化だけにする。ButtonSe など Button を必須にする部品があると Destroy できない
         foreach (var selectable in clone.GetComponentsInChildren<Selectable>())
-        {
             selectable.enabled = false;
-            Destroy(selectable);
-        }
         var cloneRect = (RectTransform)clone.transform;
         cloneRect.anchorMin = cloneRect.anchorMax = cloneRect.pivot = new Vector2(0.5f, 0.5f);
         cloneRect.sizeDelta = size;

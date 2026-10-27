@@ -1,21 +1,25 @@
 //===============================================================================-
 //ゲームの結果をリザルトシーンへ渡す    秋田蓮音
 //===============================================================================-
+using UnityEngine;
 
 // シーンをまたいで値を残すため static にする
 public static class GameResult
 {
-    private static int lastScore;
-
     public static bool HasScore { get; private set; }
+    public static int LastScore { get; private set; }
 
-    public static int LastScore
+    public static void SetScore(int score)
     {
-        get => lastScore;
-        set
-        {
-            lastScore = ScoreScript.GetScore();
-            HasScore = true;
-        }
+        LastScore = score;
+        HasScore = true;
+    }
+
+    // Domain Reload を切っていても前回のプレイの値を持ち越さない
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    static void ResetStatic()
+    {
+        LastScore = 0;
+        HasScore = false;
     }
 }

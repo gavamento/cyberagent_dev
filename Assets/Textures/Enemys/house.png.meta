@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: db5a7a02666ff7942a29156ce6531faf
+guid: 109ca6e3894da1145a8c5e42f0e30442
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -7465155600972115287
-    second: woodBox_0
+      213: -1923994175756728024
+    second: house_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -98,17 +98,30 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: woodBox_0
+      name: house_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 270
-        height: 270
+        x: 58
+        y: 25
+        width: 1141
+        height: 1209
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -117,8 +130,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 9a21a037880766890800000000000000
-      internalID: -7465155600972115287
+      spriteID: 829891cad799c45e0800000000000000
+      internalID: -1923994175756728024
       vertices: []
       indices: 
       edges: []
@@ -137,7 +150,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      woodBox_0: -7465155600972115287
+      house_0: -1923994175756728024
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

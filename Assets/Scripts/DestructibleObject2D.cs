@@ -65,8 +65,10 @@ namespace CyberAgentDev.ObjectPrototypeLearning
         readonly List<Collider2D> contacts = new List<Collider2D>();
         readonly List<Collider2D> attackContacts = new List<Collider2D>();
         readonly HashSet<Transform> handledPlayers = new HashSet<Transform>();
-        readonly HashSet<HitAttackBox> receivedAttackBoxes = new HashSet<HitAttackBox>();
+        // 攻撃判定ごとに、最後に受け付けた攻撃の番号(HitAttackBox.AttackId)
+        readonly Dictionary<HitAttackBox, int> receivedAttackIds = new Dictionary<HitAttackBox, int>();
         Collider2D objectCollider;
+        IAttackAcceptRule[] acceptRules;
         float nextDamageTime;
         PlayerCombat lastAttacker; // 最後に攻撃したPlayer(スコアの加算先)
 
@@ -96,6 +98,16 @@ namespace CyberAgentDev.ObjectPrototypeLearning
             }
             if (chargeOnly && GetComponent<ChargeOnlyEnemyScript>() == null)
                 gameObject.AddComponent<ChargeOnlyEnemyScript>();
+            acceptRules = GetComponents<IAttackAcceptRule>();
+        }
+
+        // 有効な受け付け条件の部品。なければnull(どの攻撃でも壊れる)
+        IAttackAcceptRule ActiveRule()
+        {
+            if (acceptRules == null) return null;
+            foreach (var rule in acceptRules)
+                if (rule is Behaviour behaviour && behaviour != null && behaviour.enabled) return rule;
+            return null;
         }
 
         void Reset()
@@ -126,14 +138,12 @@ namespace CyberAgentDev.ObjectPrototypeLearning
             contacts.Clear();
             attackContacts.Clear();
             handledPlayers.Clear();
-            receivedAttackBoxes.Clear();
+            receivedAttackIds.Clear();
             nextDamageTime = 0f;
         }
 
         void FixedUpdate()
         {
-            // 攻撃判定の無効状態を確認したら、次の攻撃を受け付けられるよう記録を消す。
-            receivedAttackBoxes.RemoveWhere(attack => attack == null || !attack.isActiveAndEnabled);
             if (isBroken || !MatchesAnyTag(gameObject, objectTags)) return;
             bool canDamageNow = CanDamagePlayer && Time.time >= nextDamageTime;
             bool damageSent = false;
@@ -167,8 +177,9 @@ namespace CyberAgentDev.ObjectPrototypeLearning
                 return false;
             }
             // Playerが公開する攻撃中の状態を使い、ダッシュ中も接触ダメージを止める。
-            // ただしチャージ限定のもの(Iron)は、ため攻撃の最中でなければ、通常攻撃中でもダメージを受ける。
-            if (combat != null && combat.IsAttacking && !(ChargeOnly && !combat.IsChargeAttacking)) return false;
+            // 受け付け条件の部品があれば、攻撃中でも守られるかはその部品が決める(Ironはため攻撃中だけ守られる)。
+            var rule = ActiveRule();
+            if (combat != null && combat.IsAttacking && (rule == null || rule.BlocksContactDamage(combat))) return false;
             if (!canDamageNow) return false;
             if (contactDamage < 1 || contactDamageIntervalSeconds <= 0f
                 || float.IsNaN(contactDamageIntervalSeconds) || float.IsInfinity(contactDamageIntervalSeconds))
@@ -192,13 +203,14 @@ namespace CyberAgentDev.ObjectPrototypeLearning
             if (!isActiveAndEnabled || isBroken || !canBreakFromAttack
                 || !MatchesAnyTag(gameObject, objectTags) || attackBox == null
                 || !attackBox.isActiveAndEnabled || FindTaggedPlayer(attackBox.transform) == null) return;
-            var chargeRule = GetComponent<ChargeOnlyEnemyScript>();
-            bool? accepted = chargeRule != null && chargeRule.enabled
-                ? chargeRule.CanReceiveAttack(attackBox, isChargeAttack) : true;
+            var rule = ActiveRule();
+            bool? accepted = rule != null ? rule.CanReceiveAttack(attackBox, isChargeAttack) : true;
             // 情報不足は保留し、後から届く旧通知の確定値も受け付けられるようにする。
             if (!accepted.HasValue) return;
-            // Triggerと旧通知の両方が来ても、同じ攻撃を二重に数えない。
-            if (!receivedAttackBoxes.Add(attackBox) || !accepted.Value) return;
+            // Triggerと旧通知の両方が来ても、同じ攻撃を二重に数えない。連打した次の攻撃は番号が変わるので受け付ける。
+            if (receivedAttackIds.TryGetValue(attackBox, out int receivedId) && receivedId == attackBox.AttackId) return;
+            receivedAttackIds[attackBox] = attackBox.AttackId;
+            if (!accepted.Value) return;
             if (hitsToBreak < 1)
             {
                 Debug.LogError("攻撃回数は1以上にしてください。", this);
@@ -249,7 +261,10 @@ namespace CyberAgentDev.ObjectPrototypeLearning
         }
 
         // フィーバー中のPlayerに壊される(接触・終了時の一掃)。耐久回数や突進攻撃の条件は無視して一発で壊れる
-        public void FeverBreak(PlayerCombat player)
+        public void FeverBreak(PlayerCombat player) => BreakBy(player);
+
+        // 攻撃以外の方法(踏みつけ・見切りなど)でPlayerに倒されたとき。スコアはそのPlayerへ渡す
+        public void BreakBy(PlayerCombat player)
         {
             if (isBroken || !isActiveAndEnabled) return;
             lastAttacker = player;
@@ -301,12 +316,12 @@ namespace CyberAgentDev.ObjectPrototypeLearning
             return null;
         }
 
+        // FixedUpdate から毎回呼ばれるので、文字列を作る GameObject.tag ではなく CompareTag で比べる
         static bool MatchesAnyTag(GameObject target, string[] tags)
         {
             if (target == null || tags == null) return false;
-            string targetTag = target.tag;
             foreach (string tag in tags)
-                if (targetTag == tag) return true;
+                if (!string.IsNullOrEmpty(tag) && target.CompareTag(tag)) return true;
             return false;
         }
     }

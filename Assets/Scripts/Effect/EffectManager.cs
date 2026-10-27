@@ -3,13 +3,12 @@
 * タイトル　　エフェクトマネージャー
 * 作成者　　　久保木幹太
 * 作成日　　　10月21日
-* 更新日　　　10月22日
+* 更新日　　　10月27日
 */
 
 using UnityEngine;
 using UnityEngine.VFX;
 using System.Collections.Generic;
-using UnityEditor.Tilemaps;
 
 public static class EffectManager
 {
@@ -22,12 +21,24 @@ public static class EffectManager
     private const int PaletteSize = 256;
     // これよりα値が高けりゃパレットに使う
     private const float AlphaThreshold = 0.5f;
+    // これより暗い色はパレットに使わない
+    private const float MinBrightness = 0.2f;
 
     // 一度作ったパレットを使いまわすためのキャッシュ
     private static readonly Dictionary<Sprite, Texture2D> paletteCache = new Dictionary<Sprite, Texture2D>();
 
     /// <summary>
-    /// スプライトの不透明ピクセルだけを集めたパレット画像を取得(初回のみ)
+    /// 暗い色かどうか
+    /// </summary>
+    /// <param name="color">判別する色</param>
+    private static bool IsDark(Color color)
+    {
+        float brightness = color.r * 0.2f + color.g * 0.7f + color.b * 0.07f;
+        return brightness < MinBrightness;
+    }
+
+    /// <summary>
+    /// スプライトの不透明ピクセルと暗いピクセルを集めたパレット画像を取得(初回のみ)
     /// </summary>
     /// <param name="sprite">使用するスプライト</param>
     private static Texture2D GetPalette(Sprite sprite)
@@ -51,12 +62,31 @@ public static class EffectManager
         Rect r = sprite.textureRect;
         Color[] pixels = source.GetPixels((int)r.x, (int)r.y, (int)r.width, (int)r.height);
 
-        // 不透明なピクセルだけを集める
+        // 不透明なピクセルと暗いピクセルを集める
         List<Color> opaque = new List<Color>();
+        List<Color> darkOpaque = new List<Color>();
         foreach (Color c in pixels)
         {
             // α値が高いかどうか
-            if (c.a > AlphaThreshold) opaque.Add(c);
+            if (c.a > AlphaThreshold)
+            {
+                // 暗いかどうか
+                if (IsDark(c))
+                {
+                    darkOpaque.Add(c);
+                }
+                else
+                {
+                    // 暗く無かったら格納
+                    opaque.Add(c);
+                }
+            }
+        }
+
+        // 全部暗かったら仕方なく暗い色を使う
+        if (opaque.Count == 0)
+        {
+            opaque = darkOpaque;
         }
 
         // ランダムに抜き出してパレットを作る
