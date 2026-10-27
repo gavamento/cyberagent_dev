@@ -15,7 +15,6 @@ public class SliderScript : MonoBehaviour
     [SerializeField] private GameObject feverEffect;
 
     private Color normalColor;
-    private Color FeverColor;
 
     // 最初の1フレームより前に、必ず空(最小値)の状態にしておく
     void Awake()
