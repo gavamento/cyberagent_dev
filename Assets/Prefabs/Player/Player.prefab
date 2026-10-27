@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 1022050088530406196}
   - component: {fileID: 7972279784654754196}
   - component: {fileID: 6897665812063877766}
+  - component: {fileID: 2720721183056413300}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -182,6 +183,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: '::'
   chargeThreshold: 0.2
+  maxChargeTime: 0.2
+  chargeGauge: {fileID: 0}
+  chargeGaugeRoot: {fileID: 0}
+  chargeGaugeShowDelay: 0.08
+  chargeGaugeOffset: {x: 0, y: 1.8}
+  chargingColor: {r: 1, g: 1, b: 1, a: 1}
+  chargeReadyColor: {r: 1, g: 0.76, b: 0.1, a: 1}
   attackHitbox: {fileID: 7261109890905174302}
   hitboxActiveTime: 0.15
   chargeScaleMultiplier: 2
@@ -189,7 +197,7 @@ MonoBehaviour:
   forwardSpeed: 6
   backDistance: 3
   backSpeed: 6
-  idleBackSpeed: -7.4
+  idleBackSpeed: -7.5
   jumpForce: 14
   gravityScale: 4.5
   jumpBufferTime: 0.22
@@ -202,9 +210,10 @@ MonoBehaviour:
   feverForwardSpeed: 10
   feverSpeedMultiplier: 20
   feverSlider: {fileID: 0}
-  animator: {fileID: 0}
+  animator: {fileID: 2641958160831659058}
   attackParam: IsAttack
   groundedParam: IsGrounded
+  feverParam: IsFever
   feverAnimSpeed: 1.8
   jumpSe: {fileID: 0}
   attackSe: {fileID: 0}
@@ -295,6 +304,37 @@ MonoBehaviour:
   deathSe: {fileID: 0}
   IsDebugMode: 0
 --- !u!114 &6897665812063877766
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2589848515423940712}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8708647e1b97475084006b91fc61902f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerTrailEffects
+  additiveMaterial: {fileID: 2100000, guid: 1e1d3f3cfcce4347bdfc4913695b883b, type: 2}
+  blendSpeed: 12
+  glowColor: {r: 0.3, g: 0.8, b: 1, a: 1}
+  glowOffset: {x: -0.2, y: 0}
+  glowSize: {x: 5, y: 2}
+  glowAlpha: 0.35
+  dashGlowLengthScale: 10
+  dashGlowAlpha: 0.9
+  glowFlicker: 0.08
+  trailColor: {r: 0.3, g: 0.8, b: 1, a: 1}
+  trailOffset: {x: 0, y: 0}
+  trailWidth: 0.5
+  trailAlpha: 0.25
+  trailTime: 1
+  dashTrailWidth: 3
+  dashTrailAlpha: 0.85
+  dashTrailTime: 2
+  flowOnScreen: 1
+  flowSpeed: 16
+--- !u!114 &2720721183056413300
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -467,8 +507,8 @@ Transform:
   m_GameObject: {fileID: 7261109890905174302}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1.48, y: -0.13, z: 0}
-  m_LocalScale: {x: 2.88, y: 3, z: 0}
+  m_LocalPosition: {x: 1.48, y: -0.64, z: 0}
+  m_LocalScale: {x: 2.88, y: 4.0355997, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 3415057819177947078}
