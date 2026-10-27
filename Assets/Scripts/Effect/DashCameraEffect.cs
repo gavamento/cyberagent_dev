@@ -5,7 +5,7 @@ using UnityEngine;
 
 // Main Camera に付ける。ダッシュから少し遅れてカメラを前へ押し出し、背景を一気に流す
 // AutoScrollCamera の後、ParallaxBackground の前に位置を足すため実行順を指定している
-// 位置のずらし方は HitStopRunner と同じく、Update で前フレームの分を引き、LateUpdate で足す
+// ずれは CameraOffset で足すので、次のフレームの最初に自動で戻る
 [DefaultExecutionOrder(50)]
 public class DashCameraEffect : MonoBehaviour
 {
@@ -31,7 +31,6 @@ public class DashCameraEffect : MonoBehaviour
     [SerializeField, Min(0f)] private float backgroundBoost = 3f;
 
     private readonly Pulse surge = new Pulse();
-    private Vector3 appliedOffset;
 
     private void OnEnable()
     {
@@ -46,7 +45,6 @@ public class DashCameraEffect : MonoBehaviour
     private void OnDisable()
     {
         if (player != null) player.OnForwardDash -= HandleForwardDash;
-        RemoveOffset();
         surge.Reset();
     }
 
@@ -57,24 +55,10 @@ public class DashCameraEffect : MonoBehaviour
         if (background != null) background.Boost(backgroundBoost * power);
     }
 
-    private void Update()
-    {
-        // 前フレームの分を戻してから、AutoScrollCamera に位置を計算させる
-        RemoveOffset();
-    }
-
     private void LateUpdate()
     {
         surge.Tick(Time.deltaTime);
-
-        appliedOffset = new Vector3(surge.Value, 0f, 0f);
-        transform.position += appliedOffset;
-    }
-
-    private void RemoveOffset()
-    {
-        transform.position -= appliedOffset;
-        appliedOffset = Vector3.zero;
+        CameraOffset.Add(transform, new Vector3(surge.Value, 0f, 0f));
     }
 
     // 待ち → 急に peak まで上がる → なめらかに 0 へ戻る値
