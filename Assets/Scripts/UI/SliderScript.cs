@@ -11,6 +11,12 @@ public class SliderScript : MonoBehaviour
     [Tooltip("スライダーが目標の値へ追いつく速さ(1秒あたりの増加量)。大きいほど一気に増える。0以下で即反映")]
     [SerializeField] private float fillSpeed = 60f;
 
+    [Header("フィーバー演出")]
+    [SerializeField] private GameObject feverEffect;
+
+    private Color normalColor;
+    private Color FeverColor;
+
     // 最初の1フレームより前に、必ず空(最小値)の状態にしておく
     void Awake()
     {
@@ -33,6 +39,9 @@ public class SliderScript : MonoBehaviour
         slider.value = sliderMin;
         RemoveFillGap();
         RefreshFill();
+
+        normalColor = slider.fillRect.GetComponent<Image>().color;
+        feverEffect.SetActive(false);
     }
 
     // 標準のSliderは塗りの置き場(Fill Area)の端に余白があり、最大でも隙間ができる。余白を0にして枠いっぱいまで塗る
@@ -58,7 +67,21 @@ public class SliderScript : MonoBehaviour
         else
             slider.value = Mathf.MoveTowards(slider.value, sliderValue, fillSpeed * Time.deltaTime);
 
-        RefreshFill();
+        PlayerCombat combat = FindAnyObjectByType<PlayerCombat>();
+        if (combat != null && combat.IsFever)
+        {
+            float hue = Mathf.Repeat(Time.time * 0.5f, 1.0f);
+            slider.fillRect.GetComponent<Image>().color = Color.HSVToRGB(hue, 1.0f, 1.0f);
+            feverEffect.SetActive(true);
+        }
+        else 
+        {
+            slider.fillRect.GetComponent<Image>().color = normalColor;
+            feverEffect.SetActive(false);
+        }
+
+
+            RefreshFill();
     }
 
     // 最小値のときは、塗りの部分を消して真っ黒にする(Sliderは0でも塗りが少し残るため)
