@@ -174,34 +174,50 @@ public class PlayerCombat : MonoBehaviour
     public bool TryGetAttackXRange(out float minX, out float maxX)
     {
         minX = maxX = 0f;
+        if (!TryGetAttackBox(1f, out Vector2 center, out Vector2 size)) return false;
+
+        minX = center.x - size.x * 0.5f;
+        maxX = center.x + size.x * 0.5f;
+        return true;
+    }
+
+    // 今ボタンを離したときに出る攻撃の大きさの倍率(ため攻撃が出せる状態なら、ため攻撃の大きさ)
+    public float PreviewScaleMultiplier =>
+        isPressing && Time.unscaledTime - pressStartTime >= chargeThreshold ? chargeScaleMultiplier : 1f;
+
+    // ヒットボックスが届く範囲(ワールドの箱)。ヒットボックスが非アクティブでも求められる。
+    // scaleMultiplier はため攻撃などで大きくする倍率。Box/Circle/Capsuleに対応(回転は考えない)
+    public bool TryGetAttackBox(float scaleMultiplier, out Vector2 center, out Vector2 size)
+    {
+        center = size = Vector2.zero;
         if (hitboxCollider == null) return false;
 
         var t = attackHitbox.transform;
         Vector3 parentScale = t.parent != null ? t.parent.lossyScale : Vector3.one;
-        Vector3 scale = Vector3.Scale(parentScale, hitboxBaseScale); // ため攻撃で大きくなる前の、通常の大きさ
+        Vector3 scale = Vector3.Scale(parentScale, hitboxBaseScale) * scaleMultiplier; // 攻撃中に大きくなる前の大きさが基準
 
         Vector2 offset;
-        float half;
+        Vector2 local;
         if (hitboxCollider is BoxCollider2D box)
         {
             offset = box.offset;
-            half = box.size.x * Mathf.Abs(scale.x) * 0.5f;
+            local = box.size;
         }
         else if (hitboxCollider is CircleCollider2D circle)
         {
             offset = circle.offset;
-            half = circle.radius * Mathf.Max(Mathf.Abs(scale.x), Mathf.Abs(scale.y));
+            float d = circle.radius * 2f * Mathf.Max(Mathf.Abs(scale.x), Mathf.Abs(scale.y));
+            local = new Vector2(d / Mathf.Abs(scale.x), d / Mathf.Abs(scale.y));
         }
         else if (hitboxCollider is CapsuleCollider2D capsule)
         {
             offset = capsule.offset;
-            half = capsule.size.x * Mathf.Abs(scale.x) * 0.5f;
+            local = capsule.size;
         }
         else return false;
 
-        float center = t.position.x + offset.x * scale.x;
-        minX = center - half;
-        maxX = center + half;
+        center = (Vector2)t.position + Vector2.Scale(offset, scale);
+        size = new Vector2(local.x * Mathf.Abs(scale.x), local.y * Mathf.Abs(scale.y));
         return true;
     }
 
