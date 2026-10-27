@@ -152,6 +152,8 @@ public class PlayerCombat : MonoBehaviour
     private bool hasFeverParam;
     private Canvas gaugeCanvas; // チャージゲージが入っているCanvas
 
+    private ChargeEffect chargeEffect; // チャージエフェクト
+
     // 外部から「今攻撃中か」を読めるようにする(判定が出ている間+ダッシュ中)
     // フィーバー中は常に「攻撃中」扱い(接触ダメージを受けない)
     public bool IsAttacking => isAttacking || IsFever;
@@ -177,6 +179,8 @@ public class PlayerCombat : MonoBehaviour
         progression = cam.GetComponent<ScrollSpeedProgression>();
         SetupAnimator();
         SetupChargeGauge();
+        // 子オブジェクトに付けたチャージエフェクトを探す
+        chargeEffect = GetComponentInChildren<ChargeEffect>();
 
         health = GetComponent<PlayerHealth>();
         if (health != null)
@@ -241,6 +245,19 @@ public class PlayerCombat : MonoBehaviour
             isPressing = false;
             DoAttack(chargeScaleMultiplier, "ため攻撃(自動)", true);
             held = 0f;
+        }
+
+        // 溜め具合を星に反映する
+        if (chargeEffect != null && isPressing && !IsFever)
+        {
+            if (held >= chargeThreshold)
+            {
+                chargeEffect.Ready();
+            }
+            else
+            {
+                chargeEffect.SetCharge(held / chargeThreshold);
+            }
         }
 
         if (chargeGauge == null) return;
@@ -373,6 +390,8 @@ public class PlayerCombat : MonoBehaviour
         attackHitbox.SetActive(false);
         isAttacking = false;
         isPressing = false;
+        // 溜め中だったらエフェクトを止める
+        if (chargeEffect != null) chargeEffect.Cancel();
         SetFeverAnim(true); // フィーバー中はずっと攻撃アニメーション(ループ)
 
         Debug.Log("突進!!");
@@ -478,13 +497,20 @@ public class PlayerCombat : MonoBehaviour
         {
             isPressing = true;
             pressStartTime = Time.unscaledTime; // スローやヒットストップ中も実時間で押した長さを測る
+            // 推した瞬間に薄い星を出す
+            if (chargeEffect != null) chargeEffect.StartCharge();
         }
         else if (ctx.canceled && isPressing)
         {
             isPressing = false;
             // 死亡などで非アクティブになる途中のキャンセルでは攻撃しない(非アクティブではコルーチンを始められない)
             // PlayerInput.OnDisable から呼ばれた時点では、自分の OnDisable 前なので isActiveAndEnabled はまだ true のまま
-            if (!gameObject.activeInHierarchy) return;
+            if (!gameObject.activeInHierarchy)
+            {
+                // 攻撃しないからエフェクトだけ止める
+                if (chargeEffect != null) chargeEffect.Cancel();
+                return;
+            }
 
             float held = Time.unscaledTime - pressStartTime;
 
@@ -499,6 +525,25 @@ public class PlayerCombat : MonoBehaviour
     {
         Debug.Log(label);
         AudioManager.PlaySE(isCharge ? chargeAttackSe : attackSe);
+        
+        // チャージエフェクトの後処理
+        if (chargeEffect != null)
+        {
+            // チャージ攻撃なら解放エフェクトを出す
+            if (isCharge)
+            {
+                // ゲージがたまったフレーム丁度で攻撃するとReadyが送られないから予防線
+                chargeEffect.Ready();
+                // 力を解放
+                chargeEffect.Release();
+            }
+            else
+            {
+                // 通常攻撃ならチャージエフェクトを出さない(今後エフェクト追加するかも)
+                chargeEffect.Cancel();
+            }
+        }
+
         StopAllCoroutines();
         StartCoroutine(AttackRoutine(scaleMultiplier, isCharge));
         // 攻撃の初期化の後に通知する(受け取った側が NotifyHit すると前へ踏み込む)
@@ -588,6 +633,8 @@ public class PlayerCombat : MonoBehaviour
     {
         touching.Clear();
         isPressing = false; // 押したまま無効になったら、再び有効になったときに攻撃が出ないようにする
+        // 溜め中に無効になったらエフェクトも止める
+        if (chargeEffect != null) chargeEffect.Cancel();
     }
 
     // 画面の左端から forwardLimit の位置(ワールドX)
