@@ -82,7 +82,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 2
   m_MaskInteraction: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -186,11 +186,11 @@ MonoBehaviour:
   maxAngularSpeed: 360
   lifeTime: 3
   fadeDuration: 0.5
-  DirectionX: {x: 0, y: 5}
-  DirectionY: {x: 0, y: 10}
+  DirectionX: {x: 3, y: 5}
+  DirectionY: {x: 2, y: 8}
   flashDuration: 0.1
   flashColor: {r: 1, g: 1, b: 1, a: 1}
-  isShadow: 1
+  useShadow: 1
   shadowOffset: {x: 0.06, y: -0.06}
   shadowColor: {r: 0, g: 0, b: 0, a: 0.45}
   shadowScale: 1
