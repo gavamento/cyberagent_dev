@@ -58,11 +58,12 @@ public class PlayerHealth : MonoBehaviour
     }
 
     // 無敵中だけ、一定間隔でスプライトの表示/非表示を切り替える
+    // 点滅は実時間で数える。スロー中に消えている時間が長くなり、自分の位置が見えなくならないようにする
     private void UpdateBlink()
     {
         bool visible = true;
         if (IsInvincible)
-            visible = Mathf.FloorToInt(Time.time / blinkInterval) % 2 == 0;
+            visible = Mathf.FloorToInt(Time.unscaledTime / blinkInterval) % 2 == 0;
 
         foreach (var r in blinkRenderers)
             if (r != null) r.enabled = visible;
