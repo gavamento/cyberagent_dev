@@ -541,6 +541,7 @@ GameObject:
   - component: {fileID: 173823862}
   - component: {fileID: 173823861}
   - component: {fileID: 173823860}
+  - component: {fileID: 173823863}
   m_Layer: 5
   m_Name: StartButton
   m_TagString: Untagged
@@ -651,6 +652,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 173823858}
   m_CullTransparentMesh: 1
+--- !u!114 &173823863
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 173823858}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 71e6d0c764c40cc40a7dfef4bda4670a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ButtonSe
+  clickSe: {fileID: 8300000, guid: ce99d9c4c6a0bf341ba99585f9c82b92, type: 3}
+  volume: 1
 --- !u!1 &205726513
 GameObject:
   m_ObjectHideFlags: 0
@@ -4973,6 +4988,7 @@ GameObject:
   - component: {fileID: 1685109002}
   - component: {fileID: 1685109001}
   - component: {fileID: 1685109000}
+  - component: {fileID: 1685109003}
   m_Layer: 5
   m_Name: QuitButton
   m_TagString: Untagged
@@ -5083,6 +5099,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1685108998}
   m_CullTransparentMesh: 1
+--- !u!114 &1685109003
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1685108998}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 71e6d0c764c40cc40a7dfef4bda4670a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ButtonSe
+  clickSe: {fileID: 8300000, guid: ce99d9c4c6a0bf341ba99585f9c82b92, type: 3}
+  volume: 1
 --- !u!1 &1721009202
 GameObject:
   m_ObjectHideFlags: 0
@@ -6372,6 +6402,7 @@ GameObject:
   - component: {fileID: 2095313316}
   - component: {fileID: 2095313315}
   - component: {fileID: 2095313314}
+  - component: {fileID: 2095313317}
   m_Layer: 5
   m_Name: SettingsButton
   m_TagString: Untagged
@@ -6482,6 +6513,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2095313312}
   m_CullTransparentMesh: 1
+--- !u!114 &2095313317
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2095313312}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 71e6d0c764c40cc40a7dfef4bda4670a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ButtonSe
+  clickSe: {fileID: 8300000, guid: ce99d9c4c6a0bf341ba99585f9c82b92, type: 3}
+  volume: 1
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
