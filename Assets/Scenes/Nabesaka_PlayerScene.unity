@@ -171,6 +171,11 @@ MonoBehaviour:
   minStepUp: 1
   maxStepUp: 2
   maxHeight: 3
+  holeDensity: 0.03
+  minHoleWidth: 2
+  maxHoleWidth: 3
+  holeSafeBefore: 4
+  holeSafeAfter: 3
   enemySections:
   - length: 100
     density: 0.1
@@ -202,21 +207,26 @@ MonoBehaviour:
       maxPerSection: 0
       minSameGap: 0
       noRepeat: 0
-    - prefab: {fileID: 7614807785489074122, guid: 41fd980da91dcae4287060ae1891811f, type: 3}
-      weight: 1
-      offset: {x: 0, y: 0}
-      groupMin: 1
-      groupMax: 1
-      groupSpacing: 2
-      maxPerSection: 0
-      minSameGap: 0
-      noRepeat: 0
   densityIncrease: 0.45
   densityIncreaseInterval: 100
   maxEnemyDensity: 1
   minEnemyGap: 3
   stepSafeBefore: 4
   stepSafeAfter: 3
+  timeModifiers: []
+  timedEvents:
+  - label: 
+    startTime: 0
+    duration: 0
+    densityRate: 0
+    repeatInterval: 0
+  speedProgression: {fileID: 0}
+  flowDensityBonus: 0.5
+  flowGroupAdd: 1
+  debugElapsed: 0
+  debugDensityRate: 0
+  debugActiveEvents: 
+  debugEnemyRates: 
 --- !u!4 &42231019
 Transform:
   m_ObjectHideFlags: 0
@@ -569,6 +579,7 @@ MonoBehaviour:
   brakeFollowRate: 2.3
   brakeTargetRate: 0.78
   minSpeedRate: 0.5
+  feverRecoverTime: 4
   currentSpeed: 0
   flow: 0
   distance: 0

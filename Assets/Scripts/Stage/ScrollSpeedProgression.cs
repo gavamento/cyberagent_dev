@@ -51,6 +51,10 @@ public class ScrollSpeedProgression : MonoBehaviour
     [Tooltip("ペナルティで下がる速度の下限 (初速に対する倍率)")]
     [Range(0f, 1f)][SerializeField] float minSpeedRate = 0.5f;
 
+    [Header("フィーバー明け")]
+    [Tooltip("フィーバーが終わって初速に落ちた後、フィーバー前の速度に戻るまでの時間(秒)")]
+    [Min(0f)][SerializeField] float feverRecoverTime = 4f;
+
     [Header("確認用 (実行中の値)")]
     [SerializeField] float currentSpeed;
     [SerializeField] float flow;
@@ -60,6 +64,9 @@ public class ScrollSpeedProgression : MonoBehaviour
     float startX;
     float lastBreakTime = float.NegativeInfinity;
     float brakeTimer;
+    float preFeverSpeed;
+    float preFeverFlow;
+    float recoverTimer;
 
     public float StartSpeed => scroll.BaseSpeed;
     public float CurrentSpeed => currentSpeed;
@@ -68,6 +75,8 @@ public class ScrollSpeedProgression : MonoBehaviour
     // 初速で 0、上限で 1
     public float Speed01 => Mathf.InverseLerp(StartSpeed, speedCap, currentSpeed);
     public float Flow => flow;
+    // flow の割合。0 で無し、1 で上限
+    public float Flow01 => flowMax > 0f ? flow / flowMax : 0f;
 
     void Awake()
     {
@@ -90,6 +99,15 @@ public class ScrollSpeedProgression : MonoBehaviour
 
         float rate = brakeTimer > 0f ? brakeFollowRate : followRate;
         currentSpeed += (target - currentSpeed) * Mathf.Min(1f, dt * rate);
+
+        // フィーバー明け: 初速からフィーバー前の速度まで、一定の速さでだんだん上限を上げていく
+        if (recoverTimer > 0f)
+        {
+            recoverTimer = Mathf.Max(0f, recoverTimer - dt);
+            float p = feverRecoverTime > 0f ? 1f - recoverTimer / feverRecoverTime : 1f;
+            float limit = Mathf.Lerp(StartSpeed, Mathf.Max(StartSpeed, preFeverSpeed), p);
+            currentSpeed = Mathf.Min(currentSpeed, limit);
+        }
     }
 
     // 距離に応じた基礎速度
@@ -119,6 +137,24 @@ public class ScrollSpeedProgression : MonoBehaviour
     {
         flow = Mathf.Max(0f, flow - hurtFlowLoss);
         Slow(hurtSpeedRate);
+    }
+
+    // フィーバーが始まったとき。そのときの速度と flow を覚えておく
+    public void OnFeverStart()
+    {
+        preFeverSpeed = currentSpeed;
+        preFeverFlow = flow;
+    }
+
+    // フィーバーが終わったとき。速度を初速(一番遅い速度)にして、
+    // feverRecoverTime 秒かけてフィーバー前の速度まで戻していく
+    public void OnFeverEnd()
+    {
+        flow = preFeverFlow;          // フィーバー中に増えた flow は捨てて、前の勢いに戻す
+        lastBreakTime = Time.time;
+        brakeTimer = 0f;
+        currentSpeed = StartSpeed;
+        recoverTimer = feverRecoverTime;
     }
 
     void Slow(float rate)

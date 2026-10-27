@@ -13,7 +13,9 @@ public class PlayerCombat : MonoBehaviour
 {
     [Header("Charge")]
     [SerializeField] private float chargeThreshold = 0.26f; // これ以上押したらため攻撃
-    [Tooltip("この時間(秒)ためると、ボタンを離さなくても自動でため攻撃が出る。0で自動発動しない(Charge Thresholdより大きい値にする)")]
+    [Tooltip("ONなら、最大までためた時点で、ボタンを離さなくても自動でため攻撃が出る")]
+    [SerializeField] private bool autoChargeAttack = true;
+    [Tooltip("この時間(秒)ためると自動でため攻撃が出る。Charge Thresholdより短い値にしても、Charge Threshold+0.05秒になる")]
     [Min(0f)][SerializeField] private float maxChargeTime = 0.8f;
 
     [Header("チャージゲージ(丸)")]
@@ -151,6 +153,7 @@ public class PlayerCombat : MonoBehaviour
     private int feverHash;
     private bool hasFeverParam;
     private Canvas gaugeCanvas; // チャージゲージが入っているCanvas
+    private Collider2D hitboxCollider; // 攻撃ヒットボックスの当たり判定
 
     private ChargeEffect chargeEffect; // チャージエフェクト
 
@@ -168,12 +171,49 @@ public class PlayerCombat : MonoBehaviour
         attackLanded = true;
     }
 
+    // 通常攻撃のヒットボックスが届く横の範囲(ワールドX)。ヒットボックスが非アクティブでも求められる。
+    // 見切りの敵が「ヒットボックスの範囲に入ったか」を調べるために使う。Box/Circle/Capsuleに対応
+    public bool TryGetAttackXRange(out float minX, out float maxX)
+    {
+        minX = maxX = 0f;
+        if (hitboxCollider == null) return false;
+
+        var t = attackHitbox.transform;
+        Vector3 parentScale = t.parent != null ? t.parent.lossyScale : Vector3.one;
+        Vector3 scale = Vector3.Scale(parentScale, hitboxBaseScale); // ため攻撃で大きくなる前の、通常の大きさ
+
+        Vector2 offset;
+        float half;
+        if (hitboxCollider is BoxCollider2D box)
+        {
+            offset = box.offset;
+            half = box.size.x * Mathf.Abs(scale.x) * 0.5f;
+        }
+        else if (hitboxCollider is CircleCollider2D circle)
+        {
+            offset = circle.offset;
+            half = circle.radius * Mathf.Max(Mathf.Abs(scale.x), Mathf.Abs(scale.y));
+        }
+        else if (hitboxCollider is CapsuleCollider2D capsule)
+        {
+            offset = capsule.offset;
+            half = capsule.size.x * Mathf.Abs(scale.x) * 0.5f;
+        }
+        else return false;
+
+        float center = t.position.x + offset.x * scale.x;
+        minX = center - half;
+        maxX = center + half;
+        return true;
+    }
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         rb.gravityScale = gravityScale;
         hitbox = attackHitbox.GetComponent<HitAttackBox>();
         hitboxBaseScale = attackHitbox.transform.localScale;
+        hitboxCollider = attackHitbox.GetComponent<Collider2D>();
         attackHitbox.SetActive(false);
         cam = Camera.main;
         progression = cam.GetComponent<ScrollSpeedProgression>();
@@ -234,13 +274,16 @@ public class PlayerCombat : MonoBehaviour
         }
     }
 
+    // 自動でため攻撃が出るまでの時間(ため攻撃が出せる時間より必ず長くする)
+    private float AutoChargeTime => Mathf.Max(maxChargeTime, chargeThreshold + 0.05f);
+
     // 押している間だけ、ためた割合(0〜1)を丸ゲージで見せる。色が変わるとため攻撃が出せる。満タンで自動発動
     private void Update()
     {
         float held = isPressing ? Time.unscaledTime - pressStartTime : 0f;
 
         // 最大までためたら、離さなくても自動でため攻撃
-        if (isPressing && !IsFever && maxChargeTime > chargeThreshold && held >= maxChargeTime && gameObject.activeInHierarchy)
+        if (autoChargeAttack && isPressing && !IsFever && held >= AutoChargeTime && gameObject.activeInHierarchy)
         {
             isPressing = false;
             DoAttack(chargeScaleMultiplier, "ため攻撃(自動)", true);
@@ -267,7 +310,7 @@ public class PlayerCombat : MonoBehaviour
         if (!show) return;
 
         // ゲージは「最大までの割合」。ため攻撃が出せる量(Charge Threshold)を越えたら色が変わる
-        float full = maxChargeTime > chargeThreshold ? maxChargeTime : chargeThreshold;
+        float full = autoChargeAttack ? AutoChargeTime : chargeThreshold;
         chargeGauge.fillAmount = Mathf.Clamp01(held / full);
         chargeGauge.color = held >= chargeThreshold ? chargeReadyColor : chargingColor;
     }
@@ -379,6 +422,7 @@ public class PlayerCombat : MonoBehaviour
 
     private void StartFever()
     {
+        if (progression != null) progression.OnFeverStart(); // 戻り先の速度を覚えさせる
         IsFever = true;
         SetAnimSpeed(feverAnimSpeed);
         debugIsFever = true;
@@ -439,6 +483,9 @@ public class PlayerCombat : MonoBehaviour
         Fever = 0f;
         feverTimer = 0f;
         NotifyFever(false);
+
+        // フィーバーが終わったら、スクロール速度を初速にして、だんだんフィーバー前の速度へ戻す
+        if (progression != null) progression.OnFeverEnd();
     }
 
     private void FixedUpdate()
