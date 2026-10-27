@@ -633,6 +633,10 @@ public class PlayerCombat : MonoBehaviour
         hitbox.SetAttackType(isCharge);
         attackHitbox.SetActive(true);
 
+        // 少なくとも1回は物理の判定を通してから消す。剣士の見切りのように物理の外で「当たった」が決まっても、
+        // 重なっている他の相手にも攻撃が届くようにする(ヒットストップ中は物理が止まるので、明けるまで待つ)
+        yield return new WaitForFixedUpdate();
+
         // 判定時間が終わるか、敵に当たるまで待つ
         float t = 0f;
         // (タグが合うだけでは「当たった」にしない。相手が攻撃を受け付けたときだけ NotifyHit が呼ばれる)

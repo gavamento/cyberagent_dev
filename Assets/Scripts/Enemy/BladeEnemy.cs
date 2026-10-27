@@ -17,7 +17,7 @@ namespace CyberAgentDev.ObjectPrototypeLearning
         [SerializeField] float retreatSpeed = -1.7f;
 
         [Header("構える条件")]
-        [Tooltip("ONなら、Playerの攻撃ヒットボックスの範囲(横)に入った瞬間に構える。OFFなら、下の距離で構える")]
+        [Tooltip("ONなら、Playerの攻撃ヒットボックスの範囲(横)に入ったときも構える。速さから求めた構える距離(下の構え)のほうが遠ければ、そちらで先に構える")]
         [SerializeField] bool alertByHitboxRange = true;
         [Tooltip("ヒットボックスの範囲を、前後にこの距離だけ広げて見る")]
         [Min(0f)][SerializeField] float hitboxRangeMargin = 0f;
@@ -168,11 +168,7 @@ namespace CyberAgentDev.ObjectPrototypeLearning
                     break;
                 case State.Recover:
                     timer -= dt;
-                    if (timer <= 0f)
-                    {
-                        state = State.Retreat;
-                        mover.Speed = retreatSpeed;
-                    }
+                    if (timer <= 0f) EndRecover();
                     break;
             }
         }
@@ -197,6 +193,20 @@ namespace CyberAgentDev.ObjectPrototypeLearning
             state = next;
             timer = recoverTime;
             mover.Speed = next == State.Retreat ? retreatSpeed : 0f;
+        }
+
+        // 斬った後。斬撃が届かなかった・無敵で効かなかったときに、Playerがまだ前にいれば構え直す。通り過ぎていたら退く
+        void EndRecover()
+        {
+            if (PlayerAlive() && PlayerOffset() > 0f)
+            {
+                state = State.Walk;
+                mover.Speed = walkSpeed;
+                hasLastPlayerX = false; // 止まっていた間の移動を速さに入れない
+                return;
+            }
+            state = State.Retreat;
+            mover.Speed = retreatSpeed;
         }
 
         void Strike()
@@ -308,26 +318,31 @@ namespace CyberAgentDev.ObjectPrototypeLearning
         bool PlayerAlive() =>
             player != null && player.isActiveAndEnabled && (playerHealth == null || !playerHealth.IsDead);
 
-        // 構えるか。Playerの攻撃ヒットボックスの範囲に自分の体が入ったら構える。範囲が分からなければ従来の距離で
+        // 構えるか。速さから求めた距離に入るか、Playerの攻撃ヒットボックスの範囲に自分の体が入ったら構える。
+        // ヒットボックスの範囲だけで構えると、速いときは構えている間に追い越されて斬撃が届かない
         bool ShouldAlert()
         {
-            if (alertByHitboxRange && player.TryGetAttackXRange(out float minX, out float maxX))
-            {
-                float myMin, myMax;
-                if (bodyCollider != null)
-                {
-                    var b = bodyCollider.bounds;
-                    myMin = b.min.x;
-                    myMax = b.max.x;
-                }
-                else myMin = myMax = transform.position.x;
-
-                bool inRange = myMax >= minX - hitboxRangeMargin && myMin <= maxX + hitboxRangeMargin;
-                return inRange && PlayerOffset() > 0f; // 自分がPlayerより前(右)にいるときだけ
-            }
-
             float dx = PlayerOffset();
-            return dx > 0f && dx < AlertDistance();
+            if (dx <= 0f) return false; // 自分がPlayerより前(右)にいるときだけ
+            if (dx < AlertDistance()) return true;
+            return alertByHitboxRange && InPlayerHitboxRange();
+        }
+
+        // Playerの攻撃ヒットボックスの範囲(横)に自分の体が入っているか。範囲が分からなければfalse
+        bool InPlayerHitboxRange()
+        {
+            if (!player.TryGetAttackXRange(out float minX, out float maxX)) return false;
+
+            float myMin, myMax;
+            if (bodyCollider != null)
+            {
+                var b = bodyCollider.bounds;
+                myMin = b.min.x;
+                myMax = b.max.x;
+            }
+            else myMin = myMax = transform.position.x;
+
+            return myMax >= minX - hitboxRangeMargin && myMin <= maxX + hitboxRangeMargin;
         }
 
         // 構える距離。速く走っているPlayerほど手前から構え、斬る瞬間にちょうど届く距離へ入るようにする
