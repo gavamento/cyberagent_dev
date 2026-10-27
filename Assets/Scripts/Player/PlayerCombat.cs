@@ -463,6 +463,9 @@ public class PlayerCombat : MonoBehaviour
         Fever = 0f;
         feverTimer = 0f;
         NotifyFever(false);
+
+        // フィーバーが終わったら、スクロール速度を初速(一番遅い速度)に戻す
+        if (progression != null) progression.ResetToStartSpeed();
     }
 
     private void FixedUpdate()
