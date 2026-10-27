@@ -153,10 +153,10 @@ MonoBehaviour:
   groundTile: {fileID: 11400000, guid: aed3256a29269264c98d58dd14cf523a, type: 2}
   fillTile: {fileID: 11400000, guid: 618a154993c02cd4a89e8f279106fba7, type: 2}
   groundDepth: 8
-  endless: 1
-  seed: 0
+  endless: 0
+  seed: 1
   generateOnStart: 1
-  stageLength: 300
+  stageLength: 880
   goalPrefab: {fileID: 6401440977371367732, guid: 1015c3d3bc4c49947ba802a3fa714a31, type: 3}
   goalAreaLength: 12
   goalOffset: {x: 0, y: 0}
@@ -171,6 +171,11 @@ MonoBehaviour:
   minStepUp: 1
   maxStepUp: 2
   maxHeight: 3
+  holeDensity: 0.05
+  minHoleWidth: 2
+  maxHoleWidth: 3
+  holeSafeBefore: 4
+  holeSafeAfter: 3
   enemySections:
   - length: 100
     density: 0.1
@@ -211,7 +216,16 @@ MonoBehaviour:
       maxPerSection: 0
       minSameGap: 0
       noRepeat: 0
-  densityIncrease: 0.45
+    - prefab: {fileID: 956207134204326558, guid: e6b9fbee734b498cb15c0b6ec84bec56, type: 3}
+      weight: 1
+      offset: {x: 0, y: 0}
+      groupMin: 1
+      groupMax: 1
+      groupSpacing: 2
+      maxPerSection: 0
+      minSameGap: 0
+      noRepeat: 0
+  densityIncrease: 0.05
   densityIncreaseInterval: 100
   maxEnemyDensity: 1
   minEnemyGap: 3
@@ -220,10 +234,41 @@ MonoBehaviour:
   timeModifiers:
   - startTime: 0
     rampTime: 0
-    densityRate: 0
+    densityRate: 1
     enemies:
-    - prefab: {fileID: 0}
+    - prefab: {fileID: 956207134204326558, guid: 8dfb66c23d8bc9645bd3a9098848fa3a, type: 3}
+      weightRate: 2
+      groupAdd: 0
+    - prefab: {fileID: 6232053950234815764, guid: 4039cafb8d6f8b14b95957c0e6277a40, type: 3}
+      weightRate: 1
+      groupAdd: 0
+    - prefab: {fileID: 9135695340695633282, guid: a2cef22ead2f95b4b8777f33c6178cdb, type: 3}
       weightRate: 0
+      groupAdd: 0
+    - prefab: {fileID: 7614807785489074122, guid: 41fd980da91dcae4287060ae1891811f, type: 3}
+      weightRate: 0
+      groupAdd: 0
+    - prefab: {fileID: 956207134204326558, guid: e6b9fbee734b498cb15c0b6ec84bec56, type: 3}
+      weightRate: 1
+      groupAdd: 0
+  - startTime: 30
+    rampTime: 0
+    densityRate: 1
+    enemies:
+    - prefab: {fileID: 956207134204326558, guid: 8dfb66c23d8bc9645bd3a9098848fa3a, type: 3}
+      weightRate: 3
+      groupAdd: 0
+    - prefab: {fileID: 6232053950234815764, guid: 4039cafb8d6f8b14b95957c0e6277a40, type: 3}
+      weightRate: 1
+      groupAdd: 0
+    - prefab: {fileID: 7614807785489074122, guid: 41fd980da91dcae4287060ae1891811f, type: 3}
+      weightRate: 0
+      groupAdd: 0
+    - prefab: {fileID: 9135695340695633282, guid: a2cef22ead2f95b4b8777f33c6178cdb, type: 3}
+      weightRate: 0
+      groupAdd: 0
+    - prefab: {fileID: 956207134204326558, guid: e6b9fbee734b498cb15c0b6ec84bec56, type: 3}
+      weightRate: 2
       groupAdd: 0
   timedEvents:
   - label: 
@@ -574,7 +619,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ScrollSpeedProgression
   stepDistance: 100
   stepAdd: 0.25
-  baseMax: 10
+  baseMax: 7.5
   flowPerBreak: 1
   flowMax: 17
   accelRate: 1.057
@@ -590,6 +635,7 @@ MonoBehaviour:
   brakeFollowRate: 2.3
   brakeTargetRate: 0.78
   minSpeedRate: 0.5
+  feverRecoverTime: 4
   currentSpeed: 0
   flow: 0
   distance: 0
@@ -1081,6 +1127,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 1434127356923436350, guid: f1a86af43b64057418bed1896ccea79b, type: 3}
+      propertyPath: backSpeed
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 1434127356923436350, guid: f1a86af43b64057418bed1896ccea79b, type: 3}
       propertyPath: chargeGauge
       value: 
       objectReference: {fileID: 107541806}
@@ -1092,6 +1142,18 @@ PrefabInstance:
       propertyPath: scoreScript
       value: 
       objectReference: {fileID: 1842595942}
+    - target: {fileID: 1434127356923436350, guid: f1a86af43b64057418bed1896ccea79b, type: 3}
+      propertyPath: forwardLimit
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1434127356923436350, guid: f1a86af43b64057418bed1896ccea79b, type: 3}
+      propertyPath: forwardSpeed
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 1434127356923436350, guid: f1a86af43b64057418bed1896ccea79b, type: 3}
+      propertyPath: idleBackSpeed
+      value: -7.7
+      objectReference: {fileID: 0}
     - target: {fileID: 1434127356923436350, guid: f1a86af43b64057418bed1896ccea79b, type: 3}
       propertyPath: chargeGaugeRoot
       value: 
