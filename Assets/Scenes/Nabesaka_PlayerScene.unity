@@ -171,6 +171,11 @@ MonoBehaviour:
   minStepUp: 1
   maxStepUp: 2
   maxHeight: 3
+  holeDensity: 0.03
+  minHoleWidth: 2
+  maxHoleWidth: 3
+  holeSafeBefore: 4
+  holeSafeAfter: 3
   enemySections:
   - length: 100
     density: 0.1

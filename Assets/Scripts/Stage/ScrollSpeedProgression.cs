@@ -68,7 +68,7 @@ public class ScrollSpeedProgression : MonoBehaviour
     // 初速で 0、上限で 1
     public float Speed01 => Mathf.InverseLerp(StartSpeed, speedCap, currentSpeed);
     public float Flow => flow;
-    // flow 0 で 0、上限で 1
+    // flow の割合。0 で無し、1 で上限
     public float Flow01 => flowMax > 0f ? flow / flowMax : 0f;
 
     void Awake()
@@ -121,6 +121,18 @@ public class ScrollSpeedProgression : MonoBehaviour
     {
         flow = Mathf.Max(0f, flow - hurtFlowLoss);
         Slow(hurtSpeedRate);
+    }
+
+    // フィーバーが終わったとき。速度を初速(一番遅い速度)に戻す。
+    // 距離による基礎速度も初速から数え直すので、すぐ速くなり直すことはない
+    public void ResetToStartSpeed()
+    {
+        flow = 0f;
+        brakeTimer = 0f;
+        lastBreakTime = Time.time;
+        startX = transform.position.x;
+        distance = 0f;
+        currentSpeed = StartSpeed;
     }
 
     void Slow(float rate)
