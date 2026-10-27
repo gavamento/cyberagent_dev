@@ -87,7 +87,7 @@ public class BounceDebris : MonoBehaviour
             yield return null;
         }
 
-        Destroy(gameObject, lifeTime);
+        Destroy(gameObject);
     }
 
     // ”j•Ğ‚ÉF‚ğ•t‚¯‚é

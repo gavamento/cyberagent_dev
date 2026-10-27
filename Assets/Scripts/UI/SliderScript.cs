@@ -73,6 +73,5 @@ public class SliderScript : MonoBehaviour
     public void SetSliderValue(float value)
     {
         sliderValue = Mathf.Clamp(value, sliderMin, sliderMax);
-        Debug.Log($"SliderScript: 目標値 {sliderValue} (min {sliderMin} / max {sliderMax})", this); // 動作確認用。直ったら消してOK
     }
 }

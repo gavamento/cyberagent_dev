@@ -23,9 +23,6 @@ public class HitStopRunner : MonoBehaviour
     private float shakeStrength;
     private int startFrame;
 
-    private Transform shakenCamera;
-    private Vector3 appliedOffset;
-
     public static void Request(float duration, float timeScale, float shake)
     {
         if (duration <= 0f) return;
@@ -70,8 +67,6 @@ public class HitStopRunner : MonoBehaviour
 
     private void Update()
     {
-        // 前フレームの揺れを戻してから、カメラのスクリプトに位置を計算させる
-        RemoveOffset();
         if (!stopping) return;
 
         // 当たったフレームは途中から止まるので数えず、次のフレームから数える
@@ -88,16 +83,8 @@ public class HitStopRunner : MonoBehaviour
 
         // 終わりに向けて揺れを弱める
         float remain = Mathf.Clamp01(1f - elapsed / Mathf.Max(totalDuration, 0.0001f));
-        shakenCamera = cam.transform;
-        appliedOffset = (Vector3)(Random.insideUnitCircle * shakeStrength * remain);
-        shakenCamera.position += appliedOffset;
-    }
-
-    private void RemoveOffset()
-    {
-        if (shakenCamera != null) shakenCamera.position -= appliedOffset;
-        shakenCamera = null;
-        appliedOffset = Vector3.zero;
+        // 揺れは CameraOffset が次のフレームの最初に戻す
+        CameraOffset.Add(cam.transform, (Vector3)(Random.insideUnitCircle * shakeStrength * remain));
     }
 
     private void End()
@@ -109,7 +96,6 @@ public class HitStopRunner : MonoBehaviour
 
     private void OnDestroy()
     {
-        RemoveOffset();
         if (stopping) End();
     }
 }
