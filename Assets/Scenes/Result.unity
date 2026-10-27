@@ -179,7 +179,7 @@ MonoBehaviour:
   upwardBoost: 300
   gravity: 2500
   maxAngularSpeed: 540
-  titleSceneName: Title 1
+  titleSceneName: Title1
 --- !u!114 &888654478
 MonoBehaviour:
   m_ObjectHideFlags: 0
