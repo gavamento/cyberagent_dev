@@ -60,6 +60,17 @@ namespace CyberAgentDev.ObjectPrototypeLearning
         [SerializeField] Color ringColor = new Color(1f, 0.235f, 0.353f);
         [SerializeField] Color perfectRingColor = new Color(1f, 0.76f, 0.1f);
 
+        [Header("上に積んだもの(見切りに失敗したら崩れる)")]
+        [Tooltip("剣士の上に積んであるオブジェクト(子オブジェクト)。空なら何も起きない")]
+        [SerializeField] Transform stackedObject;
+        [Tooltip("崩れるときの飛び出す勢い。Xは左右にランダム、Yは上向き")]
+        [SerializeField] Vector2 collapseKick = new Vector2(2f, 4f);
+        [Tooltip("崩れるときの回転の速さ(度/秒)。±この範囲でランダム")]
+        [SerializeField] float collapseSpin = 360f;
+        [Min(0f)][SerializeField] float collapseGravity = 3f;
+        [Tooltip("崩れてから消えるまでの時間(秒)")]
+        [Min(0.1f)][SerializeField] float collapseLifetime = 1.2f;
+
         [Header("効果音")]
         [SerializeField] AudioClip alertSe;
         [SerializeField] AudioClip slashSe;
@@ -77,6 +88,7 @@ namespace CyberAgentDev.ObjectPrototypeLearning
         bool hasLastPlayerX;
         float timer;
         float airborneSince = -1f; // 構え中にPlayerが空中に出た時刻。地上なら-1
+        bool collapsed;            // 積んだものがもう崩れたか
 
         bool InPerfectWindow => state == State.Windup && timer <= perfectWindow;
 
@@ -185,7 +197,11 @@ namespace CyberAgentDev.ObjectPrototypeLearning
             }
 
             float dx = PlayerOffset();
-            if (dx < -strikeReachBehind || dx > strikeReachAhead) return;
+            if (dx < -strikeReachBehind || dx > strikeReachAhead)
+            {
+                CollapseStack(); // 届かない位置でも、見切れていないので崩れる
+                return;
+            }
 
             if (PlayerAirborne())
             {
@@ -195,6 +211,9 @@ namespace CyberAgentDev.ObjectPrototypeLearning
                 return;
             }
 
+            // 見切れなかった。積んだものが崩れる
+            CollapseStack();
+
             // 地上で受けたらダメージ。斬った剣士もそのまま消える
             if (playerHealth != null && !playerHealth.IsInvincible)
             {
@@ -202,6 +221,28 @@ namespace CyberAgentDev.ObjectPrototypeLearning
                 playerHealth.TakeDamage(strikeDamage);
                 destructible.Break();
             }
+        }
+
+        // 積んであるものを切り離して、回転しながら落とす。剣士が消えても残るよう、親から外す
+        void CollapseStack()
+        {
+            if (collapsed || stackedObject == null) return;
+            collapsed = true;
+
+            var t = stackedObject;
+            t.SetParent(null, true);
+            foreach (var col in t.GetComponentsInChildren<Collider2D>()) col.enabled = false; // Playerや他の判定に触れない
+
+            var body = t.GetComponent<Rigidbody2D>();
+            if (body == null) body = t.gameObject.AddComponent<Rigidbody2D>();
+            body.bodyType = RigidbodyType2D.Dynamic;
+            body.gravityScale = collapseGravity;
+            body.linearVelocity = new Vector2(Random.Range(-collapseKick.x, collapseKick.x),
+                                              Random.Range(collapseKick.y * 0.5f, collapseKick.y));
+            body.angularVelocity = Random.Range(-collapseSpin, collapseSpin);
+
+            Destroy(t.gameObject, collapseLifetime);
+            Debug.Log("積んだものが崩れた", this);
         }
 
         // 攻撃ボタンでの斬り返し。金色の輪の間だけ成功し、Playerは前へ踏み込む
