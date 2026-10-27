@@ -120,6 +120,9 @@ MonoBehaviour:
   - tagName: Iron
     points: 400
     fever: 10
+  outlineInHitbox: 1
+  outlineColor: {r: 1, g: 0.85, b: 0.2, a: 1}
+  outlineWidth: 0.5
   effectPrefab: {fileID: 7536003725225183824, guid: a6e26c138c59bc44a92819a9256519ae, type: 3}
   debricPrefab: {fileID: 8425339182896627664, guid: 920554e8e1ea5684da118f571ba2848f, type: 3}
   shockPrefab: {fileID: 4079247072460627102, guid: 6c1eb619c63d33249a39a956ceae695c, type: 3}

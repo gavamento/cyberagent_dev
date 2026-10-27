@@ -16,6 +16,12 @@ namespace CyberAgentDev.ObjectPrototypeLearning
         [SerializeField] float windupSpeed = -0.46f;
         [SerializeField] float retreatSpeed = -1.7f;
 
+        [Header("構える条件")]
+        [Tooltip("ONなら、Playerの攻撃ヒットボックスの範囲(横)に入った瞬間に構える。OFFなら、下の距離で構える")]
+        [SerializeField] bool alertByHitboxRange = true;
+        [Tooltip("ヒットボックスの範囲を、前後にこの距離だけ広げて見る")]
+        [Min(0f)][SerializeField] float hitboxRangeMargin = 0f;
+
         [Header("構え")]
         [Tooltip("斬る瞬間のPlayerとの距離の目安。構える距離はこれに、構えている間にPlayerが近づく分を足して決める")]
         [Min(0f)][SerializeField] float strikeDistance = 3.1f;
@@ -81,6 +87,7 @@ namespace CyberAgentDev.ObjectPrototypeLearning
 
         readonly RaycastHit2D[] groundHits = new RaycastHit2D[4];
         DestructibleObject2D destructible;
+        Collider2D bodyCollider;
         EnemyGroundMover mover;
         PlayerCombat player;
         PlayerHealth playerHealth;
@@ -98,6 +105,7 @@ namespace CyberAgentDev.ObjectPrototypeLearning
         void Awake()
         {
             destructible = GetComponent<DestructibleObject2D>();
+            bodyCollider = GetComponentInChildren<Collider2D>();
             mover = GetComponent<EnemyGroundMover>();
             if (ring != null)
             {
@@ -147,8 +155,7 @@ namespace CyberAgentDev.ObjectPrototypeLearning
                     if (PlayerAlive() && !player.IsFever)
                     {
                         TrackPlayerSpeed(dt);
-                        float dx = PlayerOffset();
-                        if (dx > 0f && dx < AlertDistance()) BeginWindup();
+                        if (ShouldAlert()) BeginWindup();
                     }
                     break;
                 case State.Windup:
@@ -300,6 +307,28 @@ namespace CyberAgentDev.ObjectPrototypeLearning
 
         bool PlayerAlive() =>
             player != null && player.isActiveAndEnabled && (playerHealth == null || !playerHealth.IsDead);
+
+        // 構えるか。Playerの攻撃ヒットボックスの範囲に自分の体が入ったら構える。範囲が分からなければ従来の距離で
+        bool ShouldAlert()
+        {
+            if (alertByHitboxRange && player.TryGetAttackXRange(out float minX, out float maxX))
+            {
+                float myMin, myMax;
+                if (bodyCollider != null)
+                {
+                    var b = bodyCollider.bounds;
+                    myMin = b.min.x;
+                    myMax = b.max.x;
+                }
+                else myMin = myMax = transform.position.x;
+
+                bool inRange = myMax >= minX - hitboxRangeMargin && myMin <= maxX + hitboxRangeMargin;
+                return inRange && PlayerOffset() > 0f; // 自分がPlayerより前(右)にいるときだけ
+            }
+
+            float dx = PlayerOffset();
+            return dx > 0f && dx < AlertDistance();
+        }
 
         // 構える距離。速く走っているPlayerほど手前から構え、斬る瞬間にちょうど届く距離へ入るようにする
         float AlertDistance() => strikeDistance + Mathf.Max(0f, playerSpeed - windupSpeed) * windupTime;
