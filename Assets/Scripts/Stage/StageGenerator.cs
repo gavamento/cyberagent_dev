@@ -117,7 +117,9 @@ public class StageGenerator : MonoBehaviour
 
     readonly List<int> stepColumns = new List<int>();
     readonly Dictionary<int, int> heights = new Dictionary<int, int>();
-    readonly List<(int x, GameObject obj)> spawned = new List<(int, GameObject)>();
+    // 出した敵。段差の手前で取り除いたときに出現の記録を戻せるよう、種類と区間も覚えておく
+    readonly List<(int x, GameObject obj, EnemyEntry entry, int section)> spawned = new List<(int, GameObject, EnemyEntry, int)>();
+    readonly HashSet<EnemyEntry> removedEntries = new HashSet<EnemyEntry>();
     // 群れの残りを出す列
     readonly Queue<int> pendingGroup = new Queue<int>();
     readonly Dictionary<EnemyEntry, int> sectionCounts = new Dictionary<EnemyEntry, int>();
@@ -328,7 +330,7 @@ public class StageGenerator : MonoBehaviour
     void Spawn(EnemyEntry entry, int x)
     {
         var obj = Instantiate(entry.prefab, SurfacePosition(x) + (Vector3)entry.offset, Quaternion.identity, container);
-        spawned.Add((x, obj));
+        spawned.Add((x, obj, entry, currentSection));
         lastEnemyColumn = x;
         lastEntry = entry;
         lastColumnOf[entry] = x;
@@ -383,15 +385,40 @@ public class StageGenerator : MonoBehaviour
         return fallback;
     }
 
-    // 段差が決まった時点で、その手前に置いた敵を取り除く
+    // 段差が決まった時点で、その手前に置いた敵を取り除く。出現の記録も取り除いた分だけ戻す
     void RemoveEnemiesBefore(int stepX)
     {
+        removedEntries.Clear();
         for (int i = spawned.Count - 1; i >= 0; i--)
         {
-            var (x, obj) = spawned[i];
-            if (x < stepX - stepSafeBefore) break;
-            if (obj != null) DestroyObj(obj);
+            var s = spawned[i];
+            if (s.x < stepX - stepSafeBefore) break;
+            if (s.obj != null) DestroyObj(s.obj);
             spawned.RemoveAt(i);
+            // 区間が変わった後なら数は数え直しになっているので触らない
+            if (s.section == currentSection && sectionCounts.TryGetValue(s.entry, out int n))
+                sectionCounts[s.entry] = Mathf.Max(0, n - 1);
+            removedEntries.Add(s.entry);
+        }
+        if (removedEntries.Count == 0) return;
+
+        // 残っている中で最後の敵を、直前に出た敵とする
+        if (spawned.Count > 0)
+        {
+            var last = spawned[spawned.Count - 1];
+            lastEnemyColumn = last.x;
+            lastEntry = last.entry;
+        }
+        else
+        {
+            lastEnemyColumn = int.MinValue / 2;
+            lastEntry = null;
+        }
+        foreach (var entry in removedEntries)
+        {
+            int index = spawned.FindLastIndex(s => s.entry == entry);
+            if (index >= 0) lastColumnOf[entry] = spawned[index].x;
+            else lastColumnOf.Remove(entry);
         }
     }
 
