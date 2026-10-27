@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 
 // ほぼ一本道のステージをタイルマップに自動生成する。段差は上りのみ、敵もランダム配置する。
+// 敵の出方は距離の区間に加えて、経過時間・ラッシュ/休憩・flow でも変えられる。
 public class StageGenerator : MonoBehaviour
 {
     [Header("タイルマップ")]
@@ -34,7 +35,7 @@ public class StageGenerator : MonoBehaviour
     [Tooltip("地面の上面からのゴールの位置ずれ")]
     [SerializeField] Vector2 goalOffset = Vector2.zero;
 
-    [Header("エンドレス")]
+    [Header("逐次生成")]
     [Tooltip("前方生成と後方削除の基準。未指定ならメインカメラ")]
     [SerializeField] Transform target;
     [Tooltip("基準より何マス先まで生成しておくか")]
@@ -74,6 +75,67 @@ public class StageGenerator : MonoBehaviour
     [Min(0)][SerializeField] int stepSafeBefore = 4;
     [Tooltip("段差の直後で敵を置かない距離 (マス)")]
     [Min(0)][SerializeField] int stepSafeAfter = 2;
+
+    [Header("時間による変化")]
+    [Tooltip("開始からの秒数で敵の出方を変える。開始秒の早い順に並べ、後の設定ほど優先する。敵はカメラの先で決まるので、画面に出るのは数秒遅れる")]
+    [SerializeField] TimeModifier[] timeModifiers;
+    [Tooltip("一定時間だけ密度を変える。倍率を上げればラッシュ、0 なら休憩")]
+    [SerializeField] TimedEvent[] timedEvents;
+
+    [Header("flow 連動")]
+    [Tooltip("flow を読むスクロール速度。未指定なら連動しない")]
+    [SerializeField] ScrollSpeedProgression speedProgression;
+    [Tooltip("flow 最大のとき、密度に (1 + この値) を掛ける")]
+    [Min(0f)][SerializeField] float flowDensityBonus = 0.5f;
+    [Tooltip("flow 最大のとき、群れの数に足す数")]
+    [Min(0)][SerializeField] int flowGroupAdd = 1;
+
+    [Header("確認用 (実行中の値)")]
+    [SerializeField] float debugElapsed;
+    [Tooltip("時間 × イベント × flow の密度倍率")]
+    [SerializeField] float debugDensityRate;
+    [SerializeField] string debugActiveEvents;
+    [Tooltip("敵ごとの出やすさの倍率と群れの加算")]
+    [SerializeField] string debugEnemyRates;
+
+    [System.Serializable]
+    class TimeModifier
+    {
+        [Tooltip("開始からの秒数")]
+        [Min(0f)] public float startTime;
+        [Tooltip("この秒数かけて前の値から変える。0 なら即切り替え")]
+        [Min(0f)] public float rampTime = 3f;
+        [Tooltip("全体の密度の倍率")]
+        [Min(0f)] public float densityRate = 1f;
+        [Tooltip("敵ごとの変化。ここに無い敵は前の値のまま")]
+        public EnemyModifier[] enemies;
+    }
+
+    [System.Serializable]
+    class EnemyModifier
+    {
+        [Tooltip("対象の敵。どの区間に出るものにも効く")]
+        public GameObject prefab;
+        [Tooltip("出やすさの倍率。0 なら出なくなる")]
+        [Min(0f)] public float weightRate = 1f;
+        [Tooltip("群れの数に足す数。負なら減る (最低 1)")]
+        public int groupAdd;
+    }
+
+    [System.Serializable]
+    class TimedEvent
+    {
+        [Tooltip("確認用の名前")]
+        public string label;
+        [Tooltip("開始からの秒数")]
+        [Min(0f)] public float startTime;
+        [Tooltip("続く秒数")]
+        [Min(0f)] public float duration = 5f;
+        [Tooltip("この間の密度の倍率。0 なら敵を出さない")]
+        [Min(0f)] public float densityRate = 2f;
+        [Tooltip("繰り返す間隔 (秒)。0 なら 1 回だけ")]
+        [Min(0f)] public float repeatInterval;
+    }
 
     [System.Serializable]
     class EnemyEntry
@@ -126,8 +188,18 @@ public class StageGenerator : MonoBehaviour
     readonly Dictionary<EnemyEntry, int> lastColumnOf = new Dictionary<EnemyEntry, int>();
     // チャンク番号 → そのチャンクのタイルマップ
     readonly Dictionary<int, Tilemap> chunks = new Dictionary<int, Tilemap>();
+    // 時間による変化を毎フレームまとめた値。prefab → (出やすさの倍率, 群れの加算)
+    readonly Dictionary<GameObject, (float weight, float group)> enemyRates = new Dictionary<GameObject, (float, float)>();
+    readonly System.Text.StringBuilder debugBuilder = new System.Text.StringBuilder();
 
     System.Random rng;
+    float startTime;
+    float timeDensityRate = 1f;
+    float eventDensityRate = 1f;
+    float flowDensityRate = 1f;
+    int flowGroup;
+    float nextDebugTime;
+    bool goalPlaced;
     Transform container;
     Transform chunkContainer;
     int nextColumn;
@@ -160,14 +232,19 @@ public class StageGenerator : MonoBehaviour
 
     void Update()
     {
-        if (!endless || tilemap == null || rng == null) return;
+        if (tilemap == null || rng == null) return;
+        UpdateRates();
         var t = GetTarget();
         if (t == null) return;
 
         int cx = tilemap.WorldToCell(t.position).x;
-        while (nextColumn <= cx + generateAhead) GenerateChunk();
+        while (!IsFinished && nextColumn <= cx + generateAhead) GenerateChunk();
         while (deletedUntil < cx - keepBehind) DeleteColumn(deletedUntil++);
     }
+
+    // ゴールありでゴールまで作り終えたか
+    bool IsFinished => !endless && nextColumn >= stageLength;
+    float Elapsed => Time.time - startTime;
 
     [ContextMenu("Generate")]
     public void Generate()
@@ -197,11 +274,13 @@ public class StageGenerator : MonoBehaviour
         lastColumnOf.Clear();
         nextColumn = 0;
         deletedUntil = 0;
+        goalPlaced = false;
+        startTime = Time.time;
+        UpdateRates();
 
-        int length = endless ? startFlatLength + generateAhead : stageLength;
-        while (nextColumn < length) GenerateChunk();
-
-        if (!endless) PlaceGoal();
+        // 先の分だけ作り、残りは Update で進みに合わせて作る。エディタでの確認用にはゴールまで全部作る
+        int length = !endless && !Application.isPlaying ? stageLength : startFlatLength + generateAhead;
+        while (!IsFinished && nextColumn < length) GenerateChunk();
     }
 
     [ContextMenu("Clear")]
@@ -228,6 +307,12 @@ public class StageGenerator : MonoBehaviour
         int end = (ChunkOf(nextColumn) + 1) * chunkWidth;
         if (!endless) end = Mathf.Min(end, stageLength);
         while (nextColumn < end) GenerateColumn(nextColumn);
+
+        if (IsFinished && !goalPlaced)
+        {
+            goalPlaced = true;
+            PlaceGoal();
+        }
     }
 
     int ChunkOf(int x) => Mathf.FloorToInt((float)x / chunkWidth);
@@ -307,12 +392,14 @@ public class StageGenerator : MonoBehaviour
             int steps = Mathf.Max(0, x - Mathf.Max(sectionStart, startFlatLength)) / densityIncreaseInterval;
             density = Mathf.Max(density, Mathf.Min(maxEnemyDensity, density + densityIncrease * steps));
         }
-        if (rng.NextDouble() >= density) return;
+        density *= timeDensityRate * eventDensityRate * flowDensityRate;
+        if (rng.NextDouble() >= Mathf.Min(1f, density)) return;
 
         var entry = PickEnemy(section.enemies, x);
         if (entry == null) return;
 
         int count = rng.Next(entry.groupMin, Mathf.Max(entry.groupMin, entry.groupMax) + 1);
+        count = Mathf.Max(1, count + GroupAdd(entry));
         if (entry.maxPerSection > 0) count = Mathf.Min(count, entry.maxPerSection - CountInSection(entry));
         pendingEntry = entry;
         for (int i = 1; i < count; i++) pendingGroup.Enqueue(x + i * entry.groupSpacing);
@@ -342,7 +429,7 @@ public class StageGenerator : MonoBehaviour
     // 列 x にこの敵を出してよいか
     bool CanSpawn(EnemyEntry e, int x)
     {
-        if (e == null || e.prefab == null || e.weight <= 0f) return false;
+        if (e == null || e.prefab == null || EffectiveWeight(e) <= 0f) return false;
         if (e.maxPerSection > 0 && CountInSection(e) >= e.maxPerSection) return false;
         if (e.minSameGap > 0 && lastColumnOf.TryGetValue(e, out int last) && x - last < e.minSameGap) return false;
         if (e.noRepeat && e == lastEntry) return false;
@@ -370,7 +457,7 @@ public class StageGenerator : MonoBehaviour
         foreach (var e in enemies)
         {
             if (!CanSpawn(e, x)) continue;
-            total += e.weight;
+            total += EffectiveWeight(e);
             fallback = e;
         }
         if (fallback == null) return null;
@@ -379,10 +466,99 @@ public class StageGenerator : MonoBehaviour
         foreach (var e in enemies)
         {
             if (!CanSpawn(e, x)) continue;
-            r -= e.weight;
+            r -= EffectiveWeight(e);
             if (r < 0) return e;
         }
         return fallback;
+    }
+
+    // 時間による倍率を掛けた出やすさ
+    float EffectiveWeight(EnemyEntry e) =>
+        enemyRates.TryGetValue(e.prefab, out var r) ? e.weight * r.weight : e.weight;
+
+    // 時間と flow で群れに足す数
+    int GroupAdd(EnemyEntry e) =>
+        (enemyRates.TryGetValue(e.prefab, out var r) ? Mathf.RoundToInt(r.group) : 0) + flowGroup;
+
+    // 時間・イベント・flow による倍率を今の時刻で計算し直す
+    void UpdateRates()
+    {
+        float t = Elapsed;
+
+        // 開始秒を過ぎた設定を順に、直前の値からその設定の値へ近づける
+        timeDensityRate = 1f;
+        enemyRates.Clear();
+        if (timeModifiers != null)
+        {
+            foreach (var m in timeModifiers)
+            {
+                if (m == null || t < m.startTime) continue;
+                float p = m.rampTime > 0f ? Mathf.Clamp01((t - m.startTime) / m.rampTime) : 1f;
+                timeDensityRate = Mathf.Lerp(timeDensityRate, m.densityRate, p);
+                if (m.enemies == null) continue;
+                foreach (var e in m.enemies)
+                {
+                    if (e == null || e.prefab == null) continue;
+                    var prev = enemyRates.TryGetValue(e.prefab, out var r) ? r : (weight: 1f, group: 0f);
+                    enemyRates[e.prefab] = (Mathf.Lerp(prev.weight, e.weightRate, p), Mathf.Lerp(prev.group, e.groupAdd, p));
+                }
+            }
+        }
+
+        eventDensityRate = 1f;
+        if (timedEvents != null)
+        {
+            foreach (var ev in timedEvents)
+                if (ev != null && IsActive(ev, t)) eventDensityRate *= ev.densityRate;
+        }
+        // 休憩中は出しかけの群れも出さない
+        if (eventDensityRate <= 0f) pendingGroup.Clear();
+
+        float flow01 = speedProgression != null ? speedProgression.Flow01 : 0f;
+        flowDensityRate = 1f + flowDensityBonus * flow01;
+        flowGroup = Mathf.RoundToInt(flowGroupAdd * flow01);
+
+        UpdateDebugView(t);
+    }
+
+    static bool IsActive(TimedEvent ev, float t)
+    {
+        if (t < ev.startTime) return false;
+        float local = t - ev.startTime;
+        if (ev.repeatInterval > 0f) local %= ev.repeatInterval;
+        return local < ev.duration;
+    }
+
+    // インスペクターの確認用表示。文字列を作るのは間引く
+    void UpdateDebugView(float t)
+    {
+        debugElapsed = t;
+        debugDensityRate = timeDensityRate * eventDensityRate * flowDensityRate;
+        if (Time.unscaledTime < nextDebugTime) return;
+        nextDebugTime = Time.unscaledTime + 0.25f;
+
+        debugBuilder.Clear();
+        if (timedEvents != null)
+        {
+            foreach (var ev in timedEvents)
+            {
+                if (ev == null || !IsActive(ev, t)) continue;
+                if (debugBuilder.Length > 0) debugBuilder.Append(", ");
+                debugBuilder.Append(string.IsNullOrEmpty(ev.label) ? "(無名)" : ev.label);
+            }
+        }
+        debugActiveEvents = debugBuilder.ToString();
+
+        debugBuilder.Clear();
+        foreach (var pair in enemyRates)
+        {
+            if (debugBuilder.Length > 0) debugBuilder.Append(", ");
+            debugBuilder.Append(pair.Key.name).Append(" x").Append(pair.Value.weight.ToString("0.##"));
+            int add = Mathf.RoundToInt(pair.Value.group);
+            if (add != 0) debugBuilder.Append(add > 0 ? " +" : " ").Append(add);
+        }
+        if (flowGroup != 0) debugBuilder.Append(debugBuilder.Length > 0 ? ", " : "").Append("flow 群れ +").Append(flowGroup);
+        debugEnemyRates = debugBuilder.ToString();
     }
 
     // 段差が決まった時点で、その手前に置いた敵を取り除く。出現の記録も取り除いた分だけ戻す

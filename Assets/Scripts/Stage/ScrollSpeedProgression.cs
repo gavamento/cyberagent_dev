@@ -68,6 +68,8 @@ public class ScrollSpeedProgression : MonoBehaviour
     // 初速で 0、上限で 1
     public float Speed01 => Mathf.InverseLerp(StartSpeed, speedCap, currentSpeed);
     public float Flow => flow;
+    // flow 0 で 0、上限で 1
+    public float Flow01 => flowMax > 0f ? flow / flowMax : 0f;
 
     void Awake()
     {

@@ -217,6 +217,27 @@ MonoBehaviour:
   minEnemyGap: 3
   stepSafeBefore: 4
   stepSafeAfter: 3
+  timeModifiers:
+  - startTime: 0
+    rampTime: 0
+    densityRate: 0
+    enemies:
+    - prefab: {fileID: 0}
+      weightRate: 0
+      groupAdd: 0
+  timedEvents:
+  - label: 
+    startTime: 0
+    duration: 0
+    densityRate: 0
+    repeatInterval: 0
+  speedProgression: {fileID: 0}
+  flowDensityBonus: 0.5
+  flowGroupAdd: 1
+  debugElapsed: 0
+  debugDensityRate: 0
+  debugActiveEvents: 
+  debugEnemyRates: 
 --- !u!4 &42231019
 Transform:
   m_ObjectHideFlags: 0
