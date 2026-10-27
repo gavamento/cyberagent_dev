@@ -1,10 +1,16 @@
 fileFormatVersion: 2
-guid: af2206a07fd61844c9230aa564fb965c
+guid: 26de45f48dfa4754bb82d8b6d023e2ed
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -111229531100064493
-    second: ironBox_0
+      213: 3947505780097106565
+    second: chargeBlock_0
+  - first:
+      213: 5891637255138289103
+    second: chargeBlock_1
+  - first:
+      213: 4274441401202267279
+    second: chargeBlock_2
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -98,17 +104,30 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: ironBox_0
+      name: chargeBlock_0
       rect:
         serializedVersion: 2
         x: 0
-        y: 0
-        width: 415
-        height: 415
+        y: 47
+        width: 1126
+        height: 1199
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -117,8 +136,52 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 3155f3ea455d47ef0800000000000000
-      internalID: -111229531100064493
+      spriteID: 5824d7b979b58c630800000000000000
+      internalID: 3947505780097106565
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: chargeBlock_1
+      rect:
+        serializedVersion: 2
+        x: 1076
+        y: 1221
+        width: 8
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fc5a9f94edc43c150800000000000000
+      internalID: 5891637255138289103
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: chargeBlock_2
+      rect:
+        serializedVersion: 2
+        x: 874
+        y: 53
+        width: 40
+        height: 38
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f8452e3becdd15b30800000000000000
+      internalID: 4274441401202267279
       vertices: []
       indices: 
       edges: []
@@ -137,7 +200,9 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      ironBox_0: -111229531100064493
+      chargeBlock_0: 3947505780097106565
+      chargeBlock_1: 5891637255138289103
+      chargeBlock_2: 4274441401202267279
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

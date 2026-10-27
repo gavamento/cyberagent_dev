@@ -26,8 +26,8 @@ Transform:
   m_GameObject: {fileID: 2424099791058223239}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.7, z: 0}
-  m_LocalScale: {x: 0.4, y: 0.4, z: 0.5}
+  m_LocalPosition: {x: -0.08, y: 0.75, z: 0}
+  m_LocalScale: {x: 0.172275, y: 0.172275, z: 0.21534374}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 2972724993194670971}
@@ -81,7 +81,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 1
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -111229531100064493, guid: af2206a07fd61844c9230aa564fb965c, type: 3}
+  m_Sprite: {fileID: 3947505780097106565, guid: 26de45f48dfa4754bb82d8b6d023e2ed, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -215,6 +215,7 @@ MonoBehaviour:
   debricPrefab: {fileID: 8425339182896627664, guid: 920554e8e1ea5684da118f571ba2848f, type: 3}
   shockPrefab: {fileID: 4079247072460627102, guid: 6c1eb619c63d33249a39a956ceae695c, type: 3}
   positionOffset: {x: 0, y: 0.5, z: 0}
+  breakSe: {fileID: 0}
 --- !u!114 &2448734321461282982
 MonoBehaviour:
   m_ObjectHideFlags: 0
