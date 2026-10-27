@@ -184,9 +184,13 @@ MonoBehaviour:
   maxSpeed: 30
   minAngularSpeed: -360
   maxAngularSpeed: 360
-  lifeTime: 2
+  lifeTime: 3
   fadeDuration: 0.5
   DirectionX: {x: 0, y: 5}
   DirectionY: {x: 0, y: 10}
   flashDuration: 0.1
   flashColor: {r: 1, g: 1, b: 1, a: 1}
+  isShadow: 1
+  shadowOffset: {x: 0.06, y: -0.06}
+  shadowColor: {r: 0, g: 0, b: 0, a: 0.45}
+  shadowScale: 1
