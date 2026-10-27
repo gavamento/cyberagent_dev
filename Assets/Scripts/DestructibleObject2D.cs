@@ -316,12 +316,12 @@ namespace CyberAgentDev.ObjectPrototypeLearning
             return null;
         }
 
+        // FixedUpdate から毎回呼ばれるので、文字列を作る GameObject.tag ではなく CompareTag で比べる
         static bool MatchesAnyTag(GameObject target, string[] tags)
         {
             if (target == null || tags == null) return false;
-            string targetTag = target.tag;
             foreach (string tag in tags)
-                if (targetTag == tag) return true;
+                if (!string.IsNullOrEmpty(tag) && target.CompareTag(tag)) return true;
             return false;
         }
     }

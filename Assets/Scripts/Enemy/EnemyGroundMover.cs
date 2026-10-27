@@ -14,13 +14,17 @@ namespace CyberAgentDev.ObjectPrototypeLearning
         [Min(0f)][SerializeField] float gravity = 30f;
         [Tooltip("地面を探す距離(ユニット)")]
         [Min(0.1f)][SerializeField] float groundCheckDistance = 20f;
+        [Tooltip("画面の右端からこの距離(ユニット)まで近づいたら動き出す。それまでは生成した位置で待つ")]
+        [Min(0f)][SerializeField] float activateMargin = 1f;
 
         // これより高い段差は壁として扱う
         const float MaxStepUp = 0.05f;
 
         readonly RaycastHit2D[] hits = new RaycastHit2D[8];
         Rigidbody2D body;
+        Camera cam;
         float fallVelocity;
+        bool activated;
 
         // 状態に合わせて敵のスクリプトから変える
         public float Speed
@@ -34,10 +38,18 @@ namespace CyberAgentDev.ObjectPrototypeLearning
             body = GetComponent<Rigidbody2D>();
             body.bodyType = RigidbodyType2D.Kinematic;
             body.interpolation = RigidbodyInterpolation2D.Interpolate;
+            cam = Camera.main;
         }
 
         void FixedUpdate()
         {
+            // 画面に入る前に歩き出すと、生成時の配置(段差まわりの安全地帯など)が崩れるので待つ
+            if (!activated)
+            {
+                if (!IsNearScreen()) return;
+                activated = true;
+            }
+
             float dt = Time.fixedDeltaTime;
             Vector2 position = body.position;
             // 進む先の地面が足元より高ければ壁なので、よじ登らずに止まる
@@ -58,6 +70,15 @@ namespace CyberAgentDev.ObjectPrototypeLearning
                 if (TryFindGround(body.position, out groundY) && position.y < groundY) position.y = groundY;
             }
             body.MovePosition(position);
+        }
+
+        // 画面の右端から activateMargin 以内まで来たか。カメラがなければ待たずに動く
+        bool IsNearScreen()
+        {
+            if (cam == null) cam = Camera.main;
+            if (cam == null) return true;
+            float right = cam.transform.position.x + cam.orthographicSize * cam.aspect;
+            return body.position.x <= right + activateMargin;
         }
 
         // 足元の、Triggerでも動く物体でもない当たり判定(地面のタイルマップなど)の上面
