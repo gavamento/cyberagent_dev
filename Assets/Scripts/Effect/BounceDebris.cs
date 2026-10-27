@@ -30,6 +30,12 @@ public class BounceDebris : MonoBehaviour
     [SerializeField] private Vector2 DirectionX = new Vector2(0.0f, 5.0f);
     [SerializeField] private Vector2 DirectionY = new Vector2(0.0f, 10.0f);
 
+    [Header("出現したときのフラッシュ")]
+    [SerializeField] private float flashDuration = 0.15f;
+    [SerializeField] private Color flashColor = Color.white;
+
+    private Color targetColor = Color.white;
+
     private Rigidbody2D rb;
     private SpriteRenderer spriteRenderer;
 
@@ -57,6 +63,8 @@ public class BounceDebris : MonoBehaviour
         // ランダム回転
         rb.angularVelocity = Random.Range(minAngularSpeed, maxAngularSpeed);
 
+        // フラッシュ
+        StartCoroutine(Flash());
         // フェードアウト消滅
         StartCoroutine(FadeOut());
     }
@@ -90,12 +98,28 @@ public class BounceDebris : MonoBehaviour
         Destroy(gameObject, lifeTime);
     }
 
-    // 破片に色を付ける
+    // 破片に色を付ける(最初は白)
     public void SetColor(Color color)
     {
+        targetColor = color;
+
         if (spriteRenderer != null)
         {
-            spriteRenderer.color = color;
+            spriteRenderer.color = flashColor;
         }
+    }
+
+    // 白から元の色に戻す
+    private IEnumerator Flash()
+    {
+        float elapsedTime = 0.0f;
+        while (elapsedTime < flashDuration)
+        {
+            elapsedTime += Time.deltaTime;
+            float t = Mathf.Clamp01(elapsedTime / flashDuration);
+            spriteRenderer.color = Color.Lerp(flashColor, targetColor, t);
+            yield return null;
+        }
+        spriteRenderer.color = targetColor;
     }
 }
