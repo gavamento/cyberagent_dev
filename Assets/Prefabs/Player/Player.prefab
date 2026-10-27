@@ -183,6 +183,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: '::'
   chargeThreshold: 0.2
+  autoChargeAttack: 1
   maxChargeTime: 0.25
   chargeGauge: {fileID: 0}
   chargeGaugeRoot: {fileID: 0}
@@ -193,10 +194,10 @@ MonoBehaviour:
   attackHitbox: {fileID: 7261109890905174302}
   hitboxActiveTime: 0.15
   chargeScaleMultiplier: 2
-  forwardDistance: 3
-  forwardSpeed: 6
+  forwardDistance: 5
+  forwardSpeed: 7
   backDistance: 1
-  backSpeed: 6
+  backSpeed: 4
   idleBackSpeed: -7.5
   jumpForce: 14
   gravityScale: 4.5
