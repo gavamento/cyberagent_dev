@@ -408,7 +408,7 @@ MonoBehaviour:
   hardButton: {fileID: 2081925136}
   endlessButton: {fileID: 211487304}
   backButton: {fileID: 1068757155}
-  easyScene: Game
+  easyScene: Game_Easy
   normalScene: Game_Normal
   hardScene: Game_Hard
   endlessScene: Game_Endless

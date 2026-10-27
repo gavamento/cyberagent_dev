@@ -184,9 +184,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc9dc30de67d3404f8f8ab345d5ded25, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CyberAgentDev.ObjectPrototypeLearning.EnemyGroundMover
-  speed: -1
+  speed: -0.5
   gravity: 30
   groundCheckDistance: 20
+  activateMargin: 1
 --- !u!114 &3720737610993830244
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -285,7 +286,7 @@ SpriteRenderer:
   m_SortingOrder: 1
   m_MaskInteraction: 0
   m_Sprite: {fileID: -7681622323168793486, guid: efc53577e63e24c429ca852b47985a3b, type: 3}
-  m_Color: {r: 0.45, g: 0.85, b: 0.45, a: 1}
+  m_Color: {r: 1, g: 0.95945746, b: 0, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
