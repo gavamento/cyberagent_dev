@@ -220,8 +220,8 @@ MonoBehaviour:
   feverParam: IsFever
   feverAnimSpeed: 1.8
   jumpSe: {fileID: 8300000, guid: 3bc7d401e0ed69849a6bdc4dd40341e4, type: 3}
-  attackSe: {fileID: 0}
-  chargeAttackSe: {fileID: 0}
+  attackSe: {fileID: 8300000, guid: fc890eb9e01db3c429cc054c2d3580c6, type: 3}
+  chargeAttackSe: {fileID: 8300000, guid: fc890eb9e01db3c429cc054c2d3580c6, type: 3}
   feverStartSe: {fileID: 8300000, guid: 368e9591aeac75a4aae52ca5ce653385, type: 3}
   debugIsFever: 0
 --- !u!50 &267017505837109207
