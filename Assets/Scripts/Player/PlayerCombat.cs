@@ -153,6 +153,11 @@ public class PlayerCombat : MonoBehaviour
     // 引数: (今回の加算量, 合計スコア)
     public event Action<int, int> OnScoreChanged;
 
+    // 拾ったコインの枚数。リザルトのボーナスに使う
+    public int Coins { get; private set; }
+    // 引数: 合計枚数
+    public event Action<int> OnCoinsChanged;
+
     // 攻撃が当たって前へダッシュし始めたとき。引数: ため攻撃か(演出用)
     public event Action<bool> OnForwardDash;
 
@@ -475,6 +480,13 @@ public class PlayerCombat : MonoBehaviour
         OnScoreChanged?.Invoke(points, Score);
 
         if (scoreScript != null) scoreScript.AddScore(points); // UIの表示
+    }
+
+    // コインを1枚数える(Coin から呼ばれる)
+    public void AddCoin()
+    {
+        Coins++;
+        OnCoinsChanged?.Invoke(Coins);
     }
 
     // 今の攻撃のヒットボックスの中で、相手がどこに当たったかを判定する。左寄り(頭を振り下ろしたあたり)ほど良い

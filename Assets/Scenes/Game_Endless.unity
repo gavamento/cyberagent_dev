@@ -348,7 +348,7 @@ MonoBehaviour:
   minEnemyGap: 10
   stepSafeBefore: 3
   stepSafeAfter: 4
-  coinPrefab: {fileID: 0}
+  coinPrefab: {fileID: 5470343437391844390, guid: f0b1e9d871d8c6842be944aeed56013e, type: 3}
   coinDensity: 0.06
   minCoinGap: 3
   coinAirRate: 0.4
@@ -464,6 +464,58 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!1 &209252016
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 209252018}
+  - component: {fileID: 209252017}
+  m_Layer: 0
+  m_Name: CoinCounter
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &209252017
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 209252016}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 961115ff045f4024f99d8be4d7c28e30, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CoinCounterUI
+  playerCombat: {fileID: 0}
+  prefix: 'COIN x '
+  font: {fileID: 0}
+  fontSize: 70
+  textColor: {r: 1, g: 0.85, b: 0.2, a: 1}
+  margin: {x: 40, y: 20}
+  popDuration: 0.2
+  popScale: 1.4
+--- !u!4 &209252018
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 209252016}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &347703692
 GameObject:
   m_ObjectHideFlags: 0
@@ -1995,3 +2047,4 @@ SceneRoots:
   - {fileID: 2042931614}
   - {fileID: 905394115}
   - {fileID: 1232705441}
+  - {fileID: 209252018}
