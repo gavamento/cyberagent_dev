@@ -230,7 +230,7 @@ namespace CyberAgentDev.ObjectPrototypeLearning
             {
                 lastAttacker.NotifyHit(); // 攻撃が通ったので、Playerは「当たった」扱い(前へ出る)
                 // ヒットボックスのどこに当たったか。何回か叩いて壊すものは、壊した最後の一撃の判定になる
-                lastJudge = lastAttacker.JudgeHit(JudgePoint);
+                lastJudge = lastAttacker.JudgeHit(this);
             }
             // 壊す前にヒットストップを出す(Destroy後は接触通知が届かないため)
             var hitStop = GetComponent<HitStop>();

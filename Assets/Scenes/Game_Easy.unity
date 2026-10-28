@@ -1146,18 +1146,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
-    - target: {fileID: 3202173663703978069, guid: f1a86af43b64057418bed1896ccea79b, type: 3}
-      propertyPath: m_LocalScale.x
-      value: 2.923828
-      objectReference: {fileID: 0}
-    - target: {fileID: 3202173663703978069, guid: f1a86af43b64057418bed1896ccea79b, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 1.764
-      objectReference: {fileID: 0}
-    - target: {fileID: 3202173663703978069, guid: f1a86af43b64057418bed1896ccea79b, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -0.346
-      objectReference: {fileID: 0}
     - target: {fileID: 3415057819177947078, guid: f1a86af43b64057418bed1896ccea79b, type: 3}
       propertyPath: m_LocalPosition.x
       value: 5.04
