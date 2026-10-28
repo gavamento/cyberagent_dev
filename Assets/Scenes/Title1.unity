@@ -411,7 +411,7 @@ MonoBehaviour:
   easyScene: Game_Easy
   normalScene: Game_Normal
   hardScene: Game_Hard
-  endlessScene: Game_Endless
+  endlessScene: Nabesaka_PlayerScene
 --- !u!114 &67838470
 MonoBehaviour:
   m_ObjectHideFlags: 0

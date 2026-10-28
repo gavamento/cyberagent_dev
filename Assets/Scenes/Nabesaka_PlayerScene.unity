@@ -154,7 +154,7 @@ MonoBehaviour:
   fillTile: {fileID: 11400000, guid: 618a154993c02cd4a89e8f279106fba7, type: 2}
   groundDepth: 8
   endless: 1
-  seed: 0
+  seed: 1
   generateOnStart: 1
   stageLength: 300
   goalPrefab: {fileID: 6401440977371367732, guid: 1015c3d3bc4c49947ba802a3fa714a31, type: 3}
@@ -164,65 +164,205 @@ MonoBehaviour:
   generateAhead: 40
   keepBehind: 20
   baseHeight: 0
-  startFlatLength: 7
-  stepDensity: 0.08
-  minFlatLength: 8
-  maxFlatLength: 40
+  startFlatLength: 40
+  stepDensity: 0.03
+  minFlatLength: 48
+  maxFlatLength: 88
   minStepUp: 1
-  maxStepUp: 2
-  maxHeight: 3
-  holeDensity: 0.03
+  maxStepUp: 1
+  maxHeight: 2
+  holeDensity: 0.02
   minHoleWidth: 2
-  maxHoleWidth: 3
-  holeSafeBefore: 4
-  holeSafeAfter: 3
+  maxHoleWidth: 2
+  holeSafeBefore: 5
+  holeSafeAfter: 5
   enemySections:
-  - length: 100
-    density: 0.1
+  - length: 120
+    density: 0.5
     enemies:
-    - prefab: {fileID: 6232053950234815764, guid: 4039cafb8d6f8b14b95957c0e6277a40, type: 3}
-      weight: 0.6
+    - prefab: {fileID: 956207134204326558, guid: 8dfb66c23d8bc9645bd3a9098848fa3a, type: 3}
+      weight: 8
       offset: {x: 0, y: 0}
-      groupMin: 1
-      groupMax: 1
-      groupSpacing: 3
+      groupMin: 3
+      groupMax: 4
+      groupSpacing: 6
+      maxPerSection: 0
+      minSameGap: 0
+      noRepeat: 0
+  - length: 160
+    density: 0.55
+    enemies:
+    - prefab: {fileID: 956207134204326558, guid: 8dfb66c23d8bc9645bd3a9098848fa3a, type: 3}
+      weight: 8
+      offset: {x: 0, y: 0}
+      groupMin: 4
+      groupMax: 5
+      groupSpacing: 6
       maxPerSection: 0
       minSameGap: 0
       noRepeat: 0
     - prefab: {fileID: 956207134204326558, guid: 8dfb66c23d8bc9645bd3a9098848fa3a, type: 3}
+      weight: 2.5
+      offset: {x: 0, y: 0}
+      groupMin: 1
+      groupMax: 2
+      groupSpacing: 8
+      maxPerSection: 0
+      minSameGap: 0
+      noRepeat: 0
+    - prefab: {fileID: 6232053950234815764, guid: 4039cafb8d6f8b14b95957c0e6277a40, type: 3}
+      weight: 0.7
+      offset: {x: 0, y: 0}
+      groupMin: 1
+      groupMax: 1
+      groupSpacing: 10
+      maxPerSection: 2
+      minSameGap: 48
+      noRepeat: 1
+    - prefab: {fileID: 956207134204326558, guid: e6b9fbee734b498cb15c0b6ec84bec56, type: 3}
       weight: 1
       offset: {x: 0, y: 0}
       groupMin: 1
       groupMax: 1
-      groupSpacing: 2
+      groupSpacing: 10
+      maxPerSection: 2
+      minSameGap: 64
+      noRepeat: 1
+    - prefab: {fileID: 7614807785489074122, guid: 41fd980da91dcae4287060ae1891811f, type: 3}
+      weight: 2
+      offset: {x: 0, y: 0}
+      groupMin: 1
+      groupMax: 1
+      groupSpacing: 10
+      maxPerSection: 2
+      minSameGap: 64
+      noRepeat: 1
+  - length: 200
+    density: 0.58
+    enemies:
+    - prefab: {fileID: 956207134204326558, guid: 8dfb66c23d8bc9645bd3a9098848fa3a, type: 3}
+      weight: 7
+      offset: {x: 0, y: 0}
+      groupMin: 4
+      groupMax: 6
+      groupSpacing: 6
       maxPerSection: 0
       minSameGap: 0
       noRepeat: 0
+    - prefab: {fileID: 956207134204326558, guid: 8dfb66c23d8bc9645bd3a9098848fa3a, type: 3}
+      weight: 3
+      offset: {x: 0, y: 0}
+      groupMin: 1
+      groupMax: 2
+      groupSpacing: 8
+      maxPerSection: 0
+      minSameGap: 0
+      noRepeat: 0
+    - prefab: {fileID: 6232053950234815764, guid: 4039cafb8d6f8b14b95957c0e6277a40, type: 3}
+      weight: 1
+      offset: {x: 0, y: 0}
+      groupMin: 1
+      groupMax: 1
+      groupSpacing: 10
+      maxPerSection: 3
+      minSameGap: 48
+      noRepeat: 1
+    - prefab: {fileID: 956207134204326558, guid: e6b9fbee734b498cb15c0b6ec84bec56, type: 3}
+      weight: 1
+      offset: {x: 0, y: 0}
+      groupMin: 1
+      groupMax: 1
+      groupSpacing: 10
+      maxPerSection: 2
+      minSameGap: 64
+      noRepeat: 1
+    - prefab: {fileID: 7614807785489074122, guid: 41fd980da91dcae4287060ae1891811f, type: 3}
+      weight: 2
+      offset: {x: 0, y: 0}
+      groupMin: 1
+      groupMax: 1
+      groupSpacing: 10
+      maxPerSection: 2
+      minSameGap: 64
+      noRepeat: 1
+  - length: 320
+    density: 0.6
+    enemies:
+    - prefab: {fileID: 956207134204326558, guid: 8dfb66c23d8bc9645bd3a9098848fa3a, type: 3}
+      weight: 7
+      offset: {x: 0, y: 0}
+      groupMin: 4
+      groupMax: 6
+      groupSpacing: 6
+      maxPerSection: 0
+      minSameGap: 0
+      noRepeat: 0
+    - prefab: {fileID: 956207134204326558, guid: 8dfb66c23d8bc9645bd3a9098848fa3a, type: 3}
+      weight: 3
+      offset: {x: 0, y: 0}
+      groupMin: 1
+      groupMax: 2
+      groupSpacing: 8
+      maxPerSection: 0
+      minSameGap: 0
+      noRepeat: 0
+    - prefab: {fileID: 6232053950234815764, guid: 4039cafb8d6f8b14b95957c0e6277a40, type: 3}
+      weight: 1
+      offset: {x: 0, y: 0}
+      groupMin: 1
+      groupMax: 1
+      groupSpacing: 10
+      maxPerSection: 0
+      minSameGap: 48
+      noRepeat: 1
+    - prefab: {fileID: 956207134204326558, guid: e6b9fbee734b498cb15c0b6ec84bec56, type: 3}
+      weight: 1
+      offset: {x: 0, y: 0}
+      groupMin: 1
+      groupMax: 1
+      groupSpacing: 10
+      maxPerSection: 0
+      minSameGap: 72
+      noRepeat: 1
+    - prefab: {fileID: 7614807785489074122, guid: 41fd980da91dcae4287060ae1891811f, type: 3}
+      weight: 2
+      offset: {x: 0, y: 0}
+      groupMin: 1
+      groupMax: 1
+      groupSpacing: 10
+      maxPerSection: 0
+      minSameGap: 64
+      noRepeat: 1
     - prefab: {fileID: 9135695340695633282, guid: a2cef22ead2f95b4b8777f33c6178cdb, type: 3}
-      weight: 1
+      weight: 0.5
       offset: {x: 0, y: 0}
       groupMin: 1
       groupMax: 1
-      groupSpacing: 2
+      groupSpacing: 10
       maxPerSection: 0
-      minSameGap: 0
-      noRepeat: 0
-  densityIncrease: 0.45
+      minSameGap: 96
+      noRepeat: 1
+  densityIncrease: 0.02
   densityIncreaseInterval: 100
-  maxEnemyDensity: 1
-  minEnemyGap: 3
-  stepSafeBefore: 4
-  stepSafeAfter: 3
+  maxEnemyDensity: 0.75
+  minEnemyGap: 10
+  stepSafeBefore: 3
+  stepSafeAfter: 4
   timeModifiers: []
   timedEvents:
-  - label: 
-    startTime: 0
-    duration: 0
-    densityRate: 0
-    repeatInterval: 0
-  speedProgression: {fileID: 0}
-  flowDensityBonus: 0.5
-  flowGroupAdd: 1
+  - label: Rush
+    startTime: 12
+    duration: 5
+    densityRate: 1.3
+    repeatInterval: 24
+  - label: Breather
+    startTime: 20
+    duration: 3
+    densityRate: 0.65
+    repeatInterval: 24
+  speedProgression: {fileID: 351015299}
+  flowDensityBonus: 0.15
+  flowGroupAdd: 0
   debugElapsed: 0
   debugDensityRate: 0
   debugActiveEvents: 
@@ -402,7 +542,7 @@ Transform:
   m_GameObject: {fileID: 351015292}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -10}
+  m_LocalPosition: {x: 0.7499998, y: 3, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -471,7 +611,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1eb6f21ddfb829b46a9c2036e8437c97, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AutoScrollCamera
-  speed: 8
+  speed: 6
   stage: {fileID: 42231018}
   yOffset: 2
   followSmooth: 2
@@ -561,15 +701,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 58223f015530fdb4db962557b83e4e95, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ScrollSpeedProgression
-  stepDistance: 100
-  stepAdd: 0.25
-  baseMax: 10
-  flowPerBreak: 1
+  stepDistance: 200
+  stepAdd: 0.5
+  baseMax: 12
+  flowPerBreak: 0.75
   flowMax: 17
-  accelRate: 1.057
-  flowDecayDelay: 1.35
-  flowDecayRate: 0.85
-  speedCap: 16
+  accelRate: 1.04
+  flowDecayDelay: 1.6
+  flowDecayRate: 0.65
+  speedCap: 20
   whiffFlowLoss: 3.2
   whiffSpeedRate: 0.67
   whiffBrakeTime: 0.48
@@ -1092,11 +1232,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3415057819177947078, guid: f1a86af43b64057418bed1896ccea79b, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 5.04
+      value: 0.7499998
       objectReference: {fileID: 0}
     - target: {fileID: 3415057819177947078, guid: f1a86af43b64057418bed1896ccea79b, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 2.4016526
+      value: 5.671608
       objectReference: {fileID: 0}
     - target: {fileID: 3415057819177947078, guid: f1a86af43b64057418bed1896ccea79b, type: 3}
       propertyPath: m_LocalPosition.z
