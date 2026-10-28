@@ -83,7 +83,7 @@ public class GameOverDirector : MonoBehaviour
         // 画面全体を塗りつぶす
         yield return FadeAlpha(fade, fadeColor, fadeOutTime);
 
-        GameResult.SetScore(playerCombat != null ? playerCombat.Score : 0);
+        GameResult.SetScore(playerCombat != null ? playerCombat.Score : 0, playerCombat != null ? playerCombat.Coins : 0);
         SceneController.ChangeScene(resultSceneName);
     }
 

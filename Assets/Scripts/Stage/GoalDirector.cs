@@ -94,7 +94,7 @@ public class GoalDirector : MonoBehaviour
         }
         fade.color = fadeColor;
 
-        GameResult.SetScore(player != null ? player.Score : 0);
+        GameResult.SetScore(player != null ? player.Score : 0, player != null ? player.Coins : 0);
         SceneController.ChangeScene(resultSceneName);
     }
 

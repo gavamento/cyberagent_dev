@@ -5,10 +5,11 @@ using UnityEngine;
 
 // コインのプレハブに付ける。同じ GameObject の Is Trigger の Collider2D にプレイヤーの体が触れたら拾う
 // StageGenerator がランダムに置く。取ると点数が入り、敵を壊したときと同じ flow が増えて加速する
+// 取った枚数は PlayerCombat.Coins に数え、リザルトで CoinBonus のボーナスになる
 public class Coin : MonoBehaviour
 {
     [Tooltip("取ったときに入る点数")]
-    [SerializeField, Min(0)] private int points = 100;
+    [SerializeField, Min(0)] private int points = 300;
     [Tooltip("取ったときに増える flow (敵を1回壊すと ScrollSpeedProgression の flowPerBreak だけ増える)")]
     [SerializeField, Min(0f)] private float flowAmount = 1f;
     [SerializeField] private AudioClip pickupSe;
@@ -34,6 +35,7 @@ public class Coin : MonoBehaviour
 
         collected = true; // 体の Collider が複数あっても1回だけ
         player.AddScore(points);
+        player.AddCoin();
         player.AddFlow(flowAmount);
         AudioManager.PlaySE(pickupSe);
         Destroy(gameObject);
