@@ -1,10 +1,16 @@
 fileFormatVersion: 2
-guid: 58c30c8bbc1317b47bdfc4fd631a7258
+guid: 19285750455d7e047b150bb654b8f925
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -1265206311836758900
-    second: BackgroundB_1_0
+      213: -1049461823314036041
+    second: heal_0
+  - first:
+      213: -2480101461718692971
+    second: heal_1
+  - first:
+      213: -1250687572758538602
+    second: heal_2
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -40,9 +46,9 @@ TextureImporter:
     filterMode: 1
     aniso: 1
     mipBias: 0
-    wrapU: 0
-    wrapV: 0
-    wrapW: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
@@ -74,7 +80,7 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 4
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 1024
+    maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 1
@@ -102,13 +108,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: BackgroundB_1_0
+      name: heal_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 1000
-        height: 558
+        x: 179
+        y: 61
+        width: 1056
+        height: 1141
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -117,8 +123,52 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: c8c436f0095117ee0800000000000000
-      internalID: -1265206311836758900
+      spriteID: 7ba780038009f61f0800000000000000
+      internalID: -1049461823314036041
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: heal_1
+      rect:
+        serializedVersion: 2
+        x: 1222
+        y: 923
+        width: 9
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 59b84575cd8e49dd0800000000000000
+      internalID: -2480101461718692971
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: heal_2
+      rect:
+        serializedVersion: 2
+        x: 899
+        y: 53
+        width: 12
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6965bbc674aa4aee0800000000000000
+      internalID: -1250687572758538602
       vertices: []
       indices: 
       edges: []
@@ -137,7 +187,9 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      BackgroundB_1_0: -1265206311836758900
+      heal_0: -1049461823314036041
+      heal_1: -2480101461718692971
+      heal_2: -1250687572758538602
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

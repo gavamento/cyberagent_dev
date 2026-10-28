@@ -80,7 +80,7 @@ public class HitboxTargetHighlighter : MonoBehaviour
 
                 var outline = GetOutline(target);
                 if (!next.Add(outline)) continue; // Colliderが複数あっても色は1回だけ決める
-                var judge = isBlade ? PlayerCombat.HitJudge.Perfect : combat.JudgeHit(target, scale);
+                var judge = isBlade ? PlayerCombat.HitJudge.Perfect : combat.JudgeHit(target.JudgePoint, scale);
                 outline.SetColor(ColorFor(judge));
             }
         }
