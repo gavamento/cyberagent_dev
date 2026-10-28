@@ -421,6 +421,12 @@ public class PlayerCombat : MonoBehaviour
         if (progression != null) progression.AddBreak();
     }
 
+    // flow を増やして加速させる(コインなどから呼ばれる)
+    public void AddFlow(float amount)
+    {
+        if (progression != null) progression.AddFlow(amount);
+    }
+
     // 点数を加算する(倒された敵やオブジェクト側から呼ばれる)
     public void AddScore(int points)
     {
