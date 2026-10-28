@@ -87,6 +87,21 @@ public class StageGenerator : MonoBehaviour
     [Tooltip("段差の直後で敵を置かない距離 (マス)")]
     [Min(0)][SerializeField] int stepSafeAfter = 2;
 
+    [Header("コイン")]
+    [Tooltip("置くコイン。未指定ならコインを置かない")]
+    [SerializeField] GameObject coinPrefab;
+    [Tooltip("1マスごとにコインが出る確率")]
+    [Range(0f, 1f)][SerializeField] float coinDensity = 0.06f;
+    [Tooltip("コイン同士の最短間隔 (マス)")]
+    [Min(1)][SerializeField] int minCoinGap = 3;
+    [Tooltip("空中に置く割合。残りは地面すれすれに置く。穴の上は空中だけ")]
+    [Range(0f, 1f)][SerializeField] float coinAirRate = 0.4f;
+    [Tooltip("地面の上面から浮かせる高さ (マス)")]
+    [Min(0f)][SerializeField] float coinGroundHeight = 0.5f;
+    [Tooltip("空中のコインの高さ (マス)。ジャンプで届く範囲にする")]
+    [Min(0f)][SerializeField] float minCoinAirHeight = 2f;
+    [Min(0f)][SerializeField] float maxCoinAirHeight = 3.5f;
+
     [Header("時間による変化")]
     [Tooltip("開始からの秒数で敵の出方を変える。開始秒の早い順に並べ、後の設定ほど優先する。敵はカメラの先で決まるので、画面に出るのは数秒遅れる")]
     [SerializeField] TimeModifier[] timeModifiers;
@@ -196,6 +211,8 @@ public class StageGenerator : MonoBehaviour
     // 出した敵。段差の手前で取り除いたときに出現の記録を戻せるよう、種類と区間も覚えておく
     readonly List<(int x, GameObject obj, EnemyEntry entry, int section)> spawned = new List<(int, GameObject, EnemyEntry, int)>();
     readonly HashSet<EnemyEntry> removedEntries = new HashSet<EnemyEntry>();
+    // 置いたコイン。取られたものは null になっている
+    readonly List<(int x, GameObject obj)> coins = new List<(int, GameObject)>();
     // 群れの残りを出す列
     readonly Queue<int> pendingGroup = new Queue<int>();
     readonly Dictionary<EnemyEntry, int> sectionCounts = new Dictionary<EnemyEntry, int>();
@@ -207,6 +224,8 @@ public class StageGenerator : MonoBehaviour
     readonly System.Text.StringBuilder debugBuilder = new System.Text.StringBuilder();
 
     System.Random rng;
+    // コイン用の乱数。敵と分けて、同じシードなら地形と敵の並びがコインの有無で変わらないようにする
+    System.Random coinRng;
     float startTime;
     float timeDensityRate = 1f;
     float eventDensityRate = 1f;
@@ -225,6 +244,7 @@ public class StageGenerator : MonoBehaviour
     int holeRemaining;
     int lastHoleEnd;
     int lastEnemyColumn;
+    int lastCoinColumn;
     int currentSection;
     EnemyEntry pendingEntry;
     EnemyEntry lastEntry;
@@ -234,6 +254,7 @@ public class StageGenerator : MonoBehaviour
         if (maxStepUp < minStepUp) maxStepUp = minStepUp;
         if (maxFlatLength > 0 && maxFlatLength < minFlatLength) maxFlatLength = minFlatLength;
         if (maxHoleWidth < minHoleWidth) maxHoleWidth = minHoleWidth;
+        if (maxCoinAirHeight < minCoinAirHeight) maxCoinAirHeight = minCoinAirHeight;
         if (enemySections == null) return;
         foreach (var s in enemySections)
         {
@@ -274,7 +295,9 @@ public class StageGenerator : MonoBehaviour
         }
 
         Clear();
-        rng = new System.Random(seed != 0 ? seed : System.Environment.TickCount);
+        int actualSeed = seed != 0 ? seed : System.Environment.TickCount;
+        rng = new System.Random(actualSeed);
+        coinRng = new System.Random(unchecked(actualSeed * 31 + 7));
         container = new GameObject("Spawned").transform;
         container.SetParent(transform, false);
         chunkContainer = new GameObject("StageChunks").transform;
@@ -286,6 +309,7 @@ public class StageGenerator : MonoBehaviour
         holeRemaining = 0;
         lastHoleEnd = int.MinValue / 2;
         lastEnemyColumn = int.MinValue / 2;
+        lastCoinColumn = int.MinValue / 2;
         currentSection = -1;
         pendingEntry = null;
         lastEntry = null;
@@ -311,6 +335,7 @@ public class StageGenerator : MonoBehaviour
         stepColumns.Clear();
         holeColumns.Clear();
         spawned.Clear();
+        coins.Clear();
 
         if (container == null) container = transform.Find("Spawned");
         if (container != null) DestroyObj(container.gameObject);
@@ -396,7 +421,26 @@ public class StageGenerator : MonoBehaviour
         if (inStart || inGoal || inHole) pendingGroup.Clear();
         else if (pendingGroup.Count > 0) SpawnPending(x);
         else TrySpawnEnemy(x);
+
+        if (!inStart && !inGoal) TrySpawnCoin(x, inHole);
         nextColumn = x + 1;
+    }
+
+    // 列 x にコインを置く。地面すれすれか空中にランダムで、穴の上は空中だけ
+    void TrySpawnCoin(int x, bool inHole)
+    {
+        if (coinPrefab == null) return;
+        if (x - lastCoinColumn < minCoinGap) return;
+        if (lastEnemyColumn == x) return; // 敵と重ねない
+        if (coinRng.NextDouble() >= coinDensity) return;
+
+        bool air = inHole || coinRng.NextDouble() < coinAirRate;
+        float height = air
+            ? Mathf.Lerp(minCoinAirHeight, maxCoinAirHeight, (float)coinRng.NextDouble())
+            : coinGroundHeight;
+        var pos = SurfacePosition(x) + Vector3.up * (height * tilemap.layoutGrid.cellSize.y);
+        coins.Add((x, Instantiate(coinPrefab, pos, Quaternion.identity, container)));
+        lastCoinColumn = x;
     }
 
     bool ShouldStep()
@@ -675,6 +719,11 @@ public class StageGenerator : MonoBehaviour
         {
             if (spawned[0].obj != null) DestroyObj(spawned[0].obj);
             spawned.RemoveAt(0);
+        }
+        while (coins.Count > 0 && coins[0].x <= x)
+        {
+            if (coins[0].obj != null) DestroyObj(coins[0].obj);
+            coins.RemoveAt(0);
         }
         while (stepColumns.Count > 0 && stepColumns[0] <= x) stepColumns.RemoveAt(0);
         while (holeColumns.Count > 0 && holeColumns[0] <= x) holeColumns.RemoveAt(0);
