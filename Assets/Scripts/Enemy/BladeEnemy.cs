@@ -17,8 +17,10 @@ namespace CyberAgentDev.ObjectPrototypeLearning
         [SerializeField] float retreatSpeed = -1.7f;
 
         [Header("構える条件")]
-        [Tooltip("ONなら、Playerの攻撃ヒットボックスの範囲(横)に入ったときも構える。速さから求めた構える距離(下の構え)のほうが遠ければ、そちらで先に構える")]
+        [Tooltip("ONなら、Playerの攻撃ヒットボックスの範囲(横)に入ったときに構える(スローもここから)")]
         [SerializeField] bool alertByHitboxRange = true;
+        [Tooltip("ONなら、速さから求めた構える距離(下の構え)に入ったときも構える。ヒットボックスより遠くからスローになる")]
+        [SerializeField] bool alertByDistance = false;
         [Tooltip("ヒットボックスの範囲を、前後にこの距離だけ広げて見る")]
         [Min(0f)][SerializeField] float hitboxRangeMargin = 0f;
 
@@ -318,21 +320,22 @@ namespace CyberAgentDev.ObjectPrototypeLearning
         bool PlayerAlive() =>
             player != null && player.isActiveAndEnabled && (playerHealth == null || !playerHealth.IsDead);
 
-        // 構えるか。速さから求めた距離に入るか、Playerの攻撃ヒットボックスの範囲に自分の体が入ったら構える。
-        // ヒットボックスの範囲だけで構えると、速いときは構えている間に追い越されて斬撃が届かない
+        // 構えるか。Playerの攻撃ヒットボックスの範囲に自分の体が入るか、速さから求めた距離に入ったら構える。
+        // ヒットボックスの範囲だけで構えると、速いときは構えている間に追い越されて斬撃が届かないことがある
         bool ShouldAlert()
         {
             float dx = PlayerOffset();
             if (dx <= 0f) return false; // 自分がPlayerより前(右)にいるときだけ
-            if (dx < AlertDistance()) return true;
-            return alertByHitboxRange && InPlayerHitboxRange();
+            if (alertByDistance && dx < AlertDistance()) return true;
+            if (!alertByHitboxRange) return false;
+            // ヒットボックスの範囲が分からないときは、距離で代わりに見る
+            if (!player.TryGetAttackXRange(out float minX, out float maxX)) return dx < AlertDistance();
+            return InPlayerHitboxRange(minX, maxX);
         }
 
-        // Playerの攻撃ヒットボックスの範囲(横)に自分の体が入っているか。範囲が分からなければfalse
-        bool InPlayerHitboxRange()
+        // Playerの攻撃ヒットボックスの範囲(横)に自分の体が入っているか
+        bool InPlayerHitboxRange(float minX, float maxX)
         {
-            if (!player.TryGetAttackXRange(out float minX, out float maxX)) return false;
-
             float myMin, myMax;
             if (bodyCollider != null)
             {
