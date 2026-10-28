@@ -210,6 +210,15 @@ MonoBehaviour:
   shiftLimitWithSpeed: 1
   limitShiftAtMax: 0.19
   scoreScript: {fileID: 0}
+  scoreJudge: {fileID: 0}
+  judgeShowTime: 0.6
+  perfectRange: 0.45
+  greatRange: 0.65
+  goodRange: 0.85
+  perfectRate: 2
+  greatRate: 1.5
+  goodRate: 1
+  badRate: 0.5
   feverDuration: 10
   feverForwardSpeed: 10
   feverSpeedMultiplier: 20
@@ -386,7 +395,10 @@ MonoBehaviour:
   - Iron
   - Object
   outlineMaterial: {fileID: 2100000, guid: e0293ffda16d431ab1337382537fcef0, type: 2}
-  outlineColor: {r: 1, g: 0.95, b: 0.2, a: 1}
+  perfectColor: {r: 1, g: 0.95, b: 0.2, a: 1}
+  greatColor: {r: 1, g: 0.45, b: 0.2, a: 1}
+  goodColor: {r: 0.3, g: 0.8, b: 1, a: 1}
+  badColor: {r: 0.6, g: 0.6, b: 0.6, a: 1}
   outlineWidth: 0.06
   blinkSpeed: 4
   minAlpha: 0.25

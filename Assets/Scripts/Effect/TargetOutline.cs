@@ -43,6 +43,12 @@ public class TargetOutline : MonoBehaviour
         maxAlpha = alphaMax;
     }
 
+    // 輪郭の色を変える(判定の色)。点滅は毎フレーム色を塗り直すので、次のフレームから反映される
+    public void SetColor(Color outlineColor)
+    {
+        color = outlineColor;
+    }
+
     public void SetHighlighted(bool on)
     {
         if (highlighted == on) return;
