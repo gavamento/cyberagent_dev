@@ -3,11 +3,13 @@
 * タイトル　　跳ね返る破片くん
 * 作成者　　　久保木幹太
 * 作成日　　　10月22日
-* 更新日　　　10月27日
+* 更新日　　　10月28日
 */
 
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
+using NUnit.Framework.Internal;
 
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(SpriteRenderer))]
@@ -44,6 +46,41 @@ public class BounceDebris : MonoBehaviour
     // 影の大きさ
     [SerializeField] private float shadowScale = 1.0f;
 
+    [Header("バウンド音")]
+    [Tooltip("ここからランダムに1個鳴らす")]
+    [SerializeField] private AudioClip[] bounceSE;
+    [Tooltip("これより弱い衝突の時は鳴らさない")]
+    [SerializeField] private float minImpactSpeed = 2.0f;
+    [Tooltip("この速さで最大音量")]
+    [SerializeField] private float maxImpactSpeed = 15.0f;
+    [Tooltip("音量の範囲")]
+    [SerializeField, Range(0.0f, 1.0f)] private float minVolume = 0.4f;
+    [SerializeField, Range(0.0f, 1.0f)] private float maxVolume = 1.0f;
+    [Tooltip("1つの破片がならせる回数")]
+    [SerializeField] private int maxBounceSounds = 2;
+    [Tooltip("同じ破片が続けて鳴らすときの最短間隔")]
+    [SerializeField] private float soundCooldown = 0.06f;
+    [Tooltip("出現直後は鳴らさないためのディレイ")]
+    [SerializeField] private float soundStartDelay = 0.05f;
+    [Tooltip("全破片あわせて同時にならせる音の数")]
+    [SerializeField] private int maxSimultaneousSounds = 5;
+
+    // 鳴らした回数
+    private int soundCount = 0;
+    // 最後に鳴らした時刻
+    private float lastSoundTime = -999.0f;
+    // 出現した時刻
+    private float spawnTime;
+    // いまなってる音が終わる時刻(全破片共有)
+    private static readonly List<float> playingEndTimes = new List<float>();
+
+    // 再生のたびに記録をリセットする
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    private static void ResetStatics()
+    {
+        playingEndTimes.Clear();
+    }
+
     // フラッシュの後にもどる元の色
     private Color targetColor = Color.white;
     // 自動生成する影
@@ -56,6 +93,9 @@ public class BounceDebris : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
+
+        // 出現した時刻を覚えておく
+        spawnTime = Time.time;
 
         // 影を作る
         if (useShadow) CreateShadow();
@@ -177,5 +217,70 @@ public class BounceDebris : MonoBehaviour
         shadowRenderer.sortingLayerID = spriteRenderer.sortingLayerID;
         shadowRenderer.sortingOrder = spriteRenderer.sortingOrder - 1;
         shadowRenderer.color = shadowColor;
+    }
+
+    // 地面にぶつかった時
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        PlayBounseSound(collision);
+    }
+
+    // バウンド音を鳴らす
+    private void PlayBounseSound(Collision2D collision)
+    {
+        // 何も入ってなかったら鳴らさない
+        if (bounceSE == null || bounceSE.Length == 0) return;
+
+        // 鳴らせる回数を使い切ったら鳴らさない
+        if (soundCount >= maxBounceSounds) return;
+
+        float currentTime = Time.time;
+
+        // 出現直後と前に鳴らした直後は鳴らさない
+        if (currentTime - spawnTime < soundStartDelay) return;
+        if (currentTime - lastSoundTime < soundCooldown) return;
+        if (collision.contactCount == 0) return;
+
+        // 当たった面に垂直な速さを使う
+        float impact = Mathf.Abs(Vector2.Dot(collision.relativeVelocity, collision.GetContact(0).normal));
+
+        // 最低限の速さに達してなかったら鳴らさない
+        if (impact < minImpactSpeed) return;
+
+        // 強くぶつかるほど大きい音にする
+        float t = Mathf.InverseLerp(minImpactSpeed, maxImpactSpeed, impact);
+        float volume = Mathf.Lerp(minVolume, maxVolume, t);
+
+        // 配列からランダムに1個選んで鳴らす
+        AudioClip clip = bounceSE[Random.Range(0, bounceSE.Length)];
+        if (clip == null) return;
+
+        // 同時にならせる数がいっぱいなら鳴らさない
+        if (!TryReserveSoundSlot(clip.length)) return;
+
+        AudioManager.PlaySE(clip, volume);
+
+        soundCount++;
+        lastSoundTime = currentTime;
+    }
+
+    // 同時にならせる数に空きがあれば枠を確保
+    private bool TryReserveSoundSlot(float clipLength)
+    {
+        // ヒットストップ中も音は進むから止まらない時刻を使う
+        float currentTime = Time.unscaledTime;
+
+        // 鳴り終わった音を記録から消す
+        for (int i = playingEndTimes.Count - 1; i >= 0; i--)
+        {
+            if (playingEndTimes[i] <= currentTime) playingEndTimes.RemoveAt(i);
+        }
+
+        // 空きがなければ鳴らさない
+        if (playingEndTimes.Count >= maxSimultaneousSounds) return false;
+
+        // 空きがあればこの音が終わる時刻を記録する
+        playingEndTimes.Add(currentTime + clipLength);
+        return true;
     }
 }

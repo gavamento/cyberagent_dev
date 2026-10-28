@@ -194,3 +194,16 @@ MonoBehaviour:
   shadowOffset: {x: 0.06, y: -0.06}
   shadowColor: {r: 0, g: 0, b: 0, a: 0.45}
   shadowScale: 1
+  bounceSE:
+  - {fileID: 8300000, guid: cd80b1f900fd2a64ca5727c036ef730f, type: 3}
+  - {fileID: 8300000, guid: 1d50b219e3ef1294eb06aea1fcb2ee3a, type: 3}
+  - {fileID: 8300000, guid: e8d8748ee28f8124ab7f1179343b5d73, type: 3}
+  - {fileID: 8300000, guid: 7baf670d064dcae44b1cc7bb47a4a4bc, type: 3}
+  - {fileID: 8300000, guid: ee4627028ab9ba145b7098e3fe1f5e76, type: 3}
+  minImpactSpeed: 2
+  maxImpactSpeed: 15
+  minVolume: 0.02
+  maxVolume: 0.1
+  maxBounceSounds: 2
+  soundCooldown: 0.06
+  soundStartDelay: 0.05
