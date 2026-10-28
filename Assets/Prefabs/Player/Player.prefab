@@ -219,10 +219,10 @@ MonoBehaviour:
   groundedParam: IsGrounded
   feverParam: IsFever
   feverAnimSpeed: 1.8
-  jumpSe: {fileID: 0}
+  jumpSe: {fileID: 8300000, guid: 3bc7d401e0ed69849a6bdc4dd40341e4, type: 3}
   attackSe: {fileID: 0}
   chargeAttackSe: {fileID: 0}
-  feverStartSe: {fileID: 0}
+  feverStartSe: {fileID: 8300000, guid: 368e9591aeac75a4aae52ca5ce653385, type: 3}
   debugIsFever: 0
 --- !u!50 &267017505837109207
 Rigidbody2D:
@@ -304,8 +304,8 @@ MonoBehaviour:
   offscreenMargin: 0.5
   invincibleTime: 1.5
   blinkInterval: 0.1
-  damageSe: {fileID: 0}
-  deathSe: {fileID: 0}
+  damageSe: {fileID: 8300000, guid: d9aa22a2a8d2e0248a1e0e484b42c204, type: 3}
+  deathSe: {fileID: 8300000, guid: 49c11b6164128c049829ce801b6a2a00, type: 3}
   IsDebugMode: 0
 --- !u!114 &6897665812063877766
 MonoBehaviour:
