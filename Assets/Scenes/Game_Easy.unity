@@ -1045,41 +1045,30 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ParallaxBackground
   targetCamera: {fileID: 351015294}
   layers:
-  - name: Background_1
-    sprite: {fileID: 21300000, guid: 58c30c8bbc1317b47bdfc4fd631a7258, type: 3}
+  - name: Sky
+    sprite: {fileID: 3326840229467707989, guid: c22b6b2f0986a4f4c9abd02b4c62787f, type: 3}
     color: {r: 1, g: 1, b: 1, a: 1}
-    followRate: {x: 1, y: 1}
+    followRate: {x: 0.9, y: 1}
     yOffset: 0
     scale: 2
-    sortingOrder: -40
+    sortingOrder: -30
     shape: 0
     placeholderWidth: 32
     placeholderHeight: 18
     placeholderWaves: 3
-  - name: BackgroundB_0
-    sprite: {fileID: 21300000, guid: 3ff064003f5351e42b02d71dddde49d4, type: 3}
+  - name: FarMountains
+    sprite: {fileID: 21300000, guid: cafe3920a601b0d4ab1ba13c580f7c9a, type: 3}
     color: {r: 1, g: 1, b: 1, a: 1}
-    followRate: {x: 0.9, y: 1}
-    yOffset: -0.6
+    followRate: {x: 0.7, y: 1}
+    yOffset: 0.65
     scale: 2
-    sortingOrder: -30
+    sortingOrder: -20
     shape: 1
     placeholderWidth: 32
     placeholderHeight: 9
     placeholderWaves: 4
-  - name: BackgroundM
-    sprite: {fileID: 21300000, guid: cafe3920a601b0d4ab1ba13c580f7c9a, type: 3}
-    color: {r: 1, g: 1, b: 1, a: 1}
-    followRate: {x: 0.7, y: 1}
-    yOffset: 0.1
-    scale: 2
-    sortingOrder: -20
-    shape: 2
-    placeholderWidth: 32
-    placeholderHeight: 6
-    placeholderWaves: 3
-  - name: BackgroundF
-    sprite: {fileID: 21300000, guid: 2fd66a406dba9d543abd31b14aa568cc, type: 3}
+  - name: NearHills
+    sprite: {fileID: -5128094750267489279, guid: 2fd66a406dba9d543abd31b14aa568cc, type: 3}
     color: {r: 1, g: 1, b: 1, a: 1}
     followRate: {x: 0.5, y: 1}
     yOffset: 0.1
@@ -1179,6 +1168,18 @@ PrefabInstance:
     - target: {fileID: 2589848515423940712, guid: f1a86af43b64057418bed1896ccea79b, type: 3}
       propertyPath: m_Name
       value: Player
+      objectReference: {fileID: 0}
+    - target: {fileID: 3202173663703978069, guid: f1a86af43b64057418bed1896ccea79b, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 2.923828
+      objectReference: {fileID: 0}
+    - target: {fileID: 3202173663703978069, guid: f1a86af43b64057418bed1896ccea79b, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 1.764
+      objectReference: {fileID: 0}
+    - target: {fileID: 3202173663703978069, guid: f1a86af43b64057418bed1896ccea79b, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.346
       objectReference: {fileID: 0}
     - target: {fileID: 3415057819177947078, guid: f1a86af43b64057418bed1896ccea79b, type: 3}
       propertyPath: m_LocalPosition.x

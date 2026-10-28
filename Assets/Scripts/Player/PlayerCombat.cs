@@ -92,16 +92,6 @@ public class PlayerCombat : MonoBehaviour
     [Min(0f)][SerializeField] private float goodRate = 1f;
     [Min(0f)][SerializeField] private float badRate = 0.5f;
 
-    [Header("速度によるスコア倍率(壊したときの点数に掛ける)")]
-    [Tooltip("初速のときの倍率")]
-    [Min(0f)][SerializeField] private float speedRateAtStart = 1f;
-    [Tooltip("最高速のときの倍率。その間は速さに合わせてなめらかに変わる")]
-    [Min(0f)][SerializeField] private float speedRateAtMax = 2f;
-
-    [Header("固まった相手の判定")]
-    [Tooltip("同じ攻撃に入った相手同士の横の間隔がこれ以内(ユニット)なら、ひとまとまりとして一番手前の相手の判定にそろえる。0でそろえない")]
-    [Min(0f)][SerializeField] private float groupDistance = 1.5f;
-
     [Header("フィーバー(突進)")]
     [Tooltip("フィーバーの継続時間(秒)")]
     [SerializeField] private float feverDuration = 5f;
@@ -188,11 +178,6 @@ public class PlayerCombat : MonoBehaviour
 
     private ChargeEffect chargeEffect; // チャージエフェクト
 
-    // 固まった相手の判定用
-    private readonly List<Collider2D> judgeHits = new List<Collider2D>();
-    private readonly List<float> judgeXs = new List<float>();
-    private ContactFilter2D judgeFilter;
-
     // 外部から「今攻撃中か」を読めるようにする(判定が出ている間+ダッシュ中)
     // フィーバー中は常に「攻撃中」扱い(接触ダメージを受けない)
     public bool IsAttacking => isAttacking || IsFever;
@@ -272,8 +257,6 @@ public class PlayerCombat : MonoBehaviour
         SetupAnimator();
         SetupChargeGauge();
         if (scoreJudge == null) scoreJudge = FindAnyObjectByType<ScoreJudgeScript>();
-        judgeFilter = ContactFilter2D.noFilter;
-        judgeFilter.useTriggers = true; // 敵は Is Trigger の Collider
         // 子オブジェクトに付けたチャージエフェクトを探す
         chargeEffect = GetComponentInChildren<ChargeEffect>();
 
@@ -478,43 +461,11 @@ public class PlayerCombat : MonoBehaviour
     }
 
     // 今の攻撃のヒットボックスの中で、相手がどこに当たったかを判定する。左寄り(頭を振り下ろしたあたり)ほど良い
-    public HitJudge JudgeHit(DestructibleObject2D target) =>
-        JudgeHit(target, currentAttackIsCharge ? chargeScaleMultiplier : 1f);
+    public HitJudge JudgeHit(Vector2 targetPos) =>
+        JudgeHit(targetPos, currentAttackIsCharge ? chargeScaleMultiplier : 1f);
 
-    // scaleMultiplier の大きさのヒットボックスで判定する(攻撃前の予告表示用)。
-    // 近くに固まっている相手は、まとまりの一番手前の相手の位置で判定する
-    public HitJudge JudgeHit(DestructibleObject2D target, float scaleMultiplier) =>
-        JudgeHit(GroupFrontPoint(target, scaleMultiplier), scaleMultiplier);
-
-    // ヒットボックスに入っている相手を横に並べ、target から左へ間隔 groupDistance 以内で続く一番手前の位置
-    private Vector2 GroupFrontPoint(DestructibleObject2D target, float scaleMultiplier)
-    {
-        Vector2 point = target.JudgePoint;
-        if (groupDistance <= 0f || !TryGetAttackBox(scaleMultiplier, out Vector2 center, out Vector2 size)) return point;
-
-        // 同じ攻撃で先に壊れた相手も、Destroy はフレームの最後なのでまだ数えられる
-        Physics2D.OverlapBox(center, size, 0f, judgeFilter, judgeHits);
-        judgeXs.Clear();
-        foreach (var hit in judgeHits)
-        {
-            var other = hit != null ? hit.GetComponentInParent<DestructibleObject2D>() : null;
-            if (other != null && other != target) judgeXs.Add(other.JudgePoint.x);
-        }
-        judgeXs.Sort();
-
-        // 右から順に見て、間隔が開いたところで止める
-        float front = point.x;
-        for (int i = judgeXs.Count - 1; i >= 0; i--)
-        {
-            float x = judgeXs[i];
-            if (x >= front) continue;
-            if (front - x > groupDistance) break;
-            front = x;
-        }
-        return new Vector2(front, point.y);
-    }
-
-    private HitJudge JudgeHit(Vector2 targetPos, float scaleMultiplier)
+    // scaleMultiplier の大きさのヒットボックスで判定する(攻撃前の予告表示用)
+    public HitJudge JudgeHit(Vector2 targetPos, float scaleMultiplier)
     {
         if (!TryGetAttackBox(scaleMultiplier, out Vector2 center, out Vector2 size)) return HitJudge.Good;
 
@@ -526,15 +477,18 @@ public class PlayerCombat : MonoBehaviour
         return HitJudge.Bad;
     }
 
-    // 壊したときの点数。速度と判定の倍率を掛けて加算し、判定の画像を worldPos の位置に出す
+    // 判定の倍率を掛けて点数を加算し、判定の画像を worldPos の位置に出す
     public void AddScore(int points, HitJudge judge, Vector3 worldPos)
     {
-        if (points <= 0) return;
+        if (judge == HitJudge.None || points <= 0)
+        {
+            AddScore(points);
+            return;
+        }
 
-        float rate = SpeedRate * (judge == HitJudge.None ? 1f : JudgeRate(judge));
-        AddScore(Mathf.Max(1, Mathf.RoundToInt(points * rate)));
+        AddScore(Mathf.Max(1, Mathf.RoundToInt(points * JudgeRate(judge))));
 
-        if (judge == HitJudge.None || scoreJudge == null) return;
+        if (scoreJudge == null) return;
         Vector3 screen = cam.WorldToScreenPoint(worldPos); // 判定画像は画面に固定するCanvasにある
         switch (judge)
         {
@@ -544,10 +498,6 @@ public class PlayerCombat : MonoBehaviour
             case HitJudge.Bad:     scoreJudge.SetScoreBad(screen, judgeShowTime); break;
         }
     }
-
-    // 今のスクロール速度に応じた倍率。初速以下で speedRateAtStart、最高速で speedRateAtMax
-    private float SpeedRate =>
-        progression != null ? Mathf.Lerp(speedRateAtStart, speedRateAtMax, progression.Speed01) : 1f;
 
     private float JudgeRate(HitJudge judge)
     {
