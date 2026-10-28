@@ -455,7 +455,7 @@ MonoBehaviour:
   debricPrefab: {fileID: 8425339182896627664, guid: 920554e8e1ea5684da118f571ba2848f, type: 3}
   shockPrefab: {fileID: 4079247072460627102, guid: 6c1eb619c63d33249a39a956ceae695c, type: 3}
   positionOffset: {x: 0, y: 1.1, z: 0}
-  breakSe: {fileID: 0}
+  breakSe: {fileID: 8300000, guid: bbf5256a35fa05c4a833532717675789, type: 3}
 --- !u!114 &724019235362957588
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -531,6 +531,9 @@ MonoBehaviour:
   walkSpeed: -1
   windupSpeed: -0.46
   retreatSpeed: -1.7
+  alertByHitboxRange: 1
+  alertByDistance: 0
+  hitboxRangeMargin: 0
   strikeDistance: 3.1
   windupTime: 0.4
   perfectWindow: 0.26

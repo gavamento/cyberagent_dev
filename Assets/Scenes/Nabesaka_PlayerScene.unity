@@ -386,6 +386,7 @@ GameObject:
   - component: {fileID: 351015295}
   - component: {fileID: 351015298}
   - component: {fileID: 351015299}
+  - component: {fileID: 351015300}
   m_Layer: 0
   m_Name: Main Camera (1)
   m_TagString: MainCamera
@@ -583,6 +584,21 @@ MonoBehaviour:
   currentSpeed: 0
   flow: 0
   distance: 0
+--- !u!114 &351015300
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 351015292}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1c5a3f97035b96246a054a86724c1bf1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SceneBgm
+  bgm: {fileID: 8300000, guid: 54bfa53a03d6aa74fa0e93fe596b3301, type: 3}
+  volume: 0.1
+  stopIfEmpty: 0
 --- !u!114 &422097692 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7972279784654754196, guid: f1a86af43b64057418bed1896ccea79b, type: 3}
@@ -1071,6 +1087,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 1434127356923436350, guid: f1a86af43b64057418bed1896ccea79b, type: 3}
+      propertyPath: jumpSe
+      value: 
+      objectReference: {fileID: 8300000, guid: 3bc7d401e0ed69849a6bdc4dd40341e4, type: 3}
+    - target: {fileID: 1434127356923436350, guid: f1a86af43b64057418bed1896ccea79b, type: 3}
       propertyPath: chargeGauge
       value: 
       objectReference: {fileID: 107541806}
@@ -1082,6 +1102,14 @@ PrefabInstance:
       propertyPath: scoreScript
       value: 
       objectReference: {fileID: 1842595942}
+    - target: {fileID: 1434127356923436350, guid: f1a86af43b64057418bed1896ccea79b, type: 3}
+      propertyPath: feverStartSe
+      value: 
+      objectReference: {fileID: 8300000, guid: 368e9591aeac75a4aae52ca5ce653385, type: 3}
+    - target: {fileID: 1434127356923436350, guid: f1a86af43b64057418bed1896ccea79b, type: 3}
+      propertyPath: chargeAttackSe
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 1434127356923436350, guid: f1a86af43b64057418bed1896ccea79b, type: 3}
       propertyPath: chargeGaugeRoot
       value: 
@@ -1130,6 +1158,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7972279784654754196, guid: f1a86af43b64057418bed1896ccea79b, type: 3}
+      propertyPath: deathSe
+      value: 
+      objectReference: {fileID: 8300000, guid: 49c11b6164128c049829ce801b6a2a00, type: 3}
+    - target: {fileID: 7972279784654754196, guid: f1a86af43b64057418bed1896ccea79b, type: 3}
+      propertyPath: damageSe
+      value: 
+      objectReference: {fileID: 8300000, guid: d9aa22a2a8d2e0248a1e0e484b42c204, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
