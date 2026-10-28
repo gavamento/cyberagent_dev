@@ -64,6 +64,8 @@ public class HitboxTargetHighlighter : MonoBehaviour
             {
                 var target = hit != null ? hit.GetComponentInParent<DestructibleObject2D>() : null;
                 if (target == null || target.IsBroken || !IsTarget(target.gameObject)) continue;
+                // 剣士は金色の輪の間しか斬り返せないので、そのときだけ出す
+                if (target.TryGetComponent(out BladeEnemy blade) && !blade.InPerfectWindow) continue;
                 next.Add(GetOutline(target));
             }
         }
