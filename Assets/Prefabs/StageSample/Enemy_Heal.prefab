@@ -125,7 +125,7 @@ MonoBehaviour:
   debricPrefab: {fileID: 8425339182896627664, guid: 920554e8e1ea5684da118f571ba2848f, type: 3}
   shockPrefab: {fileID: 4079247072460627102, guid: 6c1eb619c63d33249a39a956ceae695c, type: 3}
   positionOffset: {x: 0, y: 1, z: 0}
-  breakSe: {fileID: 0}
+  breakSe: {fileID: 8300000, guid: eb71827d4eb5b6d459bcb6e9e98b9dba, type: 3}
 --- !u!114 &6298046847853652904
 MonoBehaviour:
   m_ObjectHideFlags: 0
