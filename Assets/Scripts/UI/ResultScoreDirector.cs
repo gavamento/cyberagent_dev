@@ -1,5 +1,5 @@
 //===============================================================================-
-//リザルトのスコア演出(一の位から壁が割れて数字が出る→クリックで割れてタイトルへ)    秋田蓮音
+//リザルトのスコア演出(一の位から壁が割れて数字が出る→コインの内訳→クリックで割れてタイトルへ)    秋田蓮音
 //===============================================================================-
 using System.Collections;
 using System.Collections.Generic;
@@ -16,6 +16,16 @@ public class ResultScoreDirector : MonoBehaviour
     [SerializeField, Min(1)] private int digitCount = 6;
     [Tooltip("ゲームを通さず Result を直接再生したときに出すスコア")]
     [SerializeField, Min(0)] private int previewScore = 1230;
+
+    [Header("コインボーナス")]
+    [Tooltip("取ったコインの枚数から足すボーナス。SCORE はボーナス込みの合計を出す")]
+    [SerializeField] private CoinBonus coinBonus = new CoinBonus();
+    [Tooltip("ゲームを通さず Result を直接再生したときのコインの枚数")]
+    [SerializeField, Min(0)] private int previewCoins = 12;
+    [Tooltip("内訳の書式。{0} が枚数、{1} がボーナス")]
+    [SerializeField] private string bonusFormat = "COIN x{0}   BONUS +{1:#,0}";
+    [SerializeField] private int bonusFontSize = 56;
+    [SerializeField] private float bonusGap = 30f;
 
     [Header("文字")]
     [Tooltip("未指定なら組み込みフォントを使う")]
@@ -81,17 +91,25 @@ public class ResultScoreDirector : MonoBehaviour
     private Image[] walls;
     private Vector2[] slotCenters;
     private Text hintText;
+    private Text bonusText; // コインが 0 枚なら null
     private Sprite shardSprite;
     private int runningBreaks;
 
     private void Start()
     {
-        int score = Mathf.Max(0, GameResult.HasScore ? GameResult.LastScore : previewScore);
+        int baseScore = Mathf.Max(0, GameResult.HasScore ? GameResult.LastScore : previewScore);
+        int coins = Mathf.Max(0, GameResult.HasScore ? GameResult.LastCoins : previewCoins);
+        int bonus = coinBonus.Calculate(coins);
+        int score = (int)System.Math.Min((long)baseScore + bonus, int.MaxValue);
+
         string text = score.ToString();
         text = text.PadLeft(Mathf.Max(digitCount, text.Length), '0');
+        string bonusLine = coins > 0
+            ? string.Format(System.Globalization.CultureInfo.InvariantCulture, bonusFormat, coins, bonus)
+            : null;
 
         shardSprite = wallSprite != null ? wallSprite : CreatePlainSprite();
-        BuildUI(text);
+        BuildUI(text, bonusLine);
         StartCoroutine(ResultRoutine());
     }
 
@@ -106,6 +124,13 @@ public class ResultScoreDirector : MonoBehaviour
             if (i > 0) yield return new WaitForSecondsRealtime(digitInterval);
         }
         while (runningBreaks > 0) yield return null;
+
+        // 全桁が出てからコインの内訳を出す
+        if (bonusText != null)
+        {
+            bonusText.gameObject.SetActive(true);
+            yield return PopRoutine((RectTransform)bonusText.transform);
+        }
 
         // 演出中のクリックは無視し、終わってからのクリックだけ受け付ける
         hintText.gameObject.SetActive(true);
@@ -246,7 +271,7 @@ public class ResultScoreDirector : MonoBehaviour
     }
 
     // 破片も同じ親に置くので、LayoutGroup は使わず位置を自分で決める
-    private void BuildUI(string scoreText)
+    private void BuildUI(string scoreText, string bonusLine)
     {
         var canvasGo = new GameObject("ResultCanvas", typeof(Canvas), typeof(CanvasScaler));
         canvasGo.transform.SetParent(transform, false);
@@ -262,14 +287,16 @@ public class ResultScoreDirector : MonoBehaviour
         int count = scoreText.Length;
         float rowWidth = count * wallSize.x + (count - 1) * spacing;
         float labelHeight = labelFontSize * 1.2f;
+        float bonusHeight = bonusLine != null ? bonusFontSize * 1.2f : 0f;
+        float bonusBlock = bonusLine != null ? bonusGap + bonusHeight : 0f;
 
-        // ラベルと数字の行をまとめた範囲。中心を画面中央に置く
+        // ラベル・数字の行・コインの内訳をまとめた範囲。中心を画面中央に置く
         var rootGo = new GameObject("Result", typeof(RectTransform));
         rootGo.layer = gameObject.layer;
         resultRoot = (RectTransform)rootGo.transform;
         resultRoot.SetParent(canvasGo.transform, false);
-        resultRoot.sizeDelta = new Vector2(rowWidth, labelHeight + labelGap + wallSize.y);
-        float rowY = -resultRoot.sizeDelta.y * 0.5f + wallSize.y * 0.5f;
+        resultRoot.sizeDelta = new Vector2(rowWidth, labelHeight + labelGap + wallSize.y + bonusBlock);
+        float rowY = -resultRoot.sizeDelta.y * 0.5f + bonusBlock + wallSize.y * 0.5f;
 
         var labelText = CreateText("Label", resultRoot, label, labelFontSize, new Vector2(rowWidth, labelHeight));
         ((RectTransform)labelText.transform).anchoredPosition = new Vector2(0f, resultRoot.sizeDelta.y * 0.5f - labelHeight * 0.5f);
@@ -300,6 +327,14 @@ public class ResultScoreDirector : MonoBehaviour
             walls[i].sprite = shardSprite;
             walls[i].color = wallColor;
             walls[i].raycastTarget = false;
+        }
+
+        // コインの内訳は数字の行の下。最後は一緒に割る
+        if (bonusLine != null)
+        {
+            bonusText = CreateText("CoinBonus", resultRoot, bonusLine, bonusFontSize, new Vector2(rowWidth, bonusHeight));
+            ((RectTransform)bonusText.transform).anchoredPosition = new Vector2(0f, -resultRoot.sizeDelta.y * 0.5f + bonusHeight * 0.5f);
+            bonusText.gameObject.SetActive(false);
         }
 
         // 案内は割らないので resultRoot の外に置く

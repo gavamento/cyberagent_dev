@@ -8,10 +8,12 @@ public static class GameResult
 {
     public static bool HasScore { get; private set; }
     public static int LastScore { get; private set; }
+    public static int LastCoins { get; private set; }
 
-    public static void SetScore(int score)
+    public static void SetScore(int score, int coins)
     {
         LastScore = score;
+        LastCoins = coins;
         HasScore = true;
     }
 
@@ -20,6 +22,7 @@ public static class GameResult
     static void ResetStatic()
     {
         LastScore = 0;
+        LastCoins = 0;
         HasScore = false;
     }
 }
