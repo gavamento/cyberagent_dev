@@ -1,10 +1,16 @@
 fileFormatVersion: 2
-guid: 7447370850cab784aae7bc31e643fd2c
+guid: 57dd1b1fd8ce42f4e9dd931e391f2f14
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -2413806693520163455
-    second: Circle
+      213: -1132608574826084606
+    second: B'z_0
+  - first:
+      213: -7899751108863405682
+    second: B'z_1
+  - first:
+      213: -313862130156841229
+    second: B'z_2
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -24,7 +30,7 @@ TextureImporter:
     heightScale: 0.25
     normalMapFilter: 0
     flipGreenChannel: 0
-  isReadable: 0
+  isReadable: 1
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
   vTOnly: 0
@@ -51,13 +57,13 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 256
+  spritePixelsToUnits: 100
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
   alphaIsTransparency: 1
   spriteTessellationMethod: 0
-  spriteTessellationDetail: 0
+  spriteTessellationDetail: -1
   spriteGeometrySubdivision: -1
   textureType: 8
   textureShape: 1
@@ -70,11 +76,11 @@ TextureImporter:
   ignorePngGamma: 0
   applyGammaDecoding: 0
   swizzle: 50462976
-  cookieLightType: 1
+  cookieLightType: 0
   platformSettings:
   - serializedVersion: 4
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 2048
+    maxTextureSize: 512
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 1
@@ -98,124 +104,78 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 4
-    buildTarget: Android
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 1
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    ignorePlatformSupport: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 4
-    buildTarget: iOS
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 1
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    ignorePlatformSupport: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Circle
+      name: B'z_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 256
-        height: 256
+        x: 19
+        y: 27
+        width: 472
+        height: 458
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
-      outline:
-      - - {x: 33, y: 128}
-        - {x: -33, y: 128}
-        - {x: -95, y: 95}
-        - {x: -128, y: 33}
-        - {x: -128, y: -33}
-        - {x: -95, y: -95}
-        - {x: -33, y: -128}
-        - {x: 33, y: -128}
-        - {x: 95, y: -95}
-        - {x: 128, y: -33}
-        - {x: 128, y: 33}
-        - {x: 95, y: 95}
-      physicsShape:
-      - - {x: 0, y: 128}
-        - {x: -39, y: 121}
-        - {x: -75, y: 103}
-        - {x: -103, y: 75}
-        - {x: -121, y: 39}
-        - {x: -128, y: 0}
-        - {x: -121, y: -39}
-        - {x: -103, y: -75}
-        - {x: -75, y: -103}
-        - {x: -39, y: -121}
-        - {x: 0, y: -128}
-        - {x: 39, y: -121}
-        - {x: 75, y: -103}
-        - {x: 103, y: -75}
-        - {x: 121, y: -39}
-        - {x: 128, y: 0}
-        - {x: 121, y: 39}
-        - {x: 103, y: 75}
-        - {x: 75, y: 103}
-        - {x: 39, y: 121}
-      tessellationDetail: 0
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
       bones: []
-      spriteID: 18d3544e99f608ed0800000000000000
-      internalID: -2413806693520163455
+      spriteID: 2070ee3808a2840f0800000000000000
+      internalID: -1132608574826084606
       vertices: []
       indices: 
       edges: []
       weights: []
-    outline:
-    - - {x: 33, y: 128}
-      - {x: -33, y: 128}
-      - {x: -95, y: 95}
-      - {x: -128, y: 33}
-      - {x: -128, y: -33}
-      - {x: -95, y: -95}
-      - {x: -33, y: -128}
-      - {x: 33, y: -128}
-      - {x: 95, y: -95}
-      - {x: 128, y: -33}
-      - {x: 128, y: 33}
-      - {x: 95, y: 95}
+    - serializedVersion: 2
+      name: B'z_1
+      rect:
+        serializedVersion: 2
+        x: 484
+        y: 274
+        width: 8
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e81d23e98327e5290800000000000000
+      internalID: -7899751108863405682
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: B'z_2
+      rect:
+        serializedVersion: 2
+        x: 484
+        y: 190
+        width: 8
+        height: 44
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3f6dd873e00f4abf0800000000000000
+      internalID: -313862130156841229
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
     customData: 
-    physicsShape:
-    - - {x: 0, y: 128}
-      - {x: -39, y: 121}
-      - {x: -75, y: 103}
-      - {x: -103, y: 75}
-      - {x: -121, y: 39}
-      - {x: -128, y: 0}
-      - {x: -121, y: -39}
-      - {x: -103, y: -75}
-      - {x: -75, y: -103}
-      - {x: -39, y: -121}
-      - {x: 0, y: -128}
-      - {x: 39, y: -121}
-      - {x: 75, y: -103}
-      - {x: 103, y: -75}
-      - {x: 121, y: -39}
-      - {x: 128, y: 0}
-      - {x: 121, y: 39}
-      - {x: 103, y: 75}
-      - {x: 75, y: 103}
-      - {x: 39, y: 121}
+    physicsShape: []
     bones: []
     spriteID: 5e97eb03825dee720800000000000000
     internalID: 0
@@ -227,7 +187,9 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Circle: -2413806693520163455
+      B'z_0: -1132608574826084606
+      B'z_1: -7899751108863405682
+      B'z_2: -313862130156841229
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
