@@ -100,7 +100,7 @@ namespace CyberAgentDev.ObjectPrototypeLearning
         float airborneSince = -1f; // 構え中にPlayerが空中に出た時刻。地上なら-1
         bool collapsed;            // 積んだものがもう崩れたか
 
-        bool InPerfectWindow => state == State.Windup && timer <= perfectWindow;
+        public bool InPerfectWindow =>state == State.Windup && timer <= perfectWindow;
 
         void Awake()
         {
