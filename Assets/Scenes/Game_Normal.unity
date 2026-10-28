@@ -648,6 +648,24 @@ MonoBehaviour:
   flow: 0
   distance: 0
 --- !u!114 &351015300
+--- !u!1 &369500507
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 369500509}
+  - component: {fileID: 369500508}
+  m_Layer: 0
+  m_Name: ParallaxBackground
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &369500508
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -662,6 +680,74 @@ MonoBehaviour:
   bgm: {fileID: 8300000, guid: 2d26e5863dcfea54585c35eb35b9acf5, type: 3}
   volume: 0.1
   stopIfEmpty: 0
+  m_GameObject: {fileID: 369500507}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b4455dff1909427db44d76417dc2ee0b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ParallaxBackground
+  targetCamera: {fileID: 0}
+  layers:
+  - name: Background_1
+    sprite: {fileID: 21300000, guid: 58c30c8bbc1317b47bdfc4fd631a7258, type: 3}
+    color: {r: 1, g: 1, b: 1, a: 1}
+    followRate: {x: 1, y: 1}
+    yOffset: 0
+    scale: 2
+    sortingOrder: -40
+    shape: 0
+    placeholderWidth: 32
+    placeholderHeight: 18
+    placeholderWaves: 3
+  - name: BackgroundB_0
+    sprite: {fileID: 21300000, guid: 3ff064003f5351e42b02d71dddde49d4, type: 3}
+    color: {r: 1, g: 1, b: 1, a: 1}
+    followRate: {x: 0.9, y: 1}
+    yOffset: -0.6
+    scale: 2
+    sortingOrder: -30
+    shape: 1
+    placeholderWidth: 32
+    placeholderHeight: 9
+    placeholderWaves: 4
+  - name: BackgroundM
+    sprite: {fileID: 21300000, guid: cafe3920a601b0d4ab1ba13c580f7c9a, type: 3}
+    color: {r: 1, g: 1, b: 1, a: 1}
+    followRate: {x: 0.7, y: 1}
+    yOffset: 0.1
+    scale: 2
+    sortingOrder: -20
+    shape: 2
+    placeholderWidth: 32
+    placeholderHeight: 6
+    placeholderWaves: 3
+  - name: BackgroundF
+    sprite: {fileID: 21300000, guid: 2fd66a406dba9d543abd31b14aa568cc, type: 3}
+    color: {r: 1, g: 1, b: 1, a: 1}
+    followRate: {x: 0.5, y: 1}
+    yOffset: 0.1
+    scale: 2
+    sortingOrder: -10
+    shape: 2
+    placeholderWidth: 32
+    placeholderHeight: 6
+    placeholderWaves: 3
+  boostEase: 10
+--- !u!4 &369500509
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 369500507}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &422097692 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7972279784654754196, guid: f1a86af43b64057418bed1896ccea79b, type: 3}
@@ -1128,86 +1214,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 12a2538de1f26084da5b5a2e2ae60bf9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SliderScript
---- !u!1 &950147314
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 950147316}
-  - component: {fileID: 950147315}
-  m_Layer: 0
-  m_Name: ParallaxBackground
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &950147315
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 950147314}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b4455dff1909427db44d76417dc2ee0b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ParallaxBackground
-  targetCamera: {fileID: 351015294}
-  layers:
-  - name: Sky
-    sprite: {fileID: 3326840229467707989, guid: c22b6b2f0986a4f4c9abd02b4c62787f, type: 3}
-    color: {r: 1, g: 1, b: 1, a: 1}
-    followRate: {x: 0.9, y: 1}
-    yOffset: 0
-    scale: 2
-    sortingOrder: -30
-    shape: 0
-    placeholderWidth: 32
-    placeholderHeight: 18
-    placeholderWaves: 3
-  - name: FarMountains
-    sprite: {fileID: 21300000, guid: cafe3920a601b0d4ab1ba13c580f7c9a, type: 3}
-    color: {r: 1, g: 1, b: 1, a: 1}
-    followRate: {x: 0.7, y: 1}
-    yOffset: 0.65
-    scale: 2
-    sortingOrder: -20
-    shape: 1
-    placeholderWidth: 32
-    placeholderHeight: 9
-    placeholderWaves: 4
-  - name: NearHills
-    sprite: {fileID: -5128094750267489279, guid: 2fd66a406dba9d543abd31b14aa568cc, type: 3}
-    color: {r: 1, g: 1, b: 1, a: 1}
-    followRate: {x: 0.5, y: 1}
-    yOffset: 0.1
-    scale: 2
-    sortingOrder: -10
-    shape: 2
-    placeholderWidth: 32
-    placeholderHeight: 6
-    placeholderWaves: 3
-  boostEase: 10
---- !u!4 &950147316
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 950147314}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1232705439
 GameObject:
   m_ObjectHideFlags: 0
@@ -2050,7 +2056,7 @@ SceneRoots:
   - {fileID: 1338264629}
   - {fileID: 2099306857}
   - {fileID: 454608685}
-  - {fileID: 950147316}
+  - {fileID: 369500509}
   - {fileID: 42231019}
   - {fileID: 2042931614}
   - {fileID: 905394115}
