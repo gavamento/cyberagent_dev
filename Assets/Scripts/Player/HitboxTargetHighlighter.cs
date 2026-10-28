@@ -3,6 +3,7 @@
 //===============================================================================-
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 using CyberAgentDev.ObjectPrototypeLearning;
 
 // Player に付ける。攻撃していない間も、今攻撃したら当たる相手の輪郭を点滅させる
@@ -17,7 +18,15 @@ public class HitboxTargetHighlighter : MonoBehaviour
     [Header("輪郭")]
     [Tooltip("単色で描くマテリアル (SpriteOutline)")]
     [SerializeField] private Material outlineMaterial;
-    [SerializeField] private Color outlineColor = new Color(1f, 0.95f, 0.2f, 1f);
+
+    [Header("判定ごとの輪郭の色(今攻撃したら出る判定)")]
+    [FormerlySerializedAs("outlineColor")]
+    [SerializeField] private Color perfectColor = new Color(1f, 0.95f, 0.2f, 1f);
+    [SerializeField] private Color greatColor = new Color(1f, 0.45f, 0.2f, 1f);
+    [SerializeField] private Color goodColor = new Color(0.3f, 0.8f, 1f, 1f);
+    [SerializeField] private Color badColor = new Color(0.6f, 0.6f, 0.6f, 1f);
+
+    [Header("輪郭の形")]
     [Tooltip("輪郭の太さ(ユニット)")]
     [SerializeField, Min(0f)] private float outlineWidth = 0.06f;
 
@@ -56,17 +65,23 @@ public class HitboxTargetHighlighter : MonoBehaviour
     {
         next.Clear();
 
+        float scale = combat.PreviewScaleMultiplier;
         if (!combat.IsFever // フィーバー中は触れるだけで壊れるので出さない
-            && combat.TryGetAttackBox(combat.PreviewScaleMultiplier, out Vector2 center, out Vector2 size))
+            && combat.TryGetAttackBox(scale, out Vector2 center, out Vector2 size))
         {
             Physics2D.OverlapBox(center, size, 0f, filter, hits);
             foreach (var hit in hits)
             {
                 var target = hit != null ? hit.GetComponentInParent<DestructibleObject2D>() : null;
                 if (target == null || target.IsBroken || !IsTarget(target.gameObject)) continue;
-                // 剣士は金色の輪の間しか斬り返せないので、そのときだけ出す
-                if (target.TryGetComponent(out BladeEnemy blade) && !blade.InPerfectWindow) continue;
-                next.Add(GetOutline(target));
+                // 剣士は金色の輪の間しか斬り返せないので、そのときだけ出す(位置の判定はないのでPerfectの色)
+                bool isBlade = target.TryGetComponent(out BladeEnemy blade);
+                if (isBlade && !blade.InPerfectWindow) continue;
+
+                var outline = GetOutline(target);
+                if (!next.Add(outline)) continue; // Colliderが複数あっても色は1回だけ決める
+                var judge = isBlade ? PlayerCombat.HitJudge.Perfect : combat.JudgeHit(target.JudgePoint, scale);
+                outline.SetColor(ColorFor(judge));
             }
         }
 
@@ -84,9 +99,20 @@ public class HitboxTargetHighlighter : MonoBehaviour
         if (!target.TryGetComponent(out TargetOutline outline))
         {
             outline = target.gameObject.AddComponent<TargetOutline>();
-            outline.Setup(outlineMaterial, outlineColor, outlineWidth, blinkSpeed, minAlpha, maxAlpha);
+            outline.Setup(outlineMaterial, perfectColor, outlineWidth, blinkSpeed, minAlpha, maxAlpha);
         }
         return outline;
+    }
+
+    private Color ColorFor(PlayerCombat.HitJudge judge)
+    {
+        switch (judge)
+        {
+            case PlayerCombat.HitJudge.Perfect: return perfectColor;
+            case PlayerCombat.HitJudge.Great:   return greatColor;
+            case PlayerCombat.HitJudge.Bad:     return badColor;
+            default:                            return goodColor;
+        }
     }
 
     private bool IsTarget(GameObject target)

@@ -71,6 +71,7 @@ namespace CyberAgentDev.ObjectPrototypeLearning
         IAttackAcceptRule[] acceptRules;
         float nextDamageTime;
         PlayerCombat lastAttacker; // 最後に攻撃したPlayer(スコアの加算先)
+        PlayerCombat.HitJudge lastJudge; // 最後に受けた攻撃の判定(倍率に使う)
 
         // Damage Tags(Enemy・Iron)のものだけが接触ダメージを出す。Objectは設定がONでもダメージなし。
         public bool CanDamagePlayer => canDamagePlayer && MatchesAnyTag(gameObject, damageTags);
@@ -85,6 +86,8 @@ namespace CyberAgentDev.ObjectPrototypeLearning
         }
         public bool IsBroken => isBroken;
         public int RemainingHits => Mathf.Max(0, hitsToBreak - currentHitsTaken);
+        // 攻撃の判定(Perfectなど)に使う位置。当たり判定の中心
+        public Vector2 JudgePoint => objectCollider != null ? (Vector2)objectCollider.bounds.center : (Vector2)transform.position;
 
         // 壊れたときの通知。引数は壊したPlayer(攻撃以外で壊れたときはnull)
         public event System.Action<PlayerCombat> OnBroken;
@@ -224,7 +227,11 @@ namespace CyberAgentDev.ObjectPrototypeLearning
             if (lastAttacker == null)
                 Debug.LogWarning("攻撃したPlayerにPlayerCombatが見つかりません。スコアは加算されません。", this);
             else
+            {
                 lastAttacker.NotifyHit(); // 攻撃が通ったので、Playerは「当たった」扱い(前へ出る)
+                // ヒットボックスのどこに当たったか。何回か叩いて壊すものは、壊した最後の一撃の判定になる
+                lastJudge = lastAttacker.JudgeHit(JudgePoint);
+            }
             // 壊す前にヒットストップを出す(Destroy後は接触通知が届かないため)
             var hitStop = GetComponent<HitStop>();
             if (hitStop != null) hitStop.Play(attackBox.IsChargeAttack);
@@ -241,7 +248,7 @@ namespace CyberAgentDev.ObjectPrototypeLearning
             // 攻撃したPlayerへスコアを渡す(攻撃以外で壊れたときは lastAttacker が空なので加算なし)
             if (lastAttacker != null)
             {
-                lastAttacker.AddScore(ScoreFor(gameObject.tag));
+                lastAttacker.AddScore(ScoreFor(gameObject.tag), lastJudge, transform.position + positionOffset);
                 lastAttacker.AddFever(FeverFor(gameObject.tag)); // フィーバー中は加算されない
                 lastAttacker.NotifyBreak(); // 破壊で加速する(フィーバー中も)
             }
@@ -272,6 +279,7 @@ namespace CyberAgentDev.ObjectPrototypeLearning
         {
             if (isBroken || !isActiveAndEnabled) return;
             lastAttacker = player;
+            lastJudge = PlayerCombat.HitJudge.None; // 攻撃の判定はつけず、そのままの点数
             Break();
         }
 

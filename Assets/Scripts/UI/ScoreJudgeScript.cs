@@ -27,7 +27,8 @@ public class ScoreJudgeScript : MonoBehaviour
         judgeObject.gameObject.SetActive(false);
         judgeObject.sprite = perfectTexture;
         judgeObject.preserveAspect = true;
-        judgeObject.transform.localScale = scale;
+        // scale が 0 のまま(シーンの初期値)なら、画像の元の大きさを使う
+        if (scale != Vector3.zero) judgeObject.transform.localScale = scale;
     }
 
     // Update is called once per frame

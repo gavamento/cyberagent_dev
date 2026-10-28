@@ -73,6 +73,24 @@ public class PlayerCombat : MonoBehaviour
     [Header("スコア")]
     [Tooltip("スコア表示のスクリプト(ScoreScript)。UIのオブジェクトをドラッグ")]
     [SerializeField] private ScoreScript scoreScript;
+    [Tooltip("判定(Perfect/Great/Good/Bad)の画像を出すスクリプト(ScoreJudgeScript)。空ならシーンから自動で探す")]
+    [SerializeField] private ScoreJudgeScript scoreJudge;
+    [Tooltip("判定画像を出しておく時間(秒)")]
+    [Min(0.05f)][SerializeField] private float judgeShowTime = 0.6f;
+
+    [Header("判定(ヒットボックスの左端を0、右端を1としたときの、当たった相手の中心の位置)")]
+    [Tooltip("ここまでならPerfect(頭を振り下ろしたあたり)")]
+    [SerializeField, Range(0f, 1f)] private float perfectRange = 0.45f;
+    [Tooltip("ここまでならGreat")]
+    [SerializeField, Range(0f, 1f)] private float greatRange = 0.65f;
+    [Tooltip("ここまでならGood。それより右はBad")]
+    [SerializeField, Range(0f, 1f)] private float goodRange = 0.85f;
+
+    [Header("判定ごとのスコア倍率(倒した相手の点数に掛ける)")]
+    [Min(0f)][SerializeField] private float perfectRate = 2f;
+    [Min(0f)][SerializeField] private float greatRate = 1.5f;
+    [Min(0f)][SerializeField] private float goodRate = 1f;
+    [Min(0f)][SerializeField] private float badRate = 0.5f;
 
     [Header("フィーバー(突進)")]
     [Tooltip("フィーバーの継続時間(秒)")]
@@ -118,6 +136,9 @@ public class PlayerCombat : MonoBehaviour
     private bool feverForced; // デバッグで強制ONにした間は、時間が経っても終わらない
 
     // ---- スコア ----
+    // 攻撃が当たった位置の判定。None は判定なし(フィーバーや見切りで倒したとき)
+    public enum HitJudge { None, Perfect, Great, Good, Bad }
+
     public int Score { get; private set; }
     // 引数: (今回の加算量, 合計スコア)
     public event Action<int, int> OnScoreChanged;
@@ -235,6 +256,7 @@ public class PlayerCombat : MonoBehaviour
         progression = cam.GetComponent<ScrollSpeedProgression>();
         SetupAnimator();
         SetupChargeGauge();
+        if (scoreJudge == null) scoreJudge = FindAnyObjectByType<ScoreJudgeScript>();
         // 子オブジェクトに付けたチャージエフェクトを探す
         chargeEffect = GetComponentInChildren<ChargeEffect>();
 
@@ -430,6 +452,56 @@ public class PlayerCombat : MonoBehaviour
         OnScoreChanged?.Invoke(points, Score);
 
         if (scoreScript != null) scoreScript.AddScore(points); // UIの表示
+    }
+
+    // 今の攻撃のヒットボックスの中で、相手がどこに当たったかを判定する。左寄り(頭を振り下ろしたあたり)ほど良い
+    public HitJudge JudgeHit(Vector2 targetPos) =>
+        JudgeHit(targetPos, currentAttackIsCharge ? chargeScaleMultiplier : 1f);
+
+    // scaleMultiplier の大きさのヒットボックスで判定する(攻撃前の予告表示用)
+    public HitJudge JudgeHit(Vector2 targetPos, float scaleMultiplier)
+    {
+        if (!TryGetAttackBox(scaleMultiplier, out Vector2 center, out Vector2 size)) return HitJudge.Good;
+
+        // 左端より左にはみ出していたら0(Perfect)、右端より右なら1(Bad)
+        float t = Mathf.InverseLerp(center.x - size.x * 0.5f, center.x + size.x * 0.5f, targetPos.x);
+        if (t <= perfectRange) return HitJudge.Perfect;
+        if (t <= greatRange) return HitJudge.Great;
+        if (t <= goodRange) return HitJudge.Good;
+        return HitJudge.Bad;
+    }
+
+    // 判定の倍率を掛けて点数を加算し、判定の画像を worldPos の位置に出す
+    public void AddScore(int points, HitJudge judge, Vector3 worldPos)
+    {
+        if (judge == HitJudge.None || points <= 0)
+        {
+            AddScore(points);
+            return;
+        }
+
+        AddScore(Mathf.Max(1, Mathf.RoundToInt(points * JudgeRate(judge))));
+
+        if (scoreJudge == null) return;
+        Vector3 screen = cam.WorldToScreenPoint(worldPos); // 判定画像は画面に固定するCanvasにある
+        switch (judge)
+        {
+            case HitJudge.Perfect: scoreJudge.SetScorePerfect(screen, judgeShowTime); break;
+            case HitJudge.Great:   scoreJudge.SetScoreGreat(screen, judgeShowTime); break;
+            case HitJudge.Good:    scoreJudge.SetScoreGood(screen, judgeShowTime); break;
+            case HitJudge.Bad:     scoreJudge.SetScoreBad(screen, judgeShowTime); break;
+        }
+    }
+
+    private float JudgeRate(HitJudge judge)
+    {
+        switch (judge)
+        {
+            case HitJudge.Perfect: return perfectRate;
+            case HitJudge.Great:   return greatRate;
+            case HitJudge.Bad:     return badRate;
+            default:               return goodRate;
+        }
     }
 
     // フィーバーゲージを加算する(倒された敵やオブジェクト側から呼ばれる)。フィーバー中は加算しない
