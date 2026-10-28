@@ -118,9 +118,13 @@ public class ScrollSpeedProgression : MonoBehaviour
     }
 
     // 敵やオブジェクトを壊したとき
-    public void AddBreak()
+    public void AddBreak() => AddFlow(flowPerBreak);
+
+    // flow を増やす(コインなど)。減り始めるまでの待ちもやり直す
+    public void AddFlow(float amount)
     {
-        flow = Mathf.Min(flowMax, flow + flowPerBreak);
+        if (amount <= 0f) return;
+        flow = Mathf.Min(flowMax, flow + amount);
         lastBreakTime = Time.time;
     }
 
