@@ -205,6 +205,18 @@ public class StageGenerator : MonoBehaviour
     public IReadOnlyList<int> HoleColumns => holeColumns;
     public bool IsEndless => endless;
 
+    // ゴールの位置(ワールドX)。進行度のスライダー用。エンドレスやタイルマップ未指定なら false
+    public bool TryGetGoalX(out float worldX)
+    {
+        worldX = 0f;
+        if (endless || tilemap == null) return false;
+
+        int column = stageLength - goalAreaLength / 2; // PlaceGoal と同じ列
+        float cellWidth = tilemap.layoutGrid.cellSize.x;
+        worldX = tilemap.CellToWorld(new Vector3Int(column, 0, 0)).x + cellWidth * 0.5f;
+        return true;
+    }
+
     readonly List<int> stepColumns = new List<int>();
     readonly List<int> holeColumns = new List<int>();
     readonly Dictionary<int, int> heights = new Dictionary<int, int>();
