@@ -595,7 +595,7 @@ public class PlayerCombat : MonoBehaviour
     {
         Debug.Log(label);
         AudioManager.PlaySE(isCharge ? chargeAttackSe : attackSe);
-        
+
         // チャージエフェクトの後処理
         if (chargeEffect != null)
         {
@@ -709,6 +709,12 @@ public class PlayerCombat : MonoBehaviour
         isPressing = false; // 押したまま無効になったら、再び有効になったときに攻撃が出ないようにする
         // 溜め中に無効になったらエフェクトも止める
         if (chargeEffect != null) chargeEffect.Cancel();
+        // 死亡などで無効になると Update が止まって隠せないので、チャージゲージもここで消す
+        if (chargeGauge != null)
+        {
+            chargeGauge.fillAmount = 0f;
+            chargeGaugeRoot.SetActive(false);
+        }
     }
 
     // 画面の左端から forwardLimit の位置(ワールドX)
