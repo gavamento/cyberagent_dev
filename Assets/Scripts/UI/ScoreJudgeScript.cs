@@ -6,15 +6,15 @@ public class ScoreJudgeScript : MonoBehaviour
     [Header("デバックモード")]
     [SerializeField] private bool Active;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    [Header("使うテクスチャデータ")]
-    [SerializeField] private Sprite perfectTexture;
-    [SerializeField] private Sprite greatTexture;
-    [SerializeField] private Sprite goodTexture;
-    [SerializeField] private Sprite badTexture;
-
     [Header("子オブジェクト")]
-    [SerializeField] private Image judgeObject;
+    [SerializeField] private UIImageScript Text;
+
+    [Header("子オブジェクトの色")]
+    [SerializeField] private Color Perfect;
+    [SerializeField] private Color Great;
+    [SerializeField] private Color Good;
+    [SerializeField] private Color Bad;
+
     [SerializeField] private Vector3 offset;
     [SerializeField] private Vector3 scale;
     [SerializeField] private float timer;
@@ -22,30 +22,10 @@ public class ScoreJudgeScript : MonoBehaviour
     [Header("SetScore関数のデフォルト値")]
     [SerializeField] private const float defaultTime = 1;
 
-    void Start()
-    {
-        judgeObject.gameObject.SetActive(false);
-        judgeObject.sprite = perfectTexture;
-        judgeObject.preserveAspect = true;
-        // scale が 0 のまま(シーンの初期値)なら、画像の元の大きさを使う
-        if (scale != Vector3.zero) judgeObject.transform.localScale = scale;
-    }
 
     // Update is called once per frame
     void Update()
     {
-        if (judgeObject != null)
-        {
-            timer -= Time.deltaTime;
-
-            if (timer < 0)
-            {
-                timer = 0;
-                judgeObject.gameObject.SetActive(false);
-            }
-
-        }
-
         if (Active)
         {
             Vector3 d = new Vector3(940.0f,540.0f,0.0f);
@@ -73,37 +53,33 @@ public class ScoreJudgeScript : MonoBehaviour
 
     public void SetScorePerfect(Vector3 position = default,float time = defaultTime)
     {
-        judgeObject.transform.position = (position + offset);
-        timer = time;
-
-        judgeObject.gameObject.SetActive(true);
-        judgeObject.sprite = perfectTexture;
+        UIImageScript UI = Instantiate(Text, transform);
+        UI.SetTime(position + offset, time);
+        UI.SetText("Perfect!!!");
+        UI.SetColor(Perfect);
     }
 
     public void SetScoreGreat(Vector3 position = default,float time = defaultTime)
     {
-        judgeObject.transform.position = position + offset;
-        timer = time;
-
-        judgeObject.gameObject.SetActive(true);
-        judgeObject.sprite = greatTexture;
+        UIImageScript UI = Instantiate(Text, transform);
+        UI.SetTime(position + offset, time);
+        UI.SetText("Great!!");
+        UI.SetColor(Great);
     }
 
     public void SetScoreGood(Vector3 position = default,float time = defaultTime)
     {
-        judgeObject.transform.position = position + offset;
-        timer = time;
-
-        judgeObject.gameObject.SetActive(true);
-        judgeObject.sprite = goodTexture;
+        UIImageScript UI = Instantiate(Text, transform);
+        UI.SetTime(position + offset, time);
+        UI.SetText("Good!");
+        UI.SetColor(Good);
     }
 
     public void SetScoreBad(Vector3 position = default,float time = defaultTime)
     {
-        judgeObject.transform.position = position + offset;
-        timer = time;
-
-        judgeObject.gameObject.SetActive(true);
-        judgeObject.sprite = badTexture;
+        UIImageScript UI = Instantiate(Text, transform);
+        UI.SetTime(position + offset, time);
+        UI.SetText("Bad...");
+        UI.SetColor(Bad);
     }
 }
