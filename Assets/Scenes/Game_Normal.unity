@@ -411,7 +411,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CoinCounterUI
   playerCombat: {fileID: 0}
   prefix: 'COIN x '
-  font: {fileID: 0}
+  font: {fileID: 12800000, guid: 5bcceb7d1a1cf9d45aaa27523a7acb34, type: 3}
   fontSize: 70
   textColor: {r: 1, g: 0.85, b: 0.2, a: 1}
   margin: {x: 40, y: 20}
@@ -461,8 +461,7 @@ Transform:
   m_LocalPosition: {x: -958, y: -542.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 1776400874}
+  m_Children: []
   m_Father: {fileID: 2099306857}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &347703694
@@ -478,12 +477,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ScoreJudgeScript
   Active: 0
-  perfectTexture: {fileID: 21300000, guid: 16b07aad7c3c9e648801896de62a980e, type: 3}
-  greatTexture: {fileID: 21300000, guid: 6f947e92bb8d05d429a073179dc7e23b, type: 3}
-  goodTexture: {fileID: 21300000, guid: 080d0268c4c9abb43a04904721c22ec8, type: 3}
-  badTexture: {fileID: 21300000, guid: 816b0a65cafe205459c3b3a28f020813, type: 3}
-  judgeObject: {fileID: 1776400875}
-  offset: {x: 0, y: 0, z: 0}
+  Text: {fileID: 7002864947840986322, guid: 2b8a394426172874ca3d72e97ef0de0c, type: 3}
+  Perfect: {r: 1, g: 0.8724341, b: 0, a: 1}
+  Great: {r: 1, g: 0.15115505, b: 0, a: 1}
+  Good: {r: 0, g: 1, b: 0.10449946, a: 1}
+  Bad: {r: 0, g: 0.09511173, b: 1, a: 1}
+  offset: {x: 0, y: 200, z: 0}
   scale: {x: 0, y: 0, z: 0}
   timer: 1
 --- !u!1 &351015292
@@ -502,6 +501,7 @@ GameObject:
   - component: {fileID: 351015298}
   - component: {fileID: 351015299}
   - component: {fileID: 351015300}
+  - component: {fileID: 369500508}
   m_Layer: 0
   m_Name: Main Camera (1)
   m_TagString: MainCamera
@@ -700,6 +700,17 @@ MonoBehaviour:
   flow: 0
   distance: 0
 --- !u!114 &351015300
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 351015292}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &369500507
 GameObject:
   m_ObjectHideFlags: 0
@@ -709,7 +720,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 369500509}
-  - component: {fileID: 369500508}
   m_Layer: 0
   m_Name: ParallaxBackground
   m_TagString: Untagged
@@ -732,59 +742,6 @@ MonoBehaviour:
   bgm: {fileID: 8300000, guid: 2d26e5863dcfea54585c35eb35b9acf5, type: 3}
   volume: 0.1
   stopIfEmpty: 0
-  m_GameObject: {fileID: 369500507}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b4455dff1909427db44d76417dc2ee0b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ParallaxBackground
-  targetCamera: {fileID: 0}
-  layers:
-  - name: Background_1
-    sprite: {fileID: 21300000, guid: 58c30c8bbc1317b47bdfc4fd631a7258, type: 3}
-    color: {r: 1, g: 1, b: 1, a: 1}
-    followRate: {x: 1, y: 1}
-    yOffset: 0
-    scale: 2
-    sortingOrder: -40
-    shape: 0
-    placeholderWidth: 32
-    placeholderHeight: 18
-    placeholderWaves: 3
-  - name: BackgroundB_0
-    sprite: {fileID: 21300000, guid: 3ff064003f5351e42b02d71dddde49d4, type: 3}
-    color: {r: 1, g: 1, b: 1, a: 1}
-    followRate: {x: 0.9, y: 1}
-    yOffset: -0.6
-    scale: 2
-    sortingOrder: -30
-    shape: 1
-    placeholderWidth: 32
-    placeholderHeight: 9
-    placeholderWaves: 4
-  - name: BackgroundM
-    sprite: {fileID: 21300000, guid: cafe3920a601b0d4ab1ba13c580f7c9a, type: 3}
-    color: {r: 1, g: 1, b: 1, a: 1}
-    followRate: {x: 0.7, y: 1}
-    yOffset: 0.1
-    scale: 2
-    sortingOrder: -20
-    shape: 2
-    placeholderWidth: 32
-    placeholderHeight: 6
-    placeholderWaves: 3
-  - name: BackgroundF
-    sprite: {fileID: 21300000, guid: 2fd66a406dba9d543abd31b14aa568cc, type: 3}
-    color: {r: 1, g: 1, b: 1, a: 1}
-    followRate: {x: 0.5, y: 1}
-    yOffset: 0.1
-    scale: 2
-    sortingOrder: -10
-    shape: 2
-    placeholderWidth: 32
-    placeholderHeight: 6
-    placeholderWaves: 3
-  boostEase: 10
 --- !u!4 &369500509
 Transform:
   m_ObjectHideFlags: 0
@@ -1494,81 +1451,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1462313301}
   m_CullTransparentMesh: 1
---- !u!1 &1776400873
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1776400874}
-  - component: {fileID: 1776400876}
-  - component: {fileID: 1776400875}
-  m_Layer: 5
-  m_Name: ScoreImage
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &1776400874
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1776400873}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 347703693}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 958, y: 542.5}
-  m_SizeDelta: {x: 100, y: 100}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1776400875
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1776400873}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 0}
-  m_Type: 0
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
---- !u!222 &1776400876
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1776400873}
-  m_CullTransparentMesh: 1
 --- !u!1001 &1842595939
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1969,7 +1851,7 @@ MonoBehaviour:
   scrollCamera: {fileID: 351015295}
   playerCombat: {fileID: 0}
   message: YOU DIED
-  font: {fileID: 0}
+  font: {fileID: 12800000, guid: 5bcceb7d1a1cf9d45aaa27523a7acb34, type: 3}
   fontSize: 160
   textColor: {r: 1, g: 1, b: 1, a: 1}
   messageFadeInTime: 0.5

@@ -219,6 +219,9 @@ MonoBehaviour:
   greatRate: 1.5
   goodRate: 1
   badRate: 0.5
+  speedRateAtStart: 1
+  speedRateAtMax: 2
+  groupDistance: 1.5
   feverDuration: 10
   feverForwardSpeed: 10
   feverSpeedMultiplier: 20

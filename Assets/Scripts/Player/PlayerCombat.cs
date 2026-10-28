@@ -167,7 +167,8 @@ public class PlayerCombat : MonoBehaviour
     private Rigidbody2D rb;
     private HitAttackBox hitbox;
     private readonly HashSet<Collider2D> touching = new HashSet<Collider2D>(); // 触れているCollider
-    private bool IsGrounded => touching.Count > 0; // 床でも壁でも、触れていればジャンプ可
+    private bool IsGrounded => touching.Count > 0; // 上向きの面(床)に触れていればジャンプ可。壁は含まない
+    private const float GroundNormalMinY = 0.7f;   // これ以上上を向いた面(約45度まで)を床とみなす
     private float pressStartTime;
     private bool isPressing;
     private Vector3 hitboxBaseScale;
@@ -551,9 +552,9 @@ public class PlayerCombat : MonoBehaviour
         switch (judge)
         {
             case HitJudge.Perfect: scoreJudge.SetScorePerfect(screen, judgeShowTime); break;
-            case HitJudge.Great:   scoreJudge.SetScoreGreat(screen, judgeShowTime); break;
-            case HitJudge.Good:    scoreJudge.SetScoreGood(screen, judgeShowTime); break;
-            case HitJudge.Bad:     scoreJudge.SetScoreBad(screen, judgeShowTime); break;
+            case HitJudge.Great: scoreJudge.SetScoreGreat(screen, judgeShowTime); break;
+            case HitJudge.Good: scoreJudge.SetScoreGood(screen, judgeShowTime); break;
+            case HitJudge.Bad: scoreJudge.SetScoreBad(screen, judgeShowTime); break;
         }
     }
 
@@ -566,9 +567,9 @@ public class PlayerCombat : MonoBehaviour
         switch (judge)
         {
             case HitJudge.Perfect: return perfectRate;
-            case HitJudge.Great:   return greatRate;
-            case HitJudge.Bad:     return badRate;
-            default:               return goodRate;
+            case HitJudge.Great: return greatRate;
+            case HitJudge.Bad: return badRate;
+            default: return goodRate;
         }
     }
 
@@ -834,7 +835,26 @@ public class PlayerCombat : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D col)
     {
-        touching.Add(col.collider);
+        UpdateGroundContact(col);
+    }
+
+    // 触れ方が変わる(壁から床へ滑るなど)ので、触れている間も見直す
+    private void OnCollisionStay2D(Collision2D col)
+    {
+        UpdateGroundContact(col);
+    }
+
+    // 上向きの面(床)に触れているときだけ「地面に触れている」とする。壁や天井ではジャンプできない
+    private void UpdateGroundContact(Collision2D col)
+    {
+        bool ground = false;
+        for (int i = 0; i < col.contactCount; i++)
+        {
+            if (col.GetContact(i).normal.y >= GroundNormalMinY) { ground = true; break; }
+        }
+
+        if (ground) touching.Add(col.collider);
+        else touching.Remove(col.collider);
     }
 
     private void OnCollisionExit2D(Collision2D col)
