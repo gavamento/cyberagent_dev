@@ -316,7 +316,7 @@ MonoBehaviour:
   offscreenMargin: 0.5
   invincibleTime: 1.5
   blinkInterval: 0.1
-  damageSe: {fileID: 8300000, guid: d9aa22a2a8d2e0248a1e0e484b42c204, type: 3}
+  damageSe: {fileID: 8300000, guid: f303929f4d9f6f54b95a459b9b0cdd92, type: 3}
   deathSe: {fileID: 8300000, guid: 49c11b6164128c049829ce801b6a2a00, type: 3}
   IsDebugMode: 0
 --- !u!114 &6897665812063877766
