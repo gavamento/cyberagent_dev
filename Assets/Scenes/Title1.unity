@@ -1856,8 +1856,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 869c3ce1fca3c9f43a10845d5ef83c07, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TitleVideoBackground
-  fileName: aaaaaaaaaaaaaaaaaaaaaaa.mp4
-  dim: 0
+  fileName: tutorial.mp4
+  dim: 0.5
 --- !u!1 &622843974
 GameObject:
   m_ObjectHideFlags: 0
@@ -3292,7 +3292,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "\u7C89\u7815\u30E9\u30F3(\u4EEE)"
+  m_Text: "\u30AC\u30E9\u30AC\u30E9\u3069\u3093"
 --- !u!222 &1003098922
 CanvasRenderer:
   m_ObjectHideFlags: 0
