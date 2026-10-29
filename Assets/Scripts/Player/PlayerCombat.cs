@@ -103,8 +103,8 @@ public class PlayerCombat : MonoBehaviour
     [Min(0f)][SerializeField] private float speedRateAtMax = 2f;
 
     [Header("固まった相手の判定")]
-    [Tooltip("同じ攻撃に入った相手同士の横の間隔がこれ以内(ユニット)なら、ひとまとまりとして一番手前の相手の判定にそろえる。0でそろえない")]
-    [Min(0f)][SerializeField] private float groupDistance = 1.5f;
+    [Tooltip("同じ攻撃に入った相手は、すべて一番手前の相手の判定にそろえる")]
+    [SerializeField] private bool alignToFront = true;
 
     [Header("フィーバー(突進)")]
     [Tooltip("フィーバーの継続時間(秒)")]
@@ -201,8 +201,9 @@ public class PlayerCombat : MonoBehaviour
 
     // 固まった相手の判定用
     private readonly List<Collider2D> judgeHits = new List<Collider2D>();
-    private readonly List<float> judgeXs = new List<float>();
     private ContactFilter2D judgeFilter;
+    private bool hasAttackFront; // 今の攻撃で一番手前の位置をもう決めたか
+    private float attackFrontX;  // 今の攻撃で当たった相手の一番手前の位置(ワールドX)
 
     // 外部から「今攻撃中か」を読めるようにする(判定が出ている間+ダッシュ中)
     // フィーバー中は常に「攻撃中」扱い(接触ダメージを受けない)
@@ -511,40 +512,38 @@ public class PlayerCombat : MonoBehaviour
     }
 
     // 今の攻撃のヒットボックスの中で、相手がどこに当たったかを判定する。左寄り(頭を振り下ろしたあたり)ほど良い
-    public HitJudge JudgeHit(DestructibleObject2D target) =>
-        JudgeHit(target, currentAttackIsCharge ? chargeScaleMultiplier : 1f);
+    // 壊れた相手はすぐヒットボックスの検索に出なくなるので、この攻撃で見つけた一番手前の位置を覚えておいて使う
+    public HitJudge JudgeHit(DestructibleObject2D target)
+    {
+        float scale = currentAttackIsCharge ? chargeScaleMultiplier : 1f;
+        Vector2 point = FrontPoint(target, scale);
+        if (alignToFront)
+        {
+            if (hasAttackFront) point.x = Mathf.Min(point.x, attackFrontX);
+            attackFrontX = point.x;
+            hasAttackFront = true;
+        }
+        return JudgeHit(point, scale);
+    }
 
     // scaleMultiplier の大きさのヒットボックスで判定する(攻撃前の予告表示用)。
-    // 近くに固まっている相手は、まとまりの一番手前の相手の位置で判定する
+    // ヒットボックスに入っている相手は、一番手前の相手の位置で判定する
     public HitJudge JudgeHit(DestructibleObject2D target, float scaleMultiplier) =>
-        JudgeHit(GroupFrontPoint(target, scaleMultiplier), scaleMultiplier);
+        JudgeHit(FrontPoint(target, scaleMultiplier), scaleMultiplier);
 
-    // ヒットボックスに入っている相手を横に並べ、target から左へ間隔 groupDistance 以内で続く一番手前の位置
-    private Vector2 GroupFrontPoint(DestructibleObject2D target, float scaleMultiplier)
+    // ヒットボックスに入っている相手のうち、一番手前(左)の位置
+    private Vector2 FrontPoint(DestructibleObject2D target, float scaleMultiplier)
     {
         Vector2 point = target.JudgePoint;
-        if (groupDistance <= 0f || !TryGetAttackBox(scaleMultiplier, out Vector2 center, out Vector2 size)) return point;
+        if (!alignToFront || !TryGetAttackBox(scaleMultiplier, out Vector2 center, out Vector2 size)) return point;
 
-        // 同じ攻撃で先に壊れた相手も、Destroy はフレームの最後なのでまだ数えられる
         Physics2D.OverlapBox(center, size, 0f, judgeFilter, judgeHits);
-        judgeXs.Clear();
         foreach (var hit in judgeHits)
         {
             var other = hit != null ? hit.GetComponentInParent<DestructibleObject2D>() : null;
-            if (other != null && other != target) judgeXs.Add(other.JudgePoint.x);
+            if (other != null) point.x = Mathf.Min(point.x, other.JudgePoint.x);
         }
-        judgeXs.Sort();
-
-        // 右から順に見て、間隔が開いたところで止める
-        float front = point.x;
-        for (int i = judgeXs.Count - 1; i >= 0; i--)
-        {
-            float x = judgeXs[i];
-            if (x >= front) continue;
-            if (front - x > groupDistance) break;
-            front = x;
-        }
-        return new Vector2(front, point.y);
+        return point;
     }
 
     private HitJudge JudgeHit(Vector2 targetPos, float scaleMultiplier)
@@ -789,6 +788,7 @@ public class PlayerCombat : MonoBehaviour
         isAttacking = true;
         attackLanded = false;
         currentAttackIsCharge = isCharge;
+        hasAttackFront = false;
         SetAttackAnim(true); // 攻撃アニメーションを再生
 
         // 前の攻撃の判定が残っていたら一度切る。入れ直すと重なっている相手にも新しい攻撃として当たる
