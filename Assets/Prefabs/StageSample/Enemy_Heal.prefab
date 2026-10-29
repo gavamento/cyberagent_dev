@@ -213,9 +213,9 @@ MonoBehaviour:
   - tagName: Iron
     points: 400
     fever: 10
-  effectPrefab: {fileID: 7536003725225183824, guid: a6e26c138c59bc44a92819a9256519ae, type: 3}
+  effectPrefab: {fileID: 5310764885206095781, guid: 8b23d93eeb48bb24781e8179926c610a, type: 3}
   debricPrefab: {fileID: 8425339182896627664, guid: 920554e8e1ea5684da118f571ba2848f, type: 3}
-  shockPrefab: {fileID: 4079247072460627102, guid: 6c1eb619c63d33249a39a956ceae695c, type: 3}
+  shockPrefab: {fileID: 5115061854429416288, guid: e2fc681775b7ac143b3f0579777c551b, type: 3}
   positionOffset: {x: 0, y: 1, z: 0}
   breakSe: {fileID: 8300000, guid: 0a8c4efb9ec5cf74cb90892b76de000b, type: 3}
 --- !u!114 &6298046847853652904

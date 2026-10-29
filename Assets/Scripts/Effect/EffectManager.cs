@@ -3,7 +3,7 @@
 * タイトル　　エフェクトマネージャー
 * 作成者　　　久保木幹太
 * 作成日　　　10月21日
-* 更新日　　　10月27日
+* 更新日　　　10月29日
 */
 
 using UnityEngine;
@@ -135,6 +135,28 @@ public static class EffectManager
     }
 
     /// <summary>
+    /// パーティクルの初速倍率を決める
+    /// </summary>
+    /// <param name="particleSize">パーティクルのサイズ</param>
+    /// <param name="speedMultiplier">パーティクルの初速倍率</param>
+    private static float GetSpeedMultiplier(float? particleSize, float? speedMultiplier)
+    {
+        if (speedMultiplier.HasValue)
+        {
+            // 指定されているならそれの倍率を優先
+            return speedMultiplier.Value;
+        }
+        else if (particleSize.HasValue)
+        {
+            // 指定されていなければサイズから自動計算
+            return particleSize.Value * 10.0f;
+        }
+
+        // どっちも指定されてなきゃデフォルト倍率
+        return 1.0f;
+    }
+
+    /// <summary>
     /// エフェクトを発生させる(スプライト指定 or スプライト指定なし)
     /// </summary>
     /// <param name="effectPrefab">生成するVFXのプレハブ</param>
@@ -158,6 +180,16 @@ public static class EffectManager
 
         // エフェクトの生成
         GameObject vfxObj = Object.Instantiate(effectPrefab, spawnPosition, Quaternion.identity);
+
+        // Particle System 版の撃破エフェクトなら、色・大きさ・初速を直接渡す(WebGL でも動く)
+        // 衝撃波などスクリプトのない Particle System 版は、生成するだけで勝手に再生される
+        BreakEffectParticle particle = vfxObj.GetComponent<BreakEffectParticle>();
+        if (particle != null)
+        {
+            particle.Play(targetSprite, particleSize, GetSpeedMultiplier(particleSize, speedMultiplier));
+            return;
+        }
+
         VisualEffect vfx = vfxObj.GetComponent<VisualEffect>();
 
         if (vfx == null) return;
@@ -175,29 +207,10 @@ public static class EffectManager
             vfx.SetTexture(SpriteTextureID, GetPalette(targetSprite));
         }
 
-        // パーティクルの初速を決める
+        // パーティクルの初速を決めてVFXに渡す
         if (vfx.HasFloat(SpeedMultiplierID))
         {
-            float multiplier;
-
-            if (speedMultiplier.HasValue)
-            {
-                // 指定されているならそれの倍率を優先
-                multiplier = speedMultiplier.Value;
-            }
-            else if (particleSize.HasValue)
-            {
-                // 指定されていなければサイズから自動計算
-                multiplier = particleSize.Value * 10.0f;
-            }
-            else
-            {
-                // どっちも指定されてなきゃデフォルト倍率
-                multiplier = 1.0f;
-            }
-
-            // VFXに値を渡す
-            vfx.SetFloat(SpeedMultiplierID, multiplier);
+            vfx.SetFloat(SpeedMultiplierID, GetSpeedMultiplier(particleSize, speedMultiplier));
         }
     }
 

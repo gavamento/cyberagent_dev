@@ -197,7 +197,7 @@ public class PlayerCombat : MonoBehaviour
     private Canvas gaugeCanvas; // チャージゲージが入っているCanvas
     private Collider2D hitboxCollider; // 攻撃ヒットボックスの当たり判定
 
-    private ChargeEffect chargeEffect; // チャージエフェクト
+    private ChargeEffectParticle chargeEffect; // チャージエフェクト(WebGL でも動く Particle System 版)
 
     // 固まった相手の判定用
     private readonly List<Collider2D> judgeHits = new List<Collider2D>();
@@ -301,7 +301,7 @@ public class PlayerCombat : MonoBehaviour
         judgeFilter = ContactFilter2D.noFilter;
         judgeFilter.useTriggers = true; // 敵は Is Trigger の Collider
         // 子オブジェクトに付けたチャージエフェクトを探す
-        chargeEffect = GetComponentInChildren<ChargeEffect>();
+        chargeEffect = GetComponentInChildren<ChargeEffectParticle>();
 
         health = GetComponent<PlayerHealth>();
         if (health != null)
