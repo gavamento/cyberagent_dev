@@ -50,6 +50,15 @@ MonoBehaviour:
   Great: {r: 1, g: 0, b: 0, a: 1}
   Good: {r: 0.13568628, g: 1, b: 0, a: 1}
   Bad: {r: 0, g: 0.026485443, b: 1, a: 1}
+  perfectSe: {fileID: 8300000, guid: 6e975844edbfc7a4c885b860fa3e4f9a, type: 3}
+  perfectVolume: 0.07
+  greatSe: {fileID: 8300000, guid: 7cf84ee8205a46a479d567c3876ba5d5, type: 3}
+  greatVolume: 0.07
+  goodSe: {fileID: 8300000, guid: 8722b999ab0d9034191f291b2cc5b799, type: 3}
+  goodVolume: 0.07
+  badSe: {fileID: 8300000, guid: 6867754ab507f7c4d980875996b8775f, type: 3}
+  badVolume: 0.07
+  seSource: {fileID: 0}
   offset: {x: 0, y: 200, z: 0}
   scale: {x: 5, y: 5, z: 5}
   timer: 3

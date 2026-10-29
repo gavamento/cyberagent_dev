@@ -203,6 +203,9 @@ MonoBehaviour:
   bounceVelocity: 12
   stompTolerance: 0.15
   playerTag: Player
+  brokenSprite: {fileID: -417064688979900798, guid: d3ba2c27146ab284db0c071a43d23920, type: 3}
+  brokenHoldTime: 0.35
+  brokenFadeTime: 0.55
   stompSe: {fileID: 0}
 --- !u!1 &8210651185909850442
 GameObject:
