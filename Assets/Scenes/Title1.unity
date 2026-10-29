@@ -1779,6 +1779,7 @@ GameObject:
   - component: {fileID: 576541863}
   - component: {fileID: 576541865}
   - component: {fileID: 576541864}
+  - component: {fileID: 576541866}
   m_Layer: 5
   m_Name: TitleBackground
   m_TagString: Untagged
@@ -1843,6 +1844,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 576541862}
   m_CullTransparentMesh: 1
+--- !u!114 &576541866
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 576541862}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 869c3ce1fca3c9f43a10845d5ef83c07, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TitleVideoBackground
+  fileName: aaaaaaaaaaaaaaaaaaaaaaa.mp4
+  dim: 0
 --- !u!1 &622843974
 GameObject:
   m_ObjectHideFlags: 0
