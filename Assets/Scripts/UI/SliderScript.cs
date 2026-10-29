@@ -15,6 +15,7 @@ public class SliderScript : MonoBehaviour
     [SerializeField] private GameObject feverEffect;
 
     private Color normalColor;
+    Text text;
 
     // 最初の1フレームより前に、必ず空(最小値)の状態にしておく
     void Awake()
@@ -41,6 +42,7 @@ public class SliderScript : MonoBehaviour
 
         normalColor = slider.fillRect.GetComponent<Image>().color;
         feverEffect.SetActive(false);
+        text = feverEffect.GetComponentInChildren<Text>();
     }
 
     // 標準のSliderは塗りの置き場(Fill Area)の端に余白があり、最大でも隙間ができる。余白を0にして枠いっぱいまで塗る
@@ -72,6 +74,14 @@ public class SliderScript : MonoBehaviour
             float hue = Mathf.Repeat(Time.time * 0.5f, 1.0f);
             slider.fillRect.GetComponent<Image>().color = Color.HSVToRGB(hue, 1.0f, 1.0f);
             feverEffect.SetActive(true);
+
+            
+            if (text != null)
+            {
+                Color color = text.color;
+                color.a = (Mathf.Sin(Time.time * 10.0f)+1.0f)/ 2.0f;
+                text.color = color;
+            }
         }
         else 
         {

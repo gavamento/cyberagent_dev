@@ -186,7 +186,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: '::'
   scrollCamera: {fileID: 0}
   message: GOAL
-  font: {fileID: 0}
+  font: {fileID: 12800000, guid: 7d64eec5d609d154b960bfe1daddc97c, type: 3}
   fontSize: 200
   textColor: {r: 1, g: 0.85, b: 0.2, a: 1}
   popScale: 1.6

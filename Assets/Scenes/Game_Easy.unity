@@ -150,8 +150,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::StageGenerator
   tilemap: {fileID: 2027936396}
   chunkWidth: 20
-  groundTile: {fileID: 11400000, guid: aed3256a29269264c98d58dd14cf523a, type: 2}
-  fillTile: {fileID: 11400000, guid: 618a154993c02cd4a89e8f279106fba7, type: 2}
+  groundTile: {fileID: 0}
+  groundTileVariants:
+  - {fileID: 11400000, guid: aed3256a29269264c98d58dd14cf523a, type: 2}
+  - {fileID: 11400000, guid: 490895d00e0e1274eac1b473b6a6ef9d, type: 2}
+  - {fileID: 11400000, guid: 7650f7d5ed3623549b699fa2886d3f66, type: 2}
+  - {fileID: 11400000, guid: 3b9960bdd520830408120d20f574fd3b, type: 2}
+  - {fileID: 11400000, guid: 1891ffc492ccbf345bad4efcc3ced859, type: 2}
+  groundPattern: 0
+  fillTile: {fileID: 11400000, guid: 9bf079fab72a66b42a9ee34f6044cde2, type: 2}
   groundDepth: 8
   endless: 0
   seed: 1
@@ -380,60 +387,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!1 &347703692
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 347703693}
-  - component: {fileID: 347703694}
-  m_Layer: 0
-  m_Name: ScoreJudge
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &347703693
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 347703692}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -958, y: -542.5, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 1776400874}
-  m_Father: {fileID: 2099306857}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &347703694
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 347703692}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8cad18016a5a3aa48a57cb5fe0eb104c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ScoreJudgeScript
-  Active: 0
-  perfectTexture: {fileID: 21300000, guid: 16b07aad7c3c9e648801896de62a980e, type: 3}
-  greatTexture: {fileID: 21300000, guid: 6f947e92bb8d05d429a073179dc7e23b, type: 3}
-  goodTexture: {fileID: 21300000, guid: 080d0268c4c9abb43a04904721c22ec8, type: 3}
-  badTexture: {fileID: 21300000, guid: 816b0a65cafe205459c3b3a28f020813, type: 3}
-  judgeObject: {fileID: 1776400875}
-  offset: {x: 0, y: 0, z: 0}
-  scale: {x: 0, y: 0, z: 0}
-  timer: 1
 --- !u!1 &351015292
 GameObject:
   m_ObjectHideFlags: 0
@@ -535,7 +488,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1eb6f21ddfb829b46a9c2036e8437c97, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AutoScrollCamera
-  speed: 8
+  speed: 7.7
   stage: {fileID: 42231018}
   yOffset: 2
   followSmooth: 2
@@ -845,6 +798,69 @@ PrefabInstance:
 VisualEffect:
   m_CorrespondingSourceObject: {fileID: 5594669762912165722, guid: bc5a8ccae54fac5498309da6eb32e360, type: 3}
   m_PrefabInstance: {fileID: 905394115}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &940791319
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 2099306857}
+    m_Modifications:
+    - target: {fileID: 5107546999862126273, guid: 2d2391f33eedf8049bcac4b8a33c5d33, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -951.7604
+      objectReference: {fileID: 0}
+    - target: {fileID: 5107546999862126273, guid: 2d2391f33eedf8049bcac4b8a33c5d33, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -535.67725
+      objectReference: {fileID: 0}
+    - target: {fileID: 5107546999862126273, guid: 2d2391f33eedf8049bcac4b8a33c5d33, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5107546999862126273, guid: 2d2391f33eedf8049bcac4b8a33c5d33, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5107546999862126273, guid: 2d2391f33eedf8049bcac4b8a33c5d33, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5107546999862126273, guid: 2d2391f33eedf8049bcac4b8a33c5d33, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5107546999862126273, guid: 2d2391f33eedf8049bcac4b8a33c5d33, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5107546999862126273, guid: 2d2391f33eedf8049bcac4b8a33c5d33, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5107546999862126273, guid: 2d2391f33eedf8049bcac4b8a33c5d33, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5107546999862126273, guid: 2d2391f33eedf8049bcac4b8a33c5d33, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8203925535465326621, guid: 2d2391f33eedf8049bcac4b8a33c5d33, type: 3}
+      propertyPath: m_Name
+      value: ScoreJudge
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects:
+    - {fileID: 3188745039308987152, guid: 2d2391f33eedf8049bcac4b8a33c5d33, type: 3}
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 2d2391f33eedf8049bcac4b8a33c5d33, type: 3}
+--- !u!4 &940791320 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 5107546999862126273, guid: 2d2391f33eedf8049bcac4b8a33c5d33, type: 3}
+  m_PrefabInstance: {fileID: 940791319}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &947885050
 PrefabInstance:
@@ -1450,7 +1466,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CoinCounterUI
   playerCombat: {fileID: 0}
   prefix: 'COIN x '
-  font: {fileID: 0}
+  font: {fileID: 12800000, guid: 5bcceb7d1a1cf9d45aaa27523a7acb34, type: 3}
   fontSize: 70
   textColor: {r: 1, g: 0.85, b: 0.2, a: 1}
   margin: {x: 40, y: 20}
@@ -1471,81 +1487,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1776400873
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1776400874}
-  - component: {fileID: 1776400876}
-  - component: {fileID: 1776400875}
-  m_Layer: 5
-  m_Name: ScoreImage
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &1776400874
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1776400873}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 347703693}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 958, y: 542.5}
-  m_SizeDelta: {x: 100, y: 100}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1776400875
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1776400873}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 0}
-  m_Type: 0
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
---- !u!222 &1776400876
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1776400873}
-  m_CullTransparentMesh: 1
 --- !u!1001 &1842595939
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1946,7 +1887,7 @@ MonoBehaviour:
   scrollCamera: {fileID: 351015295}
   playerCombat: {fileID: 0}
   message: YOU DIED
-  font: {fileID: 0}
+  font: {fileID: 12800000, guid: 5bcceb7d1a1cf9d45aaa27523a7acb34, type: 3}
   fontSize: 160
   textColor: {r: 1, g: 1, b: 1, a: 1}
   messageFadeInTime: 0.5
@@ -2067,9 +2008,9 @@ RectTransform:
   - {fileID: 685936807}
   - {fileID: 1842595940}
   - {fileID: 947885051}
-  - {fileID: 347703693}
   - {fileID: 107541805}
   - {fileID: 1399192386}
+  - {fileID: 940791320}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
