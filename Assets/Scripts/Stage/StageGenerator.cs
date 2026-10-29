@@ -13,6 +13,10 @@ public class StageGenerator : MonoBehaviour
     [Min(1)][SerializeField] int chunkWidth = 20;
     [Tooltip("地面の表面に塗るタイル")]
     [SerializeField] TileBase groundTile;
+    [Tooltip("表面タイルを複数使う時に指定する。空ならgroundTileだけを使う")]
+    [SerializeField] TileBase[] groundTileVariants;
+    [Tooltip("InOrder: 左から順に繰り返す / Scattered: 列ごとにばらばらに選ぶ")]
+    [SerializeField] GroundTilePattern groundPattern = GroundTilePattern.InOrder;
     [Tooltip("表面より下に塗るタイル。未指定なら表面タイルを使う")]
     [SerializeField] TileBase fillTile;
     [Tooltip("一番低い地面からさらに下に塗る深さ (マス)")]
@@ -124,6 +128,10 @@ public class StageGenerator : MonoBehaviour
     [Tooltip("敵ごとの出やすさの倍率と群れの加算")]
     [SerializeField] string debugEnemyRates;
 
+    enum GroundTilePattern { InOrder, Scattered }
+    // タイル選びで使うシード
+    int tileSeed;
+
     [System.Serializable]
     class TimeModifier
     {
@@ -217,6 +225,8 @@ public class StageGenerator : MonoBehaviour
         return true;
     }
 
+    bool HasGroundTile => groundTile != null || (groundTileVariants != null && groundTileVariants.Length > 0);
+
     readonly List<int> stepColumns = new List<int>();
     readonly List<int> holeColumns = new List<int>();
     readonly Dictionary<int, int> heights = new Dictionary<int, int>();
@@ -293,6 +303,30 @@ public class StageGenerator : MonoBehaviour
         while (deletedUntil < cx - keepBehind) DeleteColumn(deletedUntil++);
     }
 
+    // 列xの表面に塗るタイルを選ぶ
+    TileBase PickGroundTile(int x)
+    {
+        if (groundTileVariants == null || groundTileVariants.Length == 0) return groundTile;
+
+        int n = groundTileVariants.Length;
+        int index;
+        if (groundPattern == GroundTilePattern.InOrder)
+        {
+            // 左から順に繰り返す
+            index = ((x % n) + n) % n;
+        }
+        else
+        {
+            // 列とシードだけで決まる値を使う
+            uint h = unchecked((uint)(x * 374761393 + tileSeed * 668265263));
+            h = (h ^ (h >> 13)) * 1274126177u;
+            index = (int)((h ^ (h >> 16)) % (uint)n);
+        }
+
+        var tile = groundTileVariants[index];
+        return tile != null ? tile : groundTile;
+    }
+
     // ゴールありでゴールまで作り終えたか
     bool IsFinished => !endless && nextColumn >= stageLength;
     float Elapsed => Time.time - startTime;
@@ -300,7 +334,7 @@ public class StageGenerator : MonoBehaviour
     [ContextMenu("Generate")]
     public void Generate()
     {
-        if (tilemap == null || groundTile == null)
+        if (tilemap == null || !HasGroundTile)
         {
             Debug.LogError($"{name}: タイルマップと表面タイルを指定してください", this);
             return;
@@ -308,6 +342,7 @@ public class StageGenerator : MonoBehaviour
 
         Clear();
         int actualSeed = seed != 0 ? seed : System.Environment.TickCount;
+        tileSeed = actualSeed;
         rng = new System.Random(actualSeed);
         coinRng = new System.Random(unchecked(actualSeed * 31 + 7));
         container = new GameObject("Spawned").transform;
@@ -423,9 +458,11 @@ public class StageGenerator : MonoBehaviour
         if (!inHole)
         {
             int bottom = baseHeight - groundDepth;
+            // 表面のタイルは列ごとに一回だけ選ぶ
+            var surface = PickGroundTile(x);
             for (int y = bottom; y <= currentHeight; y++)
             {
-                var tile = y == currentHeight || fillTile == null ? groundTile : fillTile;
+                var tile = y == currentHeight || fillTile == null ? surface : fillTile;
                 map.SetTile(new Vector3Int(x, y, 0), tile);
             }
         }

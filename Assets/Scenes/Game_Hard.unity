@@ -150,8 +150,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::StageGenerator
   tilemap: {fileID: 2027936396}
   chunkWidth: 20
-  groundTile: {fileID: 11400000, guid: aed3256a29269264c98d58dd14cf523a, type: 2}
-  fillTile: {fileID: 11400000, guid: 618a154993c02cd4a89e8f279106fba7, type: 2}
+  groundTile: {fileID: 0}
+  groundTileVariants:
+  - {fileID: 11400000, guid: aed3256a29269264c98d58dd14cf523a, type: 2}
+  - {fileID: 11400000, guid: 490895d00e0e1274eac1b473b6a6ef9d, type: 2}
+  - {fileID: 11400000, guid: 7650f7d5ed3623549b699fa2886d3f66, type: 2}
+  - {fileID: 11400000, guid: 3b9960bdd520830408120d20f574fd3b, type: 2}
+  - {fileID: 11400000, guid: 1891ffc492ccbf345bad4efcc3ced859, type: 2}
+  groundPattern: 0
+  fillTile: {fileID: 11400000, guid: 9bf079fab72a66b42a9ee34f6044cde2, type: 2}
   groundDepth: 8
   endless: 0
   seed: 800
