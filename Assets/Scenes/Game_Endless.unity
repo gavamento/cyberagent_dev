@@ -732,6 +732,7 @@ MonoBehaviour:
   brakeFollowRate: 2.3
   brakeTargetRate: 0.78
   minSpeedRate: 0.5
+  feverDropTime: 4
   feverRecoverTime: 4
   currentSpeed: 0
   flow: 0
@@ -1292,6 +1293,9 @@ MonoBehaviour:
   backEffect: {fileID: 905394116}
   player: {fileID: 1338264630}
   positionOffset: {x: 10, y: 0, z: 0}
+  playerCombat: {fileID: 0}
+  feverBlendInTime: 0.3
+  feverBlendOutTime: 0.6
 --- !u!4 &1232705441
 Transform:
   m_ObjectHideFlags: 0
