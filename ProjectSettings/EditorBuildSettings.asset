@@ -6,9 +6,6 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/Title.unity
-    guid: 0ece41c482980cb409e1ff9bb281b5de
-  - enabled: 1
     path: Assets/Scenes/Title1.unity
     guid: 38233d5beb253924d9799715512dcf87
   - enabled: 1
@@ -21,20 +18,11 @@ EditorBuildSettings:
     path: Assets/Scenes/Game_Hard.unity
     guid: d4697ac5cff6c3e458697d73a6ebc4fc
   - enabled: 1
-    path: Assets/Scenes/Game.unity
-    guid: 2fa1402455dbc4f42ad5edb780969f41
-  - enabled: 1
-    path: Assets/Scenes/SampleScene.unity
-    guid: 8c9cfa26abfee488c85f1582747f6a02
-  - enabled: 0
-    path: Assets/Scenes/Clear.unity
-    guid: a115cae3fd644e3449d3185c1c7b4fe5
+    path: Assets/Scenes/Game_Endless.unity
+    guid: 8d7870097ae171340b96fd425c49432b
   - enabled: 1
     path: Assets/Scenes/Result.unity
     guid: 4ca3d89239b23fb469bd32112ebc0226
-  - enabled: 1
-    path: Assets/Scenes/Game_Endless.unity
-    guid: 8d7870097ae171340b96fd425c49432b
   m_configObjects:
     com.unity.dt.app-ui: {fileID: 11400000, guid: 1b1c20d82303e4b5781c3ef50ac1449f, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
