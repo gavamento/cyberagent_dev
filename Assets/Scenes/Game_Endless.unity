@@ -150,8 +150,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::StageGenerator
   tilemap: {fileID: 2027936396}
   chunkWidth: 20
-  groundTile: {fileID: 11400000, guid: aed3256a29269264c98d58dd14cf523a, type: 2}
-  fillTile: {fileID: 11400000, guid: 618a154993c02cd4a89e8f279106fba7, type: 2}
+  groundTile: {fileID: 0}
+  groundTileVariants:
+  - {fileID: 11400000, guid: aed3256a29269264c98d58dd14cf523a, type: 2}
+  - {fileID: 11400000, guid: 490895d00e0e1274eac1b473b6a6ef9d, type: 2}
+  - {fileID: 11400000, guid: 7650f7d5ed3623549b699fa2886d3f66, type: 2}
+  - {fileID: 11400000, guid: 3b9960bdd520830408120d20f574fd3b, type: 2}
+  - {fileID: 11400000, guid: 1891ffc492ccbf345bad4efcc3ced859, type: 2}
+  groundPattern: 0
+  fillTile: {fileID: 11400000, guid: 9bf079fab72a66b42a9ee34f6044cde2, type: 2}
   groundDepth: 8
   endless: 1
   seed: 1
@@ -562,11 +569,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ScoreJudgeScript
   Active: 0
-  perfectTexture: {fileID: 21300000, guid: 16b07aad7c3c9e648801896de62a980e, type: 3}
-  greatTexture: {fileID: 21300000, guid: 6f947e92bb8d05d429a073179dc7e23b, type: 3}
-  goodTexture: {fileID: 21300000, guid: 080d0268c4c9abb43a04904721c22ec8, type: 3}
-  badTexture: {fileID: 21300000, guid: 816b0a65cafe205459c3b3a28f020813, type: 3}
-  judgeObject: {fileID: 1776400875}
+  Text: {fileID: 0}
+  Perfect: {r: 0, g: 0, b: 0, a: 0}
+  Great: {r: 0, g: 0, b: 0, a: 0}
+  Good: {r: 0, g: 0, b: 0, a: 0}
+  Bad: {r: 0, g: 0, b: 0, a: 0}
   offset: {x: 0, y: 0, z: 0}
   scale: {x: 0, y: 0, z: 0}
   timer: 1
