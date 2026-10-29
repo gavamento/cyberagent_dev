@@ -152,8 +152,8 @@ MonoBehaviour:
   digitCount: 6
   previewScore: 1230
   coinBonus:
-    basePoints: 100
-    exponent: 1.5
+    basePoints: 25
+    exponent: 1.2
     graphMaxCoins: 30
   previewCoins: 12
   bonusFormat: COIN x{0}   BONUS +{1:#,0}

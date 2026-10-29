@@ -3,8 +3,9 @@ using UnityEngine.UI;
 
 public class ScoreRankScript : MonoBehaviour
 {
-    [Header("使うテキスト")]
+    [Header("Rank表示テキスト")]
     [SerializeField] private Text scoreText;
+    [SerializeField] static private Text scoreSendText;
 
     [Header("Eランクに行く値")]
     [SerializeField] private int limitE;
@@ -25,17 +26,23 @@ public class ScoreRankScript : MonoBehaviour
     [SerializeField] private int limitS;
     [SerializeField] private Color colorS;
 
+    [Header("NextRank表示テキスト")]
+    [SerializeField] private Text nextText;
+   
     // Update is called once per frame
     void Update()
     {
         int nowScore = ScoreScript.GetScore();
 
-        if (nowScore > limitS)      { scoreText.text = "S"; scoreText.color = colorS; }
-        else if (nowScore > limitA) { scoreText.text = "A"; scoreText.color = colorA; } 
-        else if (nowScore > limitB) { scoreText.text = "B"; scoreText.color = colorB; }  
-        else if (nowScore > limitC) { scoreText.text = "C"; scoreText.color = colorC; }
-        else if (nowScore > limitD) { scoreText.text = "D"; scoreText.color = colorD; }
-        else { scoreText.text = "E"; scoreText.color = colorE; }
-       
+        if (nowScore > limitS)      { scoreText.text = "S"; scoreText.color = colorS; nextText.text = "";}
+        else if (nowScore > limitA) { scoreText.text = "A"; scoreText.color = colorA; nextText.text = "RankUp→" + limitS; nextText.color = colorS; } 
+        else if (nowScore > limitB) { scoreText.text = "B"; scoreText.color = colorB; nextText.text = "RankUp→" + limitA; nextText.color = colorA; }  
+        else if (nowScore > limitC) { scoreText.text = "C"; scoreText.color = colorC; nextText.text = "RankUp→" + limitB; nextText.color = colorB; }
+        else if (nowScore > limitD) { scoreText.text = "D"; scoreText.color = colorD; nextText.text = "RankUp→" + limitC; nextText.color = colorC; }
+        else { scoreText.text = "E"; scoreText.color = colorE; nextText.text = "RankUp→" + limitD; nextText.color = colorD; }
+
+        scoreSendText = scoreText;
     }
+
+    static Text GetRank() {  return scoreSendText; }
 }
