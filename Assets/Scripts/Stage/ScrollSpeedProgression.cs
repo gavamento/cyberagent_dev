@@ -52,7 +52,9 @@ public class ScrollSpeedProgression : MonoBehaviour
     [Range(0f, 1f)][SerializeField] float minSpeedRate = 0.5f;
 
     [Header("フィーバー明け")]
-    [Tooltip("フィーバーが終わって初速に落ちた後、フィーバー前の速度に戻るまでの時間(秒)")]
+    [Tooltip("フィーバーが終わってから、初速(一番遅い速度)までゆっくり下がる時間(秒)。0で一瞬で下がる")]
+    [Min(0f)][SerializeField] float feverDropTime = 4.0f;
+    [Tooltip("初速まで下がった後、フィーバー前の速度に戻るまでの時間(秒)")]
     [Min(0f)][SerializeField] float feverRecoverTime = 4f;
 
     [Header("確認用 (実行中の値)")]
@@ -67,6 +69,8 @@ public class ScrollSpeedProgression : MonoBehaviour
     float preFeverSpeed;
     float preFeverFlow;
     float recoverTimer;
+    float dropTimer;
+    float dropFromSpeed;
 
     public float StartSpeed => scroll.BaseSpeed;
     public float CurrentSpeed => currentSpeed;
@@ -100,12 +104,19 @@ public class ScrollSpeedProgression : MonoBehaviour
         float rate = brakeTimer > 0f ? brakeFollowRate : followRate;
         currentSpeed += (target - currentSpeed) * Mathf.Min(1f, dt * rate);
 
-        // フィーバー明け: 初速からフィーバー前の速度まで、一定の速さでだんだん上限を上げていく
-        if (recoverTimer > 0f)
+        // フィーバー明け: まず初速までゆっくり下げ、そのあとフィーバー前の速度まで、だんだん上限を上げていく
+        if (dropTimer > 0f)
+        {
+            dropTimer = Mathf.Max(0f, dropTimer - dt);
+            float p = feverDropTime > 0f ? 1f - dropTimer / feverDropTime : 1f;
+            float limit = Mathf.Lerp(dropFromSpeed, StartSpeed, Mathf.SmoothStep(0f, 1f, p));
+            currentSpeed = Mathf.Min(currentSpeed, limit);
+        }
+        else if (recoverTimer > 0f)
         {
             recoverTimer = Mathf.Max(0f, recoverTimer - dt);
             float p = feverRecoverTime > 0f ? 1f - recoverTimer / feverRecoverTime : 1f;
-            float limit = Mathf.Lerp(StartSpeed, Mathf.Max(StartSpeed, preFeverSpeed), p);
+            float limit = Mathf.Lerp(StartSpeed, Mathf.Max(StartSpeed, preFeverSpeed), Mathf.SmoothStep(0f, 1f, p));
             currentSpeed = Mathf.Min(currentSpeed, limit);
         }
     }
@@ -150,14 +161,15 @@ public class ScrollSpeedProgression : MonoBehaviour
         preFeverFlow = flow;
     }
 
-    // フィーバーが終わったとき。速度を初速(一番遅い速度)にして、
-    // feverRecoverTime 秒かけてフィーバー前の速度まで戻していく
+    // フィーバーが終わったとき。今の速度から feverDropTime 秒かけて初速(一番遅い速度)までゆっくり下げ、
+    // そのあと feverRecoverTime 秒かけてフィーバー前の速度まで戻していく
     public void OnFeverEnd()
     {
         flow = preFeverFlow;          // フィーバー中に増えた flow は捨てて、前の勢いに戻す
         lastBreakTime = Time.time;
         brakeTimer = 0f;
-        currentSpeed = StartSpeed;
+        dropFromSpeed = Mathf.Max(StartSpeed, currentSpeed); // ここからゆっくり下げる(一気に落とさない)
+        dropTimer = feverDropTime;
         recoverTimer = feverRecoverTime;
     }
 

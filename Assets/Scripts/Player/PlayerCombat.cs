@@ -43,6 +43,10 @@ public class PlayerCombat : MonoBehaviour
     [Tooltip("ぐんっと感の強さ。大きいほど出だしが急加速")]
     [SerializeField, Range(1f, 8f)] private float forwardSpeed = 2f;
 
+    [Header("前進(踏む敵を踏んで倒したとき)")]
+    [Tooltip("前に進む距離。0で進まない")]
+    [Min(0f)][SerializeField] private float stompForwardDistance = 1.35f;
+
     [Header("後退(敵に外れたとき)")]
     [Tooltip("後ろに下がる距離")]
     [SerializeField] private float backDistance = 0.46f;
@@ -174,6 +178,7 @@ public class PlayerCombat : MonoBehaviour
     private Vector3 hitboxBaseScale;
     private const float DashDuration = 0.1f; // ダッシュの時間
     private bool isAttacking; // 攻撃(ダッシュ)中は待機後退を止める
+    private bool isStompDashing; // 踏んで前へ進んでいる間(待機後退を止める。攻撃扱いにはしない)
     private bool attackLanded;          // 今の攻撃が相手に通ったか
     private bool currentAttackIsCharge; // 今の攻撃がため攻撃か
     private float jumpBufferTimer;
@@ -223,6 +228,21 @@ public class PlayerCombat : MonoBehaviour
         minX = center.x - size.x * 0.5f;
         maxX = center.x + size.x * 0.5f;
         return true;
+    }
+
+    // 踏む敵を踏んで倒したときに、敵側から呼ばれる。攻撃が当たったときと同じように前へ進む
+    public void StompForward()
+    {
+        if (stompForwardDistance <= 0f || IsFever || isAttacking || isStompDashing) return;
+        if (!isActiveAndEnabled) return;
+        StartCoroutine(StompDashRoutine());
+    }
+
+    private IEnumerator StompDashRoutine()
+    {
+        isStompDashing = true;
+        yield return Dash(stompForwardDistance, forwardSpeed);
+        isStompDashing = false;
     }
 
     // 今ボタンを離したときに出る攻撃の大きさの倍率(ため攻撃が出せる状態なら、ため攻撃の大きさ)
@@ -597,6 +617,7 @@ public class PlayerCombat : MonoBehaviour
         StopAllCoroutines();
         attackHitbox.SetActive(false);
         isAttacking = false;
+        isStompDashing = false;
         isPressing = false;
         // 溜め中だったらエフェクトを止める
         if (chargeEffect != null) chargeEffect.Cancel();
@@ -686,7 +707,7 @@ public class PlayerCombat : MonoBehaviour
         // フィーバー中は前へ自動で進む
         float gain = progression != null ? progression.SpeedGain : 0f;
         float vx = IsFever ? feverForwardSpeed + gain
-                           : (isAttacking ? 0f : -idleBackSpeed + gain);
+                           : (isAttacking || isStompDashing ? 0f : -idleBackSpeed + gain);
         rb.linearVelocity = new Vector2(vx, vy);
 
         float maxX = MaxForwardX();
@@ -868,6 +889,7 @@ public class PlayerCombat : MonoBehaviour
     private void OnDisable()
     {
         touching.Clear();
+        isStompDashing = false;
         isPressing = false; // 押したまま無効になったら、再び有効になったときに攻撃が出ないようにする
         // 溜め中に無効になったらエフェクトも止める
         if (chargeEffect != null) chargeEffect.Cancel();

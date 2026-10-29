@@ -10,7 +10,7 @@ using UnityEngine;
 
 // backEffect.vfx を Particle System で作り直したもの。WebGL でも動く
 // 置き方は BackEffect と同じ。X だけプレイヤーに追従し、Y は最初の位置で固定
-// プレイヤーの横の速さに合わせて、風の量と流れる速さを変える
+// プレイヤーの横の速さに合わせて、風の量と流れる速さを変える。フィーバー中は風の量を増やす
 public class BackEffectParticle : MonoBehaviour
 {
     [SerializeField] private ParticleSystem backEffect;
@@ -31,12 +31,31 @@ public class BackEffectParticle : MonoBehaviour
     [Tooltip("プレイヤーが speedReferenceSpeed のときの速さの範囲(最小, 最大)")]
     [SerializeField] private Vector2 fastSpeedRange = new Vector2(20.0f, 40.0f);
 
+    [Header("フィーバー")]
+    [Tooltip("フィーバー状態を調べる対象 空だったらplayerと同じオブジェクトから探す")]
+    [SerializeField] private PlayerCombat playerCombat;
+    [Tooltip("フィーバー中に風の量を何倍にするか")]
+    [SerializeField, Min(1.0f)] private float feverRateScale = 10.0f;
+    [Tooltip("フィーバーに入ってから線が最大までの時間")]
+    [SerializeField, Min(0.01f)] private float feverBlendInTime = 0.3f;
+    [Tooltip("フィーバーが終わってから、通常の本数に戻るまでの時間")]
+    [SerializeField, Min(0.01f)] private float feverBlendOutTime = 0.6f;
+
     private float fixedY;
+
+    // 0=通常 1=フィーバー(なめらかに切り替えるための値)
+    private float feverBlend;
 
     private void Start()
     {
         // 最初のY座標を保持
         fixedY = backEffect.transform.position.y;
+
+        // 指定がなければプレイヤーのオブジェクトから探す
+        if (playerCombat == null && player != null)
+        {
+            playerCombat = player.GetComponent<PlayerCombat>();
+        }
     }
 
     private void Update()
@@ -52,8 +71,13 @@ public class BackEffectParticle : MonoBehaviour
         // VFX 版の Remap と同じく、範囲の外でもそのまま伸ばす
         float speed = Mathf.Abs(player.linearVelocity.x);
 
+        // フィーバー中は1、それ以外は0に向かって動かす。増えるときは速く、戻るときはゆっくり
+        float target = (playerCombat != null && playerCombat.IsFever) ? 1.0f : 0.0f;
+        float time = target > feverBlend ? feverBlendInTime : feverBlendOutTime;
+        feverBlend = Mathf.MoveTowards(feverBlend, target, Time.deltaTime / time);
+
         var emission = backEffect.emission;
-        emission.rateOverTimeMultiplier = speed / rateReferenceSpeed * maxRate;
+        emission.rateOverTimeMultiplier = speed / rateReferenceSpeed * maxRate * Mathf.Lerp(1.0f, feverRateScale, feverBlend);
 
         float t = speed / speedReferenceSpeed;
         var main = backEffect.main;
