@@ -1189,6 +1189,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1842595942}
     - target: {fileID: 1434127356923436350, guid: f1a86af43b64057418bed1896ccea79b, type: 3}
+      propertyPath: idleBackSpeed
+      value: -7.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 1434127356923436350, guid: f1a86af43b64057418bed1896ccea79b, type: 3}
       propertyPath: chargeGaugeRoot
       value: 
       objectReference: {fileID: 107541803}
