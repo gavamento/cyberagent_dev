@@ -151,6 +151,8 @@ public class ResultScoreDirector : MonoBehaviour
         }
 
         hintText.gameObject.SetActive(false);
+        AudioManager.PlaySE(breakEndSound);
+        AudioManager.StopBGM();
         GetComponent<UIShatterEffect>().Shatter(resultRoot, () => SceneController.ChangeScene(titleSceneName));
     }
 
