@@ -35,6 +35,12 @@ public class ScreenShatterTransition : MonoBehaviour
 
     private static ScreenShatterTransition running;
 
+    // 演出中は true。この間はゲームを止めているので、操作も受け付けないようにする
+    public static bool IsRunning => running != null;
+
+    private float savedTimeScale = 1f;
+    private bool paused;
+
     // 読み込めないシーン名なら何もせず false を返す
     public static bool Load(string sceneName)
     {
@@ -80,6 +86,11 @@ public class ScreenShatterTransition : MonoBehaviour
         // 破片が画面を覆っている間に切り替える
         SceneManager.LoadScene(sceneName);
 
+        // 破片で画面が見えない間はゲームを止めておく (演出は unscaled の時間で動く)
+        savedTimeScale = Time.timeScale;
+        Time.timeScale = 0f;
+        paused = true;
+
         // 揺れながらひびのすき間が開く
         var basePositions = new Vector2[shards.Count];
         for (int i = 0; i < shards.Count; i++) basePositions[i] = shards[i].rect.anchoredPosition;
@@ -115,8 +126,14 @@ public class ScreenShatterTransition : MonoBehaviour
 
         Destroy(sprite);
         Destroy(capture);
-        running = null;
         Destroy(gameObject);
+    }
+
+    // 演出の途中で消えたときも、止めた時間を戻す
+    private void OnDestroy()
+    {
+        if (paused) Time.timeScale = savedTimeScale;
+        if (running == this) running = null;
     }
 
     private List<Shard> CreateShards(RectTransform parent, Sprite sprite, Vector2 size, float scale)
