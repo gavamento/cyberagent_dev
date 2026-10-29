@@ -9,7 +9,6 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using NUnit.Framework.Internal;
 
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(SpriteRenderer))]

@@ -145,3 +145,10 @@ MonoBehaviour:
   points: 300
   flowAmount: 1
   pickupSe: {fileID: 8300000, guid: 6b30cdf44dab8f444b9d00d491983103, type: 3}
+  visual: {fileID: 0}
+  bobHeight: 0.15
+  bobFrequency: 0.6
+  swayWidth: 0.04
+  effectPrefab: {fileID: 7536003725225183824, guid: a6e26c138c59bc44a92819a9256519ae, type: 3}
+  debrisPrefab: {fileID: 8425339182896627664, guid: 920554e8e1ea5684da118f571ba2848f, type: 3}
+  shockPrefab: {fileID: 4079247072460627102, guid: 6c1eb619c63d33249a39a956ceae695c, type: 3}
