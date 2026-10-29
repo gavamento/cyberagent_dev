@@ -35,34 +35,6 @@ public class ScoreJudgeScript : MonoBehaviour
     [SerializeField] private const float defaultTime = 1;
 
 
-    // Update is called once per frame
-    void Update()
-    {
-        if (Active)
-        {
-            Vector3 d = new Vector3(940.0f, 540.0f, 0.0f);
-
-            if (Input.GetKeyDown(KeyCode.Q))
-            {
-                SetScorePerfect(d, 3.0f);
-            }
-            else if (Input.GetKeyDown(KeyCode.W))
-            {
-                SetScoreGreat(d, 3.0f);
-            }
-            else if (Input.GetKeyDown(KeyCode.E))
-            {
-                SetScoreGood(d, 3.0f);
-            }
-            else if (Input.GetKeyDown(KeyCode.R))
-            {
-                SetScoreBad(d, 3.0f);
-            }
-        }
-    }
-
-
-
     // 音量(0〜1)を掛けて、効果音を鳴らす
     private void PlaySe(AudioClip clip, float volume)
     {
