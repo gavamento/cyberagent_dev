@@ -151,7 +151,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ResultScoreDirector
   digitCount: 6
   previewScore: 1230
-  font: {fileID: 0}
+  coinBonus:
+    basePoints: 100
+    exponent: 1.5
+    graphMaxCoins: 30
+  previewCoins: 12
+  bonusFormat: COIN x{0}   BONUS +{1:#,0}
+  bonusFontSize: 56
+  bonusGap: 30
+  font: {fileID: 12800000, guid: 5bcceb7d1a1cf9d45aaa27523a7acb34, type: 3}
   digitFontSize: 150
   digitColor: {r: 1, g: 1, b: 1, a: 1}
   label: SCORE
@@ -180,6 +188,9 @@ MonoBehaviour:
   gravity: 2500
   maxAngularSpeed: 540
   titleSceneName: Title1
+  breakSound: {fileID: 8300000, guid: d8615f19e7c0fff4d9307c24cc8f7ab7, type: 3}
+  breakEndSound: {fileID: 8300000, guid: 373e3af31eb233a4fa7405aa881c9723, type: 3}
+  BGM: {fileID: 8300000, guid: fa96f276639fda54484dda98805369f6, type: 3}
 --- !u!114 &888654478
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -407,6 +418,7 @@ GameObject:
   - component: {fileID: 1756477924}
   - component: {fileID: 1756477923}
   - component: {fileID: 1756477922}
+  - component: {fileID: 1756477925}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -488,6 +500,50 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1756477925
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1756477921}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a79441f348de89743a2939f4d699eac1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.UniversalAdditionalCameraData
+  m_RenderShadows: 1
+  m_RequiresDepthTextureOption: 2
+  m_RequiresOpaqueTextureOption: 2
+  m_CameraType: 0
+  m_Cameras: []
+  m_RendererIndex: -1
+  m_VolumeLayerMask:
+    serializedVersion: 2
+    m_Bits: 1
+  m_VolumeTrigger: {fileID: 0}
+  m_VolumeFrameworkUpdateModeOption: 2
+  m_RenderPostProcessing: 0
+  m_Antialiasing: 0
+  m_AntialiasingQuality: 2
+  m_StopNaN: 0
+  m_Dithering: 0
+  m_ClearDepth: 1
+  m_AllowXRRendering: 1
+  m_AllowHDROutput: 1
+  m_UseScreenCoordOverride: 0
+  m_ScreenSizeOverride: {x: 0, y: 0, z: 0, w: 0}
+  m_ScreenCoordScaleBias: {x: 0, y: 0, z: 0, w: 0}
+  m_RequiresDepthTexture: 0
+  m_RequiresColorTexture: 0
+  m_TaaSettings:
+    m_Quality: 3
+    m_FrameInfluence: 0.1
+    m_JitterScale: 1
+    m_MipBias: 0
+    m_VarianceClampScale: 0.9
+    m_ContrastAdaptiveSharpening: 0
+  m_Version: 2
 --- !u!1 &2001090549
 GameObject:
   m_ObjectHideFlags: 0

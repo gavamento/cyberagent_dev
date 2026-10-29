@@ -899,6 +899,10 @@ PrefabInstance:
       propertyPath: m_Color.r
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4050106557053677990, guid: d75a30bb94884ff458c1bab592c351f1, type: 3}
+      propertyPath: m_FontData.m_Font
+      value: 
+      objectReference: {fileID: 12800000, guid: 5bcceb7d1a1cf9d45aaa27523a7acb34, type: 3}
     - target: {fileID: 5530126574076864735, guid: d75a30bb94884ff458c1bab592c351f1, type: 3}
       propertyPath: m_Pivot.x
       value: 0
@@ -1191,7 +1195,7 @@ PrefabInstance:
       objectReference: {fileID: 1842595942}
     - target: {fileID: 1434127356923436350, guid: f1a86af43b64057418bed1896ccea79b, type: 3}
       propertyPath: idleBackSpeed
-      value: -7.3
+      value: -7.1
       objectReference: {fileID: 0}
     - target: {fileID: 1434127356923436350, guid: f1a86af43b64057418bed1896ccea79b, type: 3}
       propertyPath: chargeGaugeRoot
