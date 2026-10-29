@@ -78,6 +78,11 @@ public class ResultScoreDirector : MonoBehaviour
     [Header("遷移先")]
     [SerializeField] private string titleSceneName = "Title";
 
+    [Header("サウンド")]
+    [SerializeField] private AudioClip breakSound;
+    [SerializeField] private AudioClip breakEndSound;
+    [SerializeField] private AudioClip BGM;
+
     private class Shard
     {
         public RectTransform rect;
@@ -121,6 +126,7 @@ public class ResultScoreDirector : MonoBehaviour
         for (int i = digits.Length - 1; i >= 0; i--)
         {
             StartCoroutine(BreakRoutine(i));
+            AudioManager.PlaySE(breakSound);
             if (i > 0) yield return new WaitForSecondsRealtime(digitInterval);
         }
         while (runningBreaks > 0) yield return null;
@@ -129,6 +135,7 @@ public class ResultScoreDirector : MonoBehaviour
         if (bonusText != null)
         {
             bonusText.gameObject.SetActive(true);
+            AudioManager.PlayBGM(BGM);
             yield return PopRoutine((RectTransform)bonusText.transform);
         }
 
