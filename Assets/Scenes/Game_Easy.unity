@@ -596,6 +596,7 @@ MonoBehaviour:
   brakeFollowRate: 2.3
   brakeTargetRate: 0.78
   minSpeedRate: 0.5
+  feverDropTime: 4
   feverRecoverTime: 4
   currentSpeed: 0
   flow: 0

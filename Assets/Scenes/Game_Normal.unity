@@ -580,6 +580,15 @@ MonoBehaviour:
   Great: {r: 1, g: 0.15115505, b: 0, a: 1}
   Good: {r: 0, g: 1, b: 0.10449946, a: 1}
   Bad: {r: 0, g: 0.09511173, b: 1, a: 1}
+  perfectSe: {fileID: 8300000, guid: 6e975844edbfc7a4c885b860fa3e4f9a, type: 3}
+  perfectVolume: 0.07
+  greatSe: {fileID: 8300000, guid: 7cf84ee8205a46a479d567c3876ba5d5, type: 3}
+  greatVolume: 0.07
+  goodSe: {fileID: 8300000, guid: 8722b999ab0d9034191f291b2cc5b799, type: 3}
+  goodVolume: 0.07
+  badSe: {fileID: 8300000, guid: 6867754ab507f7c4d980875996b8775f, type: 3}
+  badVolume: 0.07
+  seSource: {fileID: 0}
   offset: {x: 0, y: 200, z: 0}
   scale: {x: 0, y: 0, z: 0}
   timer: 1
@@ -793,6 +802,7 @@ MonoBehaviour:
   brakeFollowRate: 2.3
   brakeTargetRate: 0.78
   minSpeedRate: 0.5
+  feverDropTime: 4
   feverRecoverTime: 4
   currentSpeed: 0
   flow: 0
