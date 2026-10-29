@@ -144,4 +144,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Coin
   points: 300
   flowAmount: 1
-  pickupSe: {fileID: 0}
+  pickupSe: {fileID: 8300000, guid: 6b30cdf44dab8f444b9d00d491983103, type: 3}
