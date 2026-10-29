@@ -172,13 +172,13 @@ MonoBehaviour:
   keepBehind: 20
   baseHeight: 0
   startFlatLength: 7
-  stepDensity: 0.08
+  stepDensity: 0.05
   minFlatLength: 8
   maxFlatLength: 40
   minStepUp: 1
   maxStepUp: 2
   maxHeight: 3
-  holeDensity: 0.25
+  holeDensity: 0.04
   minHoleWidth: 2
   maxHoleWidth: 3
   holeSafeBefore: 4
@@ -1323,6 +1323,9 @@ MonoBehaviour:
   backEffect: {fileID: 905394116}
   player: {fileID: 1338264630}
   positionOffset: {x: 10, y: 0, z: 0}
+  playerCombat: {fileID: 0}
+  feverBlendInTime: 0.3
+  feverBlendOutTime: 0.6
 --- !u!4 &1232705441
 Transform:
   m_ObjectHideFlags: 0

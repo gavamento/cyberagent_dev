@@ -194,7 +194,9 @@ namespace CyberAgentDev.ObjectPrototypeLearning
             SpawnBrokenSprite();
             var hitStop = GetComponent<HitStop>();
             if (hitStop != null) hitStop.Play(false);
-            destructible.BreakBy(body.GetComponent<PlayerCombat>());
+            var player = body.GetComponent<PlayerCombat>();
+            destructible.BreakBy(player);
+            if (player != null) player.StompForward(); // 踏んで倒しても、前へ進む
         }
     }
 }
