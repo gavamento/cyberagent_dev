@@ -1664,12 +1664,6 @@ MonoBehaviour:
     videoFileName: tutorial_charge.mp4
     videoStart: 0
     videoEnd: 0
-  - trigger: 4
-    title: "\u3075\u3093\u3067 \u305F\u304A\u3059"
-    message: "\u3053\u306E \u3066\u304D\u306F \u653B\u6483\u304C \u304D\u304B\u306A\u3044\n\u30B8\u30E3\u30F3\u30D7\u3057\u3066 \u3046\u3048\u304B\u3089 \u3075\u3082\u3046"
-    videoFileName: tutorial_stomp.mp4
-    videoStart: 0
-    videoEnd: 0
   - trigger: 5
     title: "\u30B3\u30A4\u30F3"
     message: "\u30B3\u30A4\u30F3\u3092 \u3068\u308B\u3068 \u30B9\u30B3\u30A2\u304C \u3075\u3048\u3066\n\u30B9\u30D4\u30FC\u30C9\u3082 \u30A2\u30C3\u30D7\uFF01"
