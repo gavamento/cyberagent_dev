@@ -712,7 +712,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1eb6f21ddfb829b46a9c2036e8437c97, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AutoScrollCamera
-  speed: 8.5
+  speed: 9
   stage: {fileID: 42231018}
   yOffset: 2
   followSmooth: 2
@@ -804,7 +804,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ScrollSpeedProgression
   stepDistance: 50
   stepAdd: 0.25
-  baseMax: 8
+  baseMax: 10
   flowPerBreak: 1
   flowMax: 17
   accelRate: 1.057
@@ -1263,7 +1263,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1434127356923436350, guid: f1a86af43b64057418bed1896ccea79b, type: 3}
       propertyPath: idleBackSpeed
-      value: -6.5
+      value: -9.5
       objectReference: {fileID: 0}
     - target: {fileID: 1434127356923436350, guid: f1a86af43b64057418bed1896ccea79b, type: 3}
       propertyPath: chargeGaugeRoot
@@ -1418,6 +1418,26 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 2099306857}
     m_Modifications:
+    - target: {fileID: 5443959888566379550, guid: e762538b4863bfe47aa2f10ab62dc9fd, type: 3}
+      propertyPath: limitA
+      value: 85000
+      objectReference: {fileID: 0}
+    - target: {fileID: 5443959888566379550, guid: e762538b4863bfe47aa2f10ab62dc9fd, type: 3}
+      propertyPath: limitB
+      value: 65000
+      objectReference: {fileID: 0}
+    - target: {fileID: 5443959888566379550, guid: e762538b4863bfe47aa2f10ab62dc9fd, type: 3}
+      propertyPath: limitC
+      value: 45000
+      objectReference: {fileID: 0}
+    - target: {fileID: 5443959888566379550, guid: e762538b4863bfe47aa2f10ab62dc9fd, type: 3}
+      propertyPath: limitD
+      value: 25000
+      objectReference: {fileID: 0}
+    - target: {fileID: 5443959888566379550, guid: e762538b4863bfe47aa2f10ab62dc9fd, type: 3}
+      propertyPath: limitS
+      value: 99000
+      objectReference: {fileID: 0}
     - target: {fileID: 6394717769752704705, guid: e762538b4863bfe47aa2f10ab62dc9fd, type: 3}
       propertyPath: m_Name
       value: ScoreNum
