@@ -1,0 +1,550 @@
+fileFormatVersion: 2
+guid: 27620e97760a8a448936a8563ded1d2e
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 8970114562382590329
+    second: player_goal_spritesheet_0
+  - first:
+      213: -4609436259925199330
+    second: player_goal_spritesheet_1
+  - first:
+      213: -879586209377215523
+    second: player_goal_spritesheet_2
+  - first:
+      213: -4620001529281182924
+    second: player_goal_spritesheet_3
+  - first:
+      213: 2441549526944513560
+    second: player_goal_spritesheet_4
+  - first:
+      213: 3326617942724896658
+    second: player_goal_spritesheet_5
+  - first:
+      213: 4575518624258108454
+    second: player_goal_spritesheet_6
+  - first:
+      213: 851419987785909675
+    second: player_goal_spritesheet_7
+  - first:
+      213: 8919309105576509899
+    second: player_goal_spritesheet_8
+  - first:
+      213: 5916668941240083805
+    second: player_goal_spritesheet_9
+  - first:
+      213: -7277056592631762292
+    second: player_goal_spritesheet_10
+  - first:
+      213: 4529903721820669914
+    second: player_goal_spritesheet_11
+  - first:
+      213: 2376779670816380405
+    second: player_goal_spritesheet_12
+  - first:
+      213: 6741044937418474775
+    second: player_goal_spritesheet_13
+  - first:
+      213: -6029470374602860616
+    second: player_goal_spritesheet_14
+  - first:
+      213: -7751066574374030059
+    second: player_goal_spritesheet_15
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationMethod: 0
+  spriteTessellationDetail: -1
+  spriteGeometrySubdivision: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 16384
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: player_goal_spritesheet_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 2208
+        width: 480
+        height: 736
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9717f553baf3c7c70800000000000000
+      internalID: 8970114562382590329
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: player_goal_spritesheet_1
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 2208
+        width: 480
+        height: 736
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e167a58b42ef700c0800000000000000
+      internalID: -4609436259925199330
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: player_goal_spritesheet_2
+      rect:
+        serializedVersion: 2
+        x: 960
+        y: 2208
+        width: 480
+        height: 736
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ddb1db8b0051bc3f0800000000000000
+      internalID: -879586209377215523
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: player_goal_spritesheet_3
+      rect:
+        serializedVersion: 2
+        x: 1440
+        y: 2208
+        width: 480
+        height: 736
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4330f61461572efb0800000000000000
+      internalID: -4620001529281182924
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: player_goal_spritesheet_4
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1472
+        width: 480
+        height: 736
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 81efc0fdb5022e120800000000000000
+      internalID: 2441549526944513560
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: player_goal_spritesheet_5
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 1472
+        width: 480
+        height: 736
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 297ee8bc4658a2e20800000000000000
+      internalID: 3326617942724896658
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: player_goal_spritesheet_6
+      rect:
+        serializedVersion: 2
+        x: 960
+        y: 1472
+        width: 480
+        height: 736
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 62ca61652f18f7f30800000000000000
+      internalID: 4575518624258108454
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: player_goal_spritesheet_7
+      rect:
+        serializedVersion: 2
+        x: 1440
+        y: 1472
+        width: 480
+        height: 736
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ba585a6c7f9d0db00800000000000000
+      internalID: 851419987785909675
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: player_goal_spritesheet_8
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 736
+        width: 480
+        height: 736
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bc18bcfff50c7cb70800000000000000
+      internalID: 8919309105576509899
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: player_goal_spritesheet_9
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 736
+        width: 480
+        height: 736
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d55a330ed0b3c1250800000000000000
+      internalID: 5916668941240083805
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: player_goal_spritesheet_10
+      rect:
+        serializedVersion: 2
+        x: 960
+        y: 736
+        width: 480
+        height: 736
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c82f4c1a593b20b90800000000000000
+      internalID: -7277056592631762292
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: player_goal_spritesheet_11
+      rect:
+        serializedVersion: 2
+        x: 1440
+        y: 736
+        width: 480
+        height: 736
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ad747dd3f637dde30800000000000000
+      internalID: 4529903721820669914
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: player_goal_spritesheet_12
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 480
+        height: 736
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5f5516494840cf020800000000000000
+      internalID: 2376779670816380405
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: player_goal_spritesheet_13
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 0
+        width: 480
+        height: 736
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 71506cda7a00d8d50800000000000000
+      internalID: 6741044937418474775
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: player_goal_spritesheet_14
+      rect:
+        serializedVersion: 2
+        x: 960
+        y: 0
+        width: 480
+        height: 736
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8b71e0ac3a4035ca0800000000000000
+      internalID: -6029470374602860616
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: player_goal_spritesheet_15
+      rect:
+        serializedVersion: 2
+        x: 1440
+        y: 0
+        width: 480
+        height: 736
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 515380c740eae6490800000000000000
+      internalID: -7751066574374030059
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: ed7d7626065d4f844b5014f7a5cd69e9
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":4.0,"y":4.0},"gridSpriteSize":{"x":480.0,"y":736.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
+    nameFileIdTable:
+      player_goal_spritesheet_0: 8970114562382590329
+      player_goal_spritesheet_1: -4609436259925199330
+      player_goal_spritesheet_10: -7277056592631762292
+      player_goal_spritesheet_11: 4529903721820669914
+      player_goal_spritesheet_12: 2376779670816380405
+      player_goal_spritesheet_13: 6741044937418474775
+      player_goal_spritesheet_14: -6029470374602860616
+      player_goal_spritesheet_15: -7751066574374030059
+      player_goal_spritesheet_2: -879586209377215523
+      player_goal_spritesheet_3: -4620001529281182924
+      player_goal_spritesheet_4: 2441549526944513560
+      player_goal_spritesheet_5: 3326617942724896658
+      player_goal_spritesheet_6: 4575518624258108454
+      player_goal_spritesheet_7: 851419987785909675
+      player_goal_spritesheet_8: 8919309105576509899
+      player_goal_spritesheet_9: 5916668941240083805
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
