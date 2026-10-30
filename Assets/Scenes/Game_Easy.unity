@@ -184,8 +184,60 @@ MonoBehaviour:
   holeSafeBefore: 6
   holeSafeAfter: 3
   enemySections:
+  - length: 80
+    density: 0.1
+    minGap: 15
+    coinGap: 4
+    enemies:
+    - prefab: {fileID: 6232053950234815764, guid: 4039cafb8d6f8b14b95957c0e6277a40, type: 3}
+      weight: 0.6
+      offset: {x: 0, y: 0}
+      groupMin: 1
+      groupMax: 1
+      groupSpacing: 3
+      maxPerSection: 0
+      minSameGap: 0
+      noRepeat: 0
+    - prefab: {fileID: 956207134204326558, guid: 8dfb66c23d8bc9645bd3a9098848fa3a, type: 3}
+      weight: 1
+      offset: {x: 0, y: 0}
+      groupMin: 1
+      groupMax: 1
+      groupSpacing: 2
+      maxPerSection: 0
+      minSameGap: 0
+      noRepeat: 0
+    - prefab: {fileID: 9135695340695633282, guid: a2cef22ead2f95b4b8777f33c6178cdb, type: 3}
+      weight: 1
+      offset: {x: 0, y: 0}
+      groupMin: 1
+      groupMax: 1
+      groupSpacing: 2
+      maxPerSection: 0
+      minSameGap: 0
+      noRepeat: 0
+    - prefab: {fileID: 7614807785489074122, guid: 41fd980da91dcae4287060ae1891811f, type: 3}
+      weight: 1
+      offset: {x: 0, y: 0}
+      groupMin: 1
+      groupMax: 1
+      groupSpacing: 2
+      maxPerSection: 0
+      minSameGap: 0
+      noRepeat: 0
+    - prefab: {fileID: 956207134204326558, guid: e6b9fbee734b498cb15c0b6ec84bec56, type: 3}
+      weight: 1
+      offset: {x: 0, y: 0}
+      groupMin: 1
+      groupMax: 1
+      groupSpacing: 2
+      maxPerSection: 0
+      minSameGap: 0
+      noRepeat: 0
   - length: 100
     density: 0.1
+    minGap: 0
+    coinGap: 0
     enemies:
     - prefab: {fileID: 6232053950234815764, guid: 4039cafb8d6f8b14b95957c0e6277a40, type: 3}
       weight: 0.6

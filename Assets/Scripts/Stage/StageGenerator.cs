@@ -203,6 +203,10 @@ public class StageGenerator : MonoBehaviour
         [Min(1)] public int length = 100;
         [Tooltip("1マスごとに敵が出る確率")]
         [Range(0f, 1f)] public float density = 0.05f;
+        [Tooltip("この区間での敵同士の最短間隔 (マス)。0 なら共通の minEnemyGap を使う")]
+        [Min(0)] public int minGap = 0;
+        [Tooltip("この区間で敵の前後にコインを置かない距離 (マス)。0 なら同じ列に重ねないだけ")]
+        [Min(0)] public int coinGap = 0;
         [Tooltip("この区間に出る敵")]
         public EnemyEntry[] enemies;
     }
@@ -485,6 +489,7 @@ public class StageGenerator : MonoBehaviour
         if (coinPrefab == null) return;
         if (x - lastCoinColumn < minCoinGap) return;
         if (lastEnemyColumn == x) return; // 敵と重ねない
+        if (x - lastEnemyColumn < CoinGapAt(x)) return;
         if (coinRng.NextDouble() >= coinDensity) return;
 
         bool air = inHole || coinRng.NextDouble() < coinAirRate;
@@ -541,7 +546,8 @@ public class StageGenerator : MonoBehaviour
         if (section.enemies == null || section.enemies.Length == 0) return;
         if (x - lastStepColumn <= stepSafeAfter) return;
         if (x - lastHoleEnd < holeSafeAfter) return;
-        if (x - lastEnemyColumn < minEnemyGap) return;
+        int gap = section.minGap > 0 ? section.minGap : minEnemyGap;
+        if (x - lastEnemyColumn < gap) return;
 
         float density = section.density;
         // 最後の区間だけ、進むほど密度を上げる
@@ -576,6 +582,7 @@ public class StageGenerator : MonoBehaviour
     {
         var obj = Instantiate(entry.prefab, SurfacePosition(x) + (Vector3)entry.offset, Quaternion.identity, container);
         spawned.Add((x, obj, entry, currentSection));
+        RemoveCoinsBefore(x, CoinGapAt(x));
         lastEnemyColumn = x;
         lastEntry = entry;
         lastColumnOf[entry] = x;
@@ -583,6 +590,24 @@ public class StageGenerator : MonoBehaviour
     }
 
     int CountInSection(EnemyEntry entry) => sectionCounts.TryGetValue(entry, out int n) ? n : 0;
+
+    // 列 x の区間で、敵の前後にコインを置かない距離
+    int CoinGapAt(int x)
+    {
+        int index = SectionIndexAt(x, out _);
+        return index >= 0 ? enemySections[index].coinGap : 0;
+    }
+
+    // 敵を置いた列の手前 gap マスにあるコインを取り除く。敵の後ろ側は TrySpawnCoin で置かないようにしている
+    void RemoveCoinsBefore(int enemyX, int gap)
+    {
+        if (gap <= 0) return;
+        for (int i = coins.Count - 1; i >= 0 && coins[i].x >= enemyX - gap; i--)
+        {
+            if (coins[i].obj != null) DestroyObj(coins[i].obj);
+            coins.RemoveAt(i);
+        }
+    }
 
     // 列 x にこの敵を出してよいか
     bool CanSpawn(EnemyEntry e, int x)
