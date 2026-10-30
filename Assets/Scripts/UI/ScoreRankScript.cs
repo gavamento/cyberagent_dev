@@ -44,5 +44,5 @@ public class ScoreRankScript : MonoBehaviour
         scoreSendText = scoreText;
     }
 
-    static Text GetRank() {  return scoreSendText; }
+    public static Text GetRank() {  return scoreSendText; }
 }

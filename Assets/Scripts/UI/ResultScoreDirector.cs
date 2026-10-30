@@ -1,5 +1,5 @@
 //===============================================================================-
-//リザルトのスコア演出(一の位から壁が割れて数字が出る→コインの内訳→クリックで割れてタイトルへ)    秋田蓮音
+//リザルトのスコア演出(一の位から壁が割れて数字が出る→コインの内訳→ランク→クリックで割れてタイトルへ)    秋田蓮音
 //===============================================================================-
 using System.Collections;
 using System.Collections.Generic;
@@ -26,6 +26,18 @@ public class ResultScoreDirector : MonoBehaviour
     [SerializeField] private string bonusFormat = "COIN x{0}   BONUS +{1:#,0}";
     [SerializeField] private int bonusFontSize = 56;
     [SerializeField] private float bonusGap = 30f;
+
+    [Header("ランク")]
+    [Tooltip("表示の書式。{0} がランク")]
+    [SerializeField] private string rankFormat = "RANK {0}";
+    [Tooltip("未指定なら「文字」の font を使う")]
+    [SerializeField] private Font rankFont;
+    [SerializeField] private int rankFontSize = 96;
+    [Tooltip("コインの内訳(無ければ数字の行)の下端からのずらし量")]
+    [SerializeField] private Vector2 rankOffset = new Vector2(0f, -30f);
+    [Tooltip("ゲームを通さず Result を直接再生したときのランク")]
+    [SerializeField] private string previewRank = "S";
+    [SerializeField] private Color previewRankColor = new Color(1f, 0.85f, 0.2f);
 
     [Header("文字")]
     [Tooltip("未指定なら組み込みフォントを使う")]
@@ -97,6 +109,7 @@ public class ResultScoreDirector : MonoBehaviour
     private Vector2[] slotCenters;
     private Text hintText;
     private Text bonusText; // コインが 0 枚なら null
+    private Text rankText; // ランクを受け取っていなければ null
     private Sprite shardSprite;
     private int runningBreaks;
 
@@ -113,8 +126,12 @@ public class ResultScoreDirector : MonoBehaviour
             ? string.Format(System.Globalization.CultureInfo.InvariantCulture, bonusFormat, coins, bonus)
             : null;
 
+        string rank = GameResult.HasScore ? (GameResult.HasRank ? GameResult.LastRank : null) : previewRank;
+        Color rankColor = GameResult.HasScore ? GameResult.LastRankColor : previewRankColor;
+        string rankLine = !string.IsNullOrEmpty(rank) ? string.Format(rankFormat, rank) : null;
+
         shardSprite = wallSprite != null ? wallSprite : CreatePlainSprite();
-        BuildUI(text, bonusLine);
+        BuildUI(text, bonusLine, rankLine, rankColor);
         StartCoroutine(ResultRoutine());
     }
 
@@ -137,6 +154,13 @@ public class ResultScoreDirector : MonoBehaviour
             bonusText.gameObject.SetActive(true);
             AudioManager.PlayBGM(BGM);
             yield return PopRoutine((RectTransform)bonusText.transform);
+        }
+
+        // ランクは内訳のあと
+        if (rankText != null)
+        {
+            rankText.gameObject.SetActive(true);
+            yield return PopRoutine((RectTransform)rankText.transform);
         }
 
         // 演出中のクリックは無視し、終わってからのクリックだけ受け付ける
@@ -280,7 +304,7 @@ public class ResultScoreDirector : MonoBehaviour
     }
 
     // 破片も同じ親に置くので、LayoutGroup は使わず位置を自分で決める
-    private void BuildUI(string scoreText, string bonusLine)
+    private void BuildUI(string scoreText, string bonusLine, string rankLine, Color rankColor)
     {
         var canvasGo = new GameObject("ResultCanvas", typeof(Canvas), typeof(CanvasScaler));
         canvasGo.transform.SetParent(transform, false);
@@ -298,14 +322,18 @@ public class ResultScoreDirector : MonoBehaviour
         float labelHeight = labelFontSize * 1.2f;
         float bonusHeight = bonusLine != null ? bonusFontSize * 1.2f : 0f;
         float bonusBlock = bonusLine != null ? bonusGap + bonusHeight : 0f;
+        float rankHeight = rankLine != null ? rankFontSize * 1.2f : 0f;
+        // 下へずらした分も範囲に含め、案内と重ならないようにする
+        float rankBlock = rankLine != null ? rankHeight + Mathf.Max(0f, -rankOffset.y) : 0f;
 
-        // ラベル・数字の行・コインの内訳をまとめた範囲。中心を画面中央に置く
+        // ラベル・数字の行・コインの内訳・ランクをまとめた範囲。中心を画面中央に置く
         var rootGo = new GameObject("Result", typeof(RectTransform));
         rootGo.layer = gameObject.layer;
         resultRoot = (RectTransform)rootGo.transform;
         resultRoot.SetParent(canvasGo.transform, false);
-        resultRoot.sizeDelta = new Vector2(rowWidth, labelHeight + labelGap + wallSize.y + bonusBlock);
-        float rowY = -resultRoot.sizeDelta.y * 0.5f + bonusBlock + wallSize.y * 0.5f;
+        resultRoot.sizeDelta = new Vector2(rowWidth, labelHeight + labelGap + wallSize.y + bonusBlock + rankBlock);
+        float bottomY = -resultRoot.sizeDelta.y * 0.5f;
+        float rowY = bottomY + rankBlock + bonusBlock + wallSize.y * 0.5f;
 
         var labelText = CreateText("Label", resultRoot, label, labelFontSize, new Vector2(rowWidth, labelHeight));
         ((RectTransform)labelText.transform).anchoredPosition = new Vector2(0f, resultRoot.sizeDelta.y * 0.5f - labelHeight * 0.5f);
@@ -342,8 +370,18 @@ public class ResultScoreDirector : MonoBehaviour
         if (bonusLine != null)
         {
             bonusText = CreateText("CoinBonus", resultRoot, bonusLine, bonusFontSize, new Vector2(rowWidth, bonusHeight));
-            ((RectTransform)bonusText.transform).anchoredPosition = new Vector2(0f, -resultRoot.sizeDelta.y * 0.5f + bonusHeight * 0.5f);
+            ((RectTransform)bonusText.transform).anchoredPosition = new Vector2(0f, bottomY + rankBlock + bonusHeight * 0.5f);
             bonusText.gameObject.SetActive(false);
+        }
+
+        // ランクは内訳の下。これも最後に一緒に割る
+        if (rankLine != null)
+        {
+            rankText = CreateText("Rank", resultRoot, rankLine, rankFontSize, new Vector2(rowWidth, rankHeight), rankFont);
+            rankText.color = rankColor;
+            float aboveY = bottomY + rankBlock; // 内訳(無ければ数字の行)の下端
+            ((RectTransform)rankText.transform).anchoredPosition = new Vector2(rankOffset.x, aboveY + rankOffset.y - rankHeight * 0.5f);
+            rankText.gameObject.SetActive(false);
         }
 
         // 案内は割らないので resultRoot の外に置く
@@ -352,7 +390,7 @@ public class ResultScoreDirector : MonoBehaviour
         hintText.gameObject.SetActive(false);
     }
 
-    private Text CreateText(string name, RectTransform parent, string value, int size, Vector2 rectSize)
+    private Text CreateText(string name, RectTransform parent, string value, int size, Vector2 rectSize, Font overrideFont = null)
     {
         var go = new GameObject(name, typeof(RectTransform), typeof(Text));
         go.layer = gameObject.layer;
@@ -362,7 +400,8 @@ public class ResultScoreDirector : MonoBehaviour
 
         var text = go.GetComponent<Text>();
         text.text = value;
-        text.font = font != null ? font : Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+        Font useFont = overrideFont != null ? overrideFont : font;
+        text.font = useFont != null ? useFont : Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
         text.fontSize = size;
         text.color = digitColor;
         text.alignment = TextAnchor.MiddleCenter;
