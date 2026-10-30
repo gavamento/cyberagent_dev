@@ -41,6 +41,14 @@ public class ScreenShatterTransition : MonoBehaviour
     private float savedTimeScale = 1f;
     private bool paused;
 
+    // 演出中なら、演出が終わったときに戻す timeScale を差し替える。演出中でなければ false
+    public static bool SetResumeTimeScale(float timeScale)
+    {
+        if (running == null) return false;
+        running.savedTimeScale = timeScale;
+        return true;
+    }
+
     // 読み込めないシーン名なら何もせず false を返す
     public static bool Load(string sceneName)
     {
