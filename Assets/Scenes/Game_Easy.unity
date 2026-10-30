@@ -163,7 +163,7 @@ MonoBehaviour:
   endless: 0
   seed: 1
   generateOnStart: 1
-  stageLength: 880
+  stageLength: 800
   goalPrefab: {fileID: 6401440977371367732, guid: 1015c3d3bc4c49947ba802a3fa714a31, type: 3}
   goalAreaLength: 12
   goalOffset: {x: 0, y: 0}
@@ -172,16 +172,16 @@ MonoBehaviour:
   keepBehind: 20
   baseHeight: 0
   startFlatLength: 7
-  stepDensity: 0.08
+  stepDensity: 0.02
   minFlatLength: 8
-  maxFlatLength: 40
+  maxFlatLength: 80
   minStepUp: 1
   maxStepUp: 2
   maxHeight: 3
-  holeDensity: 0.05
+  holeDensity: 0.03
   minHoleWidth: 2
   maxHoleWidth: 3
-  holeSafeBefore: 4
+  holeSafeBefore: 6
   holeSafeAfter: 3
   enemySections:
   - length: 100
@@ -243,7 +243,7 @@ MonoBehaviour:
   minCoinGap: 3
   coinAirRate: 0.4
   coinGroundHeight: 0.5
-  minCoinAirHeight: 2
+  minCoinAirHeight: 2.2
   maxCoinAirHeight: 3.5
   timeModifiers:
   - startTime: 0
@@ -488,7 +488,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1eb6f21ddfb829b46a9c2036e8437c97, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AutoScrollCamera
-  speed: 7.7
+  speed: 7
   stage: {fileID: 42231018}
   yOffset: 2
   followSmooth: 2
@@ -580,7 +580,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ScrollSpeedProgression
   stepDistance: 100
   stepAdd: 0.25
-  baseMax: 7.5
+  baseMax: 8
   flowPerBreak: 1
   flowMax: 17
   accelRate: 1.057
@@ -596,7 +596,7 @@ MonoBehaviour:
   brakeFollowRate: 2.3
   brakeTargetRate: 0.78
   minSpeedRate: 0.5
-  feverDropTime: 4
+  feverDropTime: 2
   feverRecoverTime: 4
   currentSpeed: 0
   flow: 0
@@ -1073,6 +1073,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 1434127356923436350, guid: f1a86af43b64057418bed1896ccea79b, type: 3}
+      propertyPath: backSpeed
+      value: 1.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1434127356923436350, guid: f1a86af43b64057418bed1896ccea79b, type: 3}
       propertyPath: chargeGauge
       value: 
       objectReference: {fileID: 107541806}
@@ -1086,12 +1090,24 @@ PrefabInstance:
       objectReference: {fileID: 1842595942}
     - target: {fileID: 1434127356923436350, guid: f1a86af43b64057418bed1896ccea79b, type: 3}
       propertyPath: idleBackSpeed
-      value: -7.1
+      value: -6.5
       objectReference: {fileID: 0}
     - target: {fileID: 1434127356923436350, guid: f1a86af43b64057418bed1896ccea79b, type: 3}
       propertyPath: chargeGaugeRoot
       value: 
       objectReference: {fileID: 107541803}
+    - target: {fileID: 1434127356923436350, guid: f1a86af43b64057418bed1896ccea79b, type: 3}
+      propertyPath: limitShiftAtMax
+      value: 0.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 1434127356923436350, guid: f1a86af43b64057418bed1896ccea79b, type: 3}
+      propertyPath: feverForwardSpeed
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 1434127356923436350, guid: f1a86af43b64057418bed1896ccea79b, type: 3}
+      propertyPath: feverSpeedMultiplier
+      value: 17
+      objectReference: {fileID: 0}
     - target: {fileID: 2589848515423940712, guid: f1a86af43b64057418bed1896ccea79b, type: 3}
       propertyPath: m_Name
       value: Player
