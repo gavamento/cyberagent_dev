@@ -163,7 +163,7 @@ MonoBehaviour:
   endless: 0
   seed: 1
   generateOnStart: 1
-  stageLength: 880
+  stageLength: 800
   goalPrefab: {fileID: 6401440977371367732, guid: 1015c3d3bc4c49947ba802a3fa714a31, type: 3}
   goalAreaLength: 12
   goalOffset: {x: 0, y: 0}
@@ -172,16 +172,16 @@ MonoBehaviour:
   keepBehind: 20
   baseHeight: 0
   startFlatLength: 7
-  stepDensity: 0.08
+  stepDensity: 0.02
   minFlatLength: 8
-  maxFlatLength: 40
+  maxFlatLength: 80
   minStepUp: 1
   maxStepUp: 2
   maxHeight: 3
-  holeDensity: 0.05
+  holeDensity: 0.03
   minHoleWidth: 2
   maxHoleWidth: 3
-  holeSafeBefore: 4
+  holeSafeBefore: 6
   holeSafeAfter: 3
   enemySections:
   - length: 100
@@ -243,7 +243,7 @@ MonoBehaviour:
   minCoinGap: 3
   coinAirRate: 0.4
   coinGroundHeight: 0.5
-  minCoinAirHeight: 2
+  minCoinAirHeight: 2.2
   maxCoinAirHeight: 3.5
   timeModifiers:
   - startTime: 0
@@ -488,7 +488,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1eb6f21ddfb829b46a9c2036e8437c97, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AutoScrollCamera
-  speed: 7.7
+  speed: 7
   stage: {fileID: 42231018}
   yOffset: 2
   followSmooth: 2
@@ -580,7 +580,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ScrollSpeedProgression
   stepDistance: 100
   stepAdd: 0.25
-  baseMax: 7.5
+  baseMax: 8
   flowPerBreak: 1
   flowMax: 17
   accelRate: 1.057
@@ -596,7 +596,7 @@ MonoBehaviour:
   brakeFollowRate: 2.3
   brakeTargetRate: 0.78
   minSpeedRate: 0.5
-  feverDropTime: 4
+  feverDropTime: 2
   feverRecoverTime: 4
   currentSpeed: 0
   flow: 0
@@ -1073,6 +1073,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 1434127356923436350, guid: f1a86af43b64057418bed1896ccea79b, type: 3}
+      propertyPath: backSpeed
+      value: 1.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1434127356923436350, guid: f1a86af43b64057418bed1896ccea79b, type: 3}
       propertyPath: chargeGauge
       value: 
       objectReference: {fileID: 107541806}
@@ -1086,12 +1090,24 @@ PrefabInstance:
       objectReference: {fileID: 1842595942}
     - target: {fileID: 1434127356923436350, guid: f1a86af43b64057418bed1896ccea79b, type: 3}
       propertyPath: idleBackSpeed
-      value: -7.1
+      value: -6.5
       objectReference: {fileID: 0}
     - target: {fileID: 1434127356923436350, guid: f1a86af43b64057418bed1896ccea79b, type: 3}
       propertyPath: chargeGaugeRoot
       value: 
       objectReference: {fileID: 107541803}
+    - target: {fileID: 1434127356923436350, guid: f1a86af43b64057418bed1896ccea79b, type: 3}
+      propertyPath: limitShiftAtMax
+      value: 0.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 1434127356923436350, guid: f1a86af43b64057418bed1896ccea79b, type: 3}
+      propertyPath: feverForwardSpeed
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 1434127356923436350, guid: f1a86af43b64057418bed1896ccea79b, type: 3}
+      propertyPath: feverSpeedMultiplier
+      value: 17
+      objectReference: {fileID: 0}
     - target: {fileID: 2589848515423940712, guid: f1a86af43b64057418bed1896ccea79b, type: 3}
       propertyPath: m_Name
       value: Player
@@ -1593,6 +1609,89 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0c1bc633ebbfd264da4c91aed24500dd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ScoreScript
+--- !u!1 &1984753040
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1984753042}
+  - component: {fileID: 1984753041}
+  m_Layer: 0
+  m_Name: TutorialPopup
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1984753041
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1984753040}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 734ca9e602fd2c8479b4af21d68d77ee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TutorialPopup
+  prefsKeyPrefix: Tutorial_Easy_
+  entries:
+  - trigger: 0
+    title: "\u3066\u304D\u3092 \u653B\u6483"
+    message: "\u30AF\u30EA\u30C3\u30AF / Enter / X \u30DC\u30BF\u30F3\u3067 \u653B\u6483\n\u3066\u304D\u3092 \u53E9\u3044\u3066 \u58CA\u305D\u3046\uFF01"
+    videoFileName: tutorial_enemy.mp4
+    videoStart: 0
+    videoEnd: 0
+  - trigger: 1
+    title: "\u3060\u3093\u3055\u3092 \u30B8\u30E3\u30F3\u30D7"
+    message: "\u30B9\u30DA\u30FC\u30B9 / A \u30DC\u30BF\u30F3\u3067 \u30B8\u30E3\u30F3\u30D7\n\u3060\u3093\u3055\u3092 \u306E\u308A\u3053\u3048\u3088\u3046"
+    videoFileName: tutorial_step.mp4
+    videoStart: 0
+    videoEnd: 0
+  - trigger: 2
+    title: "\u3042\u306A\u3092 \u30B8\u30E3\u30F3\u30D7"
+    message: "\u3042\u306A\u306B \u304A\u3061\u306A\u3044\u3088\u3046\u306B\n\u30B8\u30E3\u30F3\u30D7\u3067 \u3068\u3073\u3053\u3048\u3088\u3046"
+    videoFileName: tutorial_hole.mp4
+    videoStart: 0
+    videoEnd: 0
+  - trigger: 3
+    title: "\u6E9C\u3081\u653B\u6483"
+    message: "\u3053\u306E \u3066\u304D\u306F \u6E9C\u3081\u653B\u6483\u3067 \u3057\u304B \u58CA\u305B\u306A\u3044\n\u9577\u62BC\u3057\u3057\u3066 \u306F\u306A\u3059\u3068 \u6E9C\u3081\u653B\u6483"
+    videoFileName: tutorial_charge.mp4
+    videoStart: 0
+    videoEnd: 0
+  - trigger: 5
+    title: "\u30B3\u30A4\u30F3"
+    message: "\u30B3\u30A4\u30F3\u3092 \u3068\u308B\u3068 \u30B9\u30B3\u30A2\u304C \u3075\u3048\u3066\n\u30B9\u30D4\u30FC\u30C9\u3082 \u30A2\u30C3\u30D7\uFF01"
+    videoFileName: tutorial_coin.mp4
+    videoStart: 0
+    videoEnd: 0
+  appearViewportX: 0.85
+  checkInterval: 0.1
+  stageGenerator: {fileID: 0}
+  font: {fileID: 12800000, guid: 697e72cdc1c2e694384b55d191d615a8, type: 3}
+  slowScale: 0.3
+  slowDuration: 1
+  recoverDuration: 0.25
+--- !u!4 &1984753042
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1984753040}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2027936395
 GameObject:
   m_ObjectHideFlags: 0
@@ -2012,3 +2111,4 @@ SceneRoots:
   - {fileID: 2042931614}
   - {fileID: 1797217397}
   - {fileID: 1741141535}
+  - {fileID: 1984753042}

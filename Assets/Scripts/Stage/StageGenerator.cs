@@ -219,10 +219,14 @@ public class StageGenerator : MonoBehaviour
         worldX = 0f;
         if (endless || tilemap == null) return false;
 
-        int column = stageLength - goalAreaLength / 2; // PlaceGoal と同じ列
-        float cellWidth = tilemap.layoutGrid.cellSize.x;
-        worldX = tilemap.CellToWorld(new Vector3Int(column, 0, 0)).x + cellWidth * 0.5f;
+        worldX = ColumnToWorldX(stageLength - goalAreaLength / 2); // PlaceGoal と同じ列
         return true;
+    }
+
+    // 列の中央のワールドX。段差や穴の位置を画面上の位置に直すのに使う
+    public float ColumnToWorldX(int column)
+    {
+        return tilemap.CellToWorld(new Vector3Int(column, 0, 0)).x + tilemap.layoutGrid.cellSize.x * 0.5f;
     }
 
     bool HasGroundTile => groundTile != null || (groundTileVariants != null && groundTileVariants.Length > 0);

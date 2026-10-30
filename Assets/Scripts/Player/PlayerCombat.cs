@@ -717,14 +717,14 @@ public class PlayerCombat : MonoBehaviour
     public void OnJump(InputAction.CallbackContext ctx)
     {
         if (!ctx.performed) return;
-        if (ScreenShatterTransition.IsRunning) return; // シーン切り替えの演出中は操作しない
+        if (ScreenShatterTransition.IsRunning || TutorialPopup.IsOpen) return; // シーン切り替えの演出中とチュートリアル表示中は操作しない
         jumpBufferTimer = jumpBufferTime; // 実際のジャンプはFixedUpdateで判定する
     }
 
     public void OnAttack(InputAction.CallbackContext ctx)
     {
         if (IsFever) return; // フィーバー中は攻撃操作なし
-        if (ScreenShatterTransition.IsRunning) return; // シーン切り替えの演出中は操作しない
+        if (ScreenShatterTransition.IsRunning || TutorialPopup.IsOpen) return; // シーン切り替えの演出中とチュートリアル表示中は操作しない
 
         if (ctx.started)
         {
